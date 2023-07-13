@@ -18,7 +18,7 @@ MAX_PRICE = 3500
 URL = f"https://www.autoscout24.nl/lst?atype=C&body=1&cy=NL&desc=0&fuel=B&kmfrom=100000&lat=53.3202659&lon=6.8575082&powertype=hp&priceto={MAX_PRICE}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip=9901%20appingedam&zipr={MAX_DISTANCE_FROM_HOME}"
 
 with open("emails.json", "r") as f:
-    emails = json.load(f)["emails"]
+    EMAILS = json.load(f)["emails"]
 
 def main():
     options = webdriver.FirefoxOptions()
