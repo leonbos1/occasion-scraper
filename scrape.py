@@ -22,6 +22,7 @@ with open("emails.json", "r") as f:
 
 def main():
     options = webdriver.FirefoxOptions()
+    options.headless = True
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
