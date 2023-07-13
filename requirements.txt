@@ -2,6 +2,6 @@ selenium<4
 apscheduler
 urllib3>=1.26.15,<2
 mysql
-sqlachemy
+sqlalchemy==1.4.41
 requests
 pymysql
