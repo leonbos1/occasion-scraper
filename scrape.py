@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import requests
-import sqlite3
+import sqlalchemy
 from requests import get
 import os
 import json
@@ -11,6 +11,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import base64
 import time
+import pymysql
+from sqlalchemy.orm import Session
 
 SYNC = True
 MAX_DISTANCE_FROM_HOME = 50
@@ -19,6 +21,28 @@ URL = f"https://www.autoscout24.nl/lst?atype=C&body=1&cy=NL&desc=0&fuel=B&kmfrom
 
 with open("emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
+
+CREDENTIALS = json.load(open("credentials.json"))
+
+username = CREDENTIALS["username"]
+password = CREDENTIALS["password"]
+hostname = CREDENTIALS["hostname"]
+port = CREDENTIALS["port"]
+database = CREDENTIALS["database"]
+
+pymysql.install_as_MySQLdb()
+
+url = f'mysql://{username}:{password}@{hostname}:{port}/{database}'
+
+engine = sqlalchemy.create_engine(url)
+
+conn = engine.connect()
+
+metadata = sqlalchemy.MetaData()
+
+CarTable = sqlalchemy.Table("cars", metadata, autoload=True, autoload_with=engine)
+
+session = Session(engine)
 
 def main():
     options = webdriver.FirefoxOptions()
@@ -41,7 +65,7 @@ def scrape_page(driver: webdriver, cars: list):
 
     scroll = 500
 
-    for i in range(0, 10):
+    for i in range(0, 20):
         sleep(1)
 
         articles = main.find_elements_by_tag_name("article")
@@ -156,43 +180,31 @@ def convert_to_year(first_registration: str):
 
 
 def get_new_cars(cars: list):
-    conn = sqlite3.connect("cars.db")
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM cars")
-
-    db_cars = c.fetchall()
-
     new_cars = []
-
-    guids = []
-
-    for car in db_cars:
-        guids.append(car[0])
-
+    
     for car in cars:
-        if car.guid not in guids:
+        query = sqlalchemy.select([CarTable]).where(
+            CarTable.columns.guid == car.guid)
+
+        result = session.execute(query)
+
+        if result.rowcount == 0:
             new_cars.append(car)
 
     return new_cars
-
-
+        
 def save_cars_to_db(cars: list):
-    conn = sqlite3.connect("cars.db")
-    c = conn.cursor()
 
     for car in cars:
-        c.execute("INSERT INTO cars VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (car.guid, car.brand, car.model,
-                  car.price, car.mileage, car.first_registration, car.vehicle_type, car.location, car.image, car.condition))
+        query = sqlalchemy.insert(CarTable).values(guid=car.guid, brand=car.brand, model=car.model, price=car.price, mileage=car.mileage,
+                                               first_registration=car.first_registration, vehicle_type=car.vehicle_type, location=car.location, image=car.image, condition=car.condition, url=car.url)
 
-    conn.commit()
-    conn.close()
+        conn.execute(query)
 
 
 def send_email(cars: list):
-    creds = json.load(open("credentials.json"))
-    from_email = creds["email"]
-    password = creds["password"]
+    from_email = CREDENTIALS["email"]
+    password = CREDENTIALS["email_password"]
 
     content = get_mail_content(cars)
 
