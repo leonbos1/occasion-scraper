@@ -23,6 +23,9 @@ def send_email(cars: list, credentials, emails):
 
 
 def get_mail_content(cars: list):
+    if len(cars) == 0:
+        return "Geen nieuwe auto's gevonden"
+    
     content = ""
 
     content += "<table style='border: 1px solid black; border-collapse: collapse;'>"
@@ -45,7 +48,6 @@ def get_mail_content(cars: list):
         content += f"<td style='border: 1px solid black; padding: 5px;'>{car.first_registration}</td>"
         content += f"<td style='border: 1px solid black; padding: 5px;'>{car.location}</td>"
         content += f"<td style='border: 1px solid black; padding: 5px;'><a href='{car.url}'>Link</a></td>"
-        # image
         content += f"<td style='border: 1px solid black; padding: 5px;'><img src='data:image/png;base64,{base64.b64encode(car.image).decode('utf-8')}'></td>"
 
         content += "</tr>"

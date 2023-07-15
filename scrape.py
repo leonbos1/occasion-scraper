@@ -12,17 +12,11 @@ from sqlalchemy.orm import sessionmaker
 from extensions import Base, CREDENTIALS, url
 from models.car import Car
 from models.scrape_session import ScrapeSession
-
-
-SYNC = True
-MAX_DISTANCE_FROM_HOME = 50
-MAX_PRICE = 3500
-CITY = "appingedam"
-FUEL_TYPE = "B"
-MIN_MILEAGE = 100000
-BODY_TYPE = 1
-
-URL = f"https://www.autoscout24.nl/lst?atype=C&body={BODY_TYPE}&cy=NL&desc=0&fuel={FUEL_TYPE}&kmfrom={MIN_MILEAGE}&lat=53.3202659&lon=6.8575082&powertype=hp&priceto={MAX_PRICE}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={CITY}&zipr={MAX_DISTANCE_FROM_HOME}"
+from models.blueprint import BluePrint
+from models.subscription import Subscription
+from models.user import User
+from models.log import Log
+import datetime
 
 with open("emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
@@ -37,27 +31,39 @@ session = Session()
 
 def main():
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
     cars = []
 
-    driver.get(URL)
-    sleep(2)
-    accept_cookies(driver)
     sleep(0.5)
 
-    scrape_page(driver, cars)
+    blueprints = session.query(BluePrint).all()
+
+    for blueprint in blueprints:
+        scrape_blueprint(driver, cars, blueprint)
 
 
-def scrape_page(driver: webdriver, cars: list):
+def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
+    global logger
+
+    url = f"https://www.autoscout24.nl/lst?atype=C&cy=NL&desc=0&fuel=b&kmfrom={blueprint.min_mileage}&powertype=hp&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+    print(url)
+    driver.get(url)
+
+    sleep(2)
+    accept_cookies(driver)
+
     main = driver.find_element_by_class_name("ListPage_main__L0gsf")
     scroll = 500
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
 
-    for i in range(0, 1):
+    logger = Logger(scrape_session.id)
+    logger.log_info("Scrape session started")
+
+    for i in range(0, 100):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
@@ -118,8 +124,10 @@ def scrape_page(driver: webdriver, cars: list):
 
     if len(new_cars) > 0:
         send_email(new_cars, CREDENTIALS, EMAILS)
+        logger.log_info("Email sent")
 
     driver.close()
+    logger.log_info("Scrape session ended")
 
 
 def click_more_vehicles(driver: webdriver):
@@ -150,11 +158,16 @@ def accept_cookies(driver: webdriver):
 
 
 def convert_to_year(first_registration: str):
-    if first_registration.lower() == "new":
-        return 2023
+    try:
+        if first_registration.lower() == "new":
+            return 2023
 
-    else:
-        return int(first_registration.split("-")[1])
+        else:
+            return int(first_registration.split("-")[1])
+        
+    except:
+        logger.log_error(f"Could not convert {first_registration} to year")
+        return 696969
 
 
 def get_new_cars(cars: list):
@@ -170,10 +183,15 @@ def get_new_cars(cars: list):
 
 
 def save_cars_to_db(cars: list):
-    for car in cars:
-        session.add(car)
+    try:
+        for car in cars:
+            session.add(car)
 
-    session.commit()
+        session.commit()
+        logger.log_info(f"{len(cars)} new cars saved to db")
+
+    except Exception as e:
+        logger.log_error(e)
 
 
 def save_session_to_db(scrape_session: ScrapeSession):
@@ -185,6 +203,29 @@ def save_session_to_db(scrape_session: ScrapeSession):
             {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
 
     session.commit()
+
+class Logger:
+    def __init__(self, session_id):
+        self.session_id = session_id
+
+    def log(self, message, level):
+        log = Log(
+            message=message,
+            level=level,
+            session_id=self.session_id
+        )
+        
+        session.add(log)
+        session.commit()
+        
+    def log_error(self, message):
+        self.log(message, 3)
+
+    def log_warning(self, message):
+        self.log(message, 2)
+
+    def log_info(self, message):
+        self.log(message, 1)
 
 
 if __name__ == "__main__":
