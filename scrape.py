@@ -2,47 +2,38 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import requests
-import sqlalchemy
-from requests import get
 import os
 import json
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import base64
 import time
-import pymysql
 from sqlalchemy.orm import Session
+from utills.mail import send_email
+import sqlalchemy
+from sqlalchemy.orm import sessionmaker
+from extensions import Base, CREDENTIALS, url
+from models.car import Car
+from models.scrape_session import ScrapeSession
+
 
 SYNC = True
 MAX_DISTANCE_FROM_HOME = 50
 MAX_PRICE = 3500
-URL = f"https://www.autoscout24.nl/lst?atype=C&body=1&cy=NL&desc=0&fuel=B&kmfrom=100000&lat=53.3202659&lon=6.8575082&powertype=hp&priceto={MAX_PRICE}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip=9901%20appingedam&zipr={MAX_DISTANCE_FROM_HOME}"
+CITY = "appingedam"
+FUEL_TYPE = "B"
+MIN_MILEAGE = 100000
+BODY_TYPE = 1
+
+URL = f"https://www.autoscout24.nl/lst?atype=C&body={BODY_TYPE}&cy=NL&desc=0&fuel={FUEL_TYPE}&kmfrom={MIN_MILEAGE}&lat=53.3202659&lon=6.8575082&powertype=hp&priceto={MAX_PRICE}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={CITY}&zipr={MAX_DISTANCE_FROM_HOME}"
 
 with open("emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
 
-CREDENTIALS = json.load(open("credentials.json"))
-
-username = CREDENTIALS["username"]
-password = CREDENTIALS["password"]
-hostname = CREDENTIALS["hostname"]
-port = CREDENTIALS["port"]
-database = CREDENTIALS["database"]
-
-pymysql.install_as_MySQLdb()
-
-url = f'mysql://{username}:{password}@{hostname}:{port}/{database}'
-
 engine = sqlalchemy.create_engine(url)
 
-conn = engine.connect()
+Base.metadata.create_all(bind=engine)
 
-metadata = sqlalchemy.MetaData()
+Session = sessionmaker(bind=engine)
+session = Session()
 
-CarTable = sqlalchemy.Table("cars", metadata, autoload=True, autoload_with=engine)
-
-session = Session(engine)
 
 def main():
     options = webdriver.FirefoxOptions()
@@ -62,12 +53,12 @@ def main():
 
 def scrape_page(driver: webdriver, cars: list):
     main = driver.find_element_by_class_name("ListPage_main__L0gsf")
-
     scroll = 500
+    scrape_session = ScrapeSession()
+    save_session_to_db(scrape_session)
 
-    for i in range(0, 20):
+    for i in range(0, 1):
         sleep(1)
-
         articles = main.find_elements_by_tag_name("article")
 
         for article in articles:
@@ -78,29 +69,22 @@ def scrape_page(driver: webdriver, cars: list):
             try:
                 location_span = article.find_element_by_class_name(
                     "SellerInfo_address__txoNV")
-
                 location_text = location_span.text.split("•")
-
                 location = location_text[1]
 
             except Exception as e:
                 all_elements = article.find_elements_by_tag_name("span")
-
                 location = all_elements[-1].text
 
             try:
                 img = article.find_element_by_class_name(
                     "NewGallery_img__bi92g")
-
                 image = img.get_attribute("src")
-
                 request = requests.get(image)
-
                 image = request.content
 
             except NoSuchElementException:
                 path = os.path.abspath("no-picture.png")
-
                 with open(path, "rb") as f:
                     image = f.read()
 
@@ -112,12 +96,10 @@ def scrape_page(driver: webdriver, cars: list):
 
             a_element = article.find_element_by_xpath(
                 ".//a[contains(@class, 'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l')]")
-
             href = a_element.get_attribute("href")
-
-            car = Car(guid=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"), mileage=mileage,
-                      first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"), location=location, image=image, condition=mileage, url=href)
-
+            car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
+                      mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
+                      location=location, image=image, condition=mileage, url=href, session_id=scrape_session.id)
             cars.append(car)
 
         driver.execute_script("window.scrollBy(0, -300);")
@@ -129,15 +111,13 @@ def scrape_page(driver: webdriver, cars: list):
             break
 
     new_cars = get_new_cars(cars)
-
-    if SYNC:
-        save_cars_to_db(new_cars)
-
-    for car in new_cars:
-        print(car)
+    save_cars_to_db(new_cars)
+    scrape_session.ended = time.time()
+    scrape_session.new_cars = len(new_cars)
+    save_session_to_db(scrape_session)
 
     if len(new_cars) > 0:
-        send_email(new_cars)
+        send_email(new_cars, CREDENTIALS, EMAILS)
 
     driver.close()
 
@@ -145,7 +125,6 @@ def scrape_page(driver: webdriver, cars: list):
 def click_more_vehicles(driver: webdriver):
     more_vehicles_button = driver.find_element_by_xpath(
         "//button[contains(text(), 'More vehicles')]")
-
     more_vehicles_button.click()
 
 
@@ -163,7 +142,6 @@ def next_page(driver: webdriver):
 def accept_cookies(driver: webdriver):
     try:
         cookies_button = driver.find_element_by_xpath(
-
             "//button[contains(text(), 'Alles accepteren')]")
         cookies_button.click()
 
@@ -181,94 +159,32 @@ def convert_to_year(first_registration: str):
 
 def get_new_cars(cars: list):
     new_cars = []
-    
+
     for car in cars:
-        query = sqlalchemy.select([CarTable]).where(
-            CarTable.columns.guid == car.guid)
+        car_from_db = session.query(Car).filter(Car.id == car.id).first()
 
-        result = session.execute(query)
-
-        if result.rowcount == 0:
+        if car_from_db == None:
             new_cars.append(car)
 
     return new_cars
-        
+
+
 def save_cars_to_db(cars: list):
-
     for car in cars:
-        query = sqlalchemy.insert(CarTable).values(guid=car.guid, brand=car.brand, model=car.model, price=car.price, mileage=car.mileage,
-                                               first_registration=car.first_registration, vehicle_type=car.vehicle_type, location=car.location, image=car.image, condition=car.condition, url=car.url)
+        session.add(car)
 
-        conn.execute(query)
-
-
-def send_email(cars: list):
-    from_email = CREDENTIALS["email"]
-    password = CREDENTIALS["email_password"]
-
-    content = get_mail_content(cars)
-
-    for email in EMAILS:
-        message = MIMEMultipart()
-        message["From"] = from_email
-        message["To"] = email
-        message["Subject"] = "Nieuwe auto's op autoscout24"
-
-        message.attach(MIMEText(content, "html"))
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-            smtp.login(from_email, password)
-            smtp.sendmail(from_email, email, message.as_string())
+    session.commit()
 
 
-def get_mail_content(cars: list):
-    content = ""
+def save_session_to_db(scrape_session: ScrapeSession):
+    if session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
+        session.add(scrape_session)
 
-    # make a table
-    content += "<table style='border: 1px solid black; border-collapse: collapse;'>"
-    content += "<tr>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Merk</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Model</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Prijs</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Kilometerstand</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Bouwjaar</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>Locatie</th>"
-    content += "<th style='border: 1px solid black; padding: 5px;'>URL</th>"
-    content += "</tr>"
+    else:
+        session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
+            {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
 
-    for car in cars:
-        content += "<tr>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>{car.brand}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>{car.model}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>€{car.price}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>{car.mileage}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>{car.first_registration}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'>{car.location}</td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'><a href='{car.url}'>Link</a></td>"
-        # image
-        content += f"<td style='border: 1px solid black; padding: 5px;'><img src='data:image/png;base64,{base64.b64encode(car.image).decode('utf-8')}'></td>"
-
-        content += "</tr>"
-
-    return content
-
-
-class Car:
-    def __init__(self, guid: str, brand: str, model: str, price: str, mileage: int, first_registration: int, vehicle_type: str, location: str, image: bytes, condition: str, url: str):
-        self.guid = guid
-        self.brand = brand
-        self.model = model
-        self.price = price
-        self.mileage = mileage
-        self.first_registration = first_registration
-        self.vehicle_type = vehicle_type
-        self.location = location
-        self.image = image
-        self.condition = condition
-        self.url = url
-
-    def __str__(self):
-        return f"{self.brand} {self.model} {self.price} {self.mileage} {self.first_registration} {self.vehicle_type} {self.location} {self.condition} {self.url}"
+    session.commit()
 
 
 if __name__ == "__main__":
