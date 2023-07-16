@@ -18,7 +18,7 @@ class BluePrint(Base, BaseModel):
     max_distance_from_home = Column(Integer)
     owner_id = Column(String(36), ForeignKey('users.id'))
 
-    def __init__(self, brand, model, min_price, max_price, min_mileage, max_mileage, min_first_registration, max_first_registration, vehicle_type, city, max_distance_from_home, owner_id):
+    def __init__(self, brand=None, model=None, min_price=None, max_price=None, min_mileage=None, max_mileage=None, min_first_registration=None, max_first_registration=None, vehicle_type=None, city=None, max_distance_from_home=None, owner_id=None):
         self.brand = brand
         self.model = model
         self.min_price = min_price
@@ -36,3 +36,19 @@ class BluePrint(Base, BaseModel):
     def __repr__(self):
         return f"<BluePrint(id={self.id}, brand={self.brand}, model={self.model}, min_price={self.min_price}, max_price={self.max_price}, min_mileage={self.min_mileage}, max_mileage={self.max_mileage}, min_first_registration={self.min_first_registration}, max_first_registration={self.max_first_registration}, vehicle_type={self.vehicle_type}, owner_id={self.owner_id}, created={self.created}, updated={self.updated})>"
   
+    @property
+    def attributes(self):
+        return [
+            'brand',
+            'model',
+            'min_price',
+            'max_price',
+            'min_mileage',
+            'max_mileage',
+            'min_first_registration',
+            'max_first_registration',
+            'vehicle_type',
+            'city',
+            'max_distance_from_home',
+            'owner_id'
+        ]

@@ -8,7 +8,6 @@ class User(Base, BaseModel):
 
     email = Column(String(50), unique=True)
     password = Column(String(50))
-    blueprints = relationship("BluePrint", backref="user")
 
     def __init__(self, email, password):
         self.email = email
