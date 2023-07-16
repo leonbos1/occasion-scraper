@@ -4,6 +4,7 @@ import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from models.car import Car
 import datetime
+import uvicorn
 
 app = FastAPI()
 
@@ -98,6 +99,9 @@ def get_amount_of_cars_by_session(session_id: str):
 
 @app.get("/cars/date/{date}")
 def get_cars_by_date(date: str):
+    if date == "today":
+        date = datetime.datetime.now().strftime("%d-%m-%Y")
+
     session = get_session()
 
     start_timestamp = datetime.datetime.strptime(date, "%d-%m-%Y").timestamp()
@@ -112,3 +116,31 @@ def get_cars_by_date(date: str):
     session.close()
 
     return cars
+
+@app.get("/cars/date/today/amount")
+def get_amount_of_cars_today():
+    session = get_session()
+
+    start_timestamp = datetime.datetime.now().replace(
+        hour=0, minute=0, second=0, microsecond=0).timestamp()
+    end_timestamp = start_timestamp + 86400
+
+    amount = session.query(Car).filter(
+        Car.created >= start_timestamp, Car.created <= end_timestamp).count()
+
+    session.close()
+
+    return amount
+
+#get latest car scraped
+@app.get("/car/latest")
+def get_latest_car():
+    session = get_session()
+
+    car = session.query(Car).order_by(Car.created.desc()).first()
+
+    car.image = None
+
+    session.close()
+
+    return car
