@@ -1,6 +1,22 @@
-import './assets/main.css'
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import App from './App.vue';
 
-import { createApp } from 'vue'
-import App from './App.vue'
+import Cars from './components/cars/Cars.vue';
+import Home from './components/home/Home.vue'; 
+import Users from './components/users/Users.vue';
+import Blueprints from './components/blueprints/Blueprints.vue';
 
-createApp(App).mount('#app')
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', component: Home },
+    { path: '/cars', component: Cars },
+    { path: '/users', component: Users},
+    { path: '/blueprints', component: Blueprints}
+  ],
+});
+
+const app = createApp(App);
+app.use(router);
+app.mount('#app');

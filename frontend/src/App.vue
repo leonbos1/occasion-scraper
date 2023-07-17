@@ -1,41 +1,52 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="container" id="app">
+    <Nav class="nav" />
+    <div class="content">
+      <router-view />
     </div>
-  </header>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+import Nav from './components/Nav.vue';
+import Cars from './components/cars/Cars.vue';
+import Home from './components/home/Home.vue';
+import Users from './components/users/Users.vue';
+import Blueprints from './components/blueprints/Blueprints.vue';
+
+export default {
+  components: {
+    Nav,
+    Cars,
+    Home,
+    Users,
+    Blueprints
+  }
+};
+</script>
+
+<style>
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.container {
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.content {
+  margin-top: 60px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f2f2f2;
+  padding: 10px;
+  z-index: 9999;
 }
 </style>
