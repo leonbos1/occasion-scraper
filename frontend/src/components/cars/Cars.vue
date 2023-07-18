@@ -1,28 +1,24 @@
 <template>
-  <div>
-    <DataTable :data="cars" :columns="dataTableColumns">
-    </DataTable>
-  </div>
+    <DataTable id="carTable" :data="cars" :columns="dataTableColumns" class="display nowrap" />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import CarRow from './CarRow.vue';
 import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net';
- 
+import DataTablesCore from 'datatables.net-bs5';
+
 DataTable.use(DataTablesCore);
 
 const cars = ref([]);
 
 const dataTableColumns = [
-  { data: 'brand' },
-  { data: 'model' },
-  { data: 'price' },
-  { data: 'mileage' },
-  { data: 'location' },
-  { data: 'first_registration' },
-  { data: 'url' },
+  { data: 'brand', title: 'Brand' },
+  { data: 'model', title: 'Model' },
+  { data: 'price', title: 'Price' },
+  { data: 'mileage', title: 'Mileage' },
+  { data: 'location', title: 'Location' },
+  { data: 'first_registration', title: 'First Registration' },
+  { data: 'url', title:'Url' },
 ];
 
 onMounted(async () => {
@@ -34,11 +30,6 @@ onMounted(async () => {
     console.error('Failed to fetch cars:', error);
   }
 });
-
 </script>
 
-<style scoped>
-@import 'datatables.net-dt';
-@import 'datatables.net-bs5';
-@import 'bootstrap';
-</style>
+<style scoped></style>
