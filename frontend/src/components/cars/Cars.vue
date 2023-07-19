@@ -1,25 +1,34 @@
 <template>
-    <DataTable id="carTable" :data="cars" :columns="dataTableColumns" class="display nowrap" />
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-6 py-3">Id</th>
+          <th scope="col" class="px-6 py-3">Brand</th>
+          <th scope="col" class="px-6 py-3">Model</th>
+          <th scope="col" class="px-6 py-3">Price</th>
+          <th scope="col" class="px-6 py-3">Mileage</th>
+          <th scope="col" class="px-6 py-3">City</th>
+          <th scope="col" class="px-6 py-3">First Registration</th>
+          <th scope="col" class="px-6 py-3">Vehicle Type</th>
+          <th scope="col" class="px-6 py-3">Created</th>
+          <th scope="col" class="px-6 py-3">Updated</th>
+          <th scope="col" class="px-6 py-3">Url</th>
+          <th scope="col" class="px-6 py-3">Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        <CarRow v-for="car in cars" :key="car.id" :car="car" />
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-bs5';
-
-DataTable.use(DataTablesCore);
+import CarRow from './CarRow.vue';
 
 const cars = ref([]);
-
-const dataTableColumns = [
-  { data: 'brand', title: 'Brand' },
-  { data: 'model', title: 'Model' },
-  { data: 'price', title: 'Price' },
-  { data: 'mileage', title: 'Mileage' },
-  { data: 'location', title: 'Location' },
-  { data: 'first_registration', title: 'First Registration' },
-  { data: 'url', title:'Url' },
-];
 
 onMounted(async () => {
   try {
