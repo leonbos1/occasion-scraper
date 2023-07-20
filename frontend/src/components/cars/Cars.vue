@@ -2,6 +2,14 @@
   <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <div class="flex flex-col items-center justify-center w-full h-32">
       <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+      <paginationComponent
+        class="w-1/4 ml-auto"
+        :current-page="currentPage"
+        :has-next="hasNext"
+        :has-previous="hasPrevious"
+        @previous="handlePrevious"
+        @next="handleNext"
+      />
     </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table class="w-full text-sm text-left">
@@ -36,20 +44,56 @@
 import { ref, onMounted, watch } from 'vue';
 import CarRow from './CarRow.vue';
 import perPageComponent from '../datatables/perPageComponent.vue';
+import paginationComponent from '../datatables/paginationComponent.vue';
 
 const cars = ref([]);
 const selectedCars = ref([]);
 const perPage = ref(10);
+const currentPage = ref(1);
+const hasNext = ref(false);
+const hasPrevious = ref(false);
 
 function perPageData() {
-  return cars.value.slice(0, perPage.value);
+  const start = (currentPage.value - 1) * perPage.value;
+  const end = currentPage.value * perPage.value;
+  return cars.value.slice(start, end);
 }
 
 function perPageSelected(option) {
   perPage.value = option;
 };
 
+function handlePrevious() {
+  currentPage.value--;
+
+  if (currentPage.value === 1) {
+    hasPrevious.value = false;
+  }
+
+  if (currentPage.value < cars.value.length / perPage.value) {
+    hasNext.value = true;
+  }
+}
+
+function handleNext() {
+  console.log("parent")
+  console.log(currentPage.value)
+  currentPage.value++;
+
+  if (currentPage.value > 1) {
+    hasPrevious.value = true;
+  }
+
+  if (currentPage.value === cars.value.length / perPage.value) {
+    hasNext.value = false;
+  }
+}
+
 watch(perPage, () => {
+  selectedCars.value = perPageData();
+});
+
+watch(currentPage, () => {
   selectedCars.value = perPageData();
 });
 
