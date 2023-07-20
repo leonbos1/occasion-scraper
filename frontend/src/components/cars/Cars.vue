@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <perPageComponent @option-selected="perPageSelected" />
+  <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <div class="flex flex-col items-center justify-center w-full h-32">
+      <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+    </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <table class="w-full text-sm text-left">
+        <thead class="text-xs">
           <tr>
             <th scope="col" class="px-6 py-3">Id</th>
             <th scope="col" class="px-6 py-3">Brand</th>
@@ -23,6 +25,9 @@
           <CarRow v-for="car in selectedCars" :key="car.id" :car="car" />
         </tbody>
       </table>
+    </div>
+    <div class="flex flex-col items-center justify-center w-full h-32">
+      <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
     </div>
   </div>
 </template>

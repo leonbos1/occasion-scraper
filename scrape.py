@@ -6,7 +6,7 @@ import os
 import json
 import time
 from sqlalchemy.orm import Session
-from utills.mail import send_email
+from utills import mail
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from extensions import Base, CREDENTIALS, url
@@ -31,7 +31,7 @@ session = Session()
 
 def main():
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -94,11 +94,11 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 with open(path, "rb") as f:
                     image = f.read()
 
-            if article.get_attribute("data-mileage").isdigit():
+            try:
                 mileage = int(article.get_attribute("data-mileage"))
 
-            else:
-                mileage = 696969
+            except:
+                mileage = 0
 
             a_element = article.find_element_by_xpath(
                 ".//a[contains(@class, 'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l')]")
@@ -114,16 +114,18 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             next_page(driver)
 
         except:
+            logger.log_info(f"No next page, {i} pages scraped")
             break
 
     new_cars = get_new_cars(cars)
+    logger.log_info(f"{len(new_cars)} new cars found")
     save_cars_to_db(new_cars)
     scrape_session.ended = time.time()
     scrape_session.new_cars = len(new_cars)
     save_session_to_db(scrape_session)
 
     if len(new_cars) > 0:
-        send_email(new_cars, CREDENTIALS, EMAILS)
+        mail.send_email(new_cars, CREDENTIALS, EMAILS)
         logger.log_info("Email sent")
 
     driver.close()
@@ -139,8 +141,7 @@ def click_more_vehicles(driver: webdriver):
 def next_page(driver: webdriver):
     try:
         button = driver.find_element_by_xpath(
-            "//button[contains(@class, 'FilteredListPagination') and contains(text(), 'Volgende')]")
-
+            "//button[contains(@aria-label, 'Ga naar volgende pagina')]")
         button.click()
 
     except NoSuchElementException:
@@ -214,6 +215,9 @@ class Logger:
             level=level,
             session_id=self.session_id
         )
+
+        print(f"{datetime.datetime.now()} - {level} - {message}")
+
         
         session.add(log)
         session.commit()

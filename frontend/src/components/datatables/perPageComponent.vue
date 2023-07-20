@@ -1,6 +1,6 @@
 <template>
     <select
-      class="block w-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-200 rounded appearance-none dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 focus:outline-none focus:bg-white focus:border-gray-500"
+      class="block w-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border"
       @change="handleOptionSelected"
     >
       <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
