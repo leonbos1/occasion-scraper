@@ -2,14 +2,9 @@
   <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <div class="flex flex-col items-center justify-center w-full h-32">
       <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
-      <paginationComponent
-        class="w-1/4 ml-auto"
-        :current-page="currentPage"
-        :has-next="hasNext"
-        :has-previous="hasPrevious"
-        @previous="handlePrevious"
-        @next="handleNext"
-      />
+      <paginationComponent class="w-1/4 ml-auto" :current-page="currentPage"
+        :total-pages="Math.ceil(cars.length / perPage)" :has-previous="hasPrevious" :has-next="hasNext"
+        @previous="handlePrevious" @next="handleNext" />
     </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table class="w-full text-sm text-left">
@@ -49,8 +44,8 @@ import paginationComponent from '../datatables/paginationComponent.vue';
 const cars = ref([]);
 const selectedCars = ref([]);
 const perPage = ref(10);
-const currentPage = ref(1);
-const hasNext = ref(false);
+const currentPage = ref(1);;
+const hasNext = ref(true);
 const hasPrevious = ref(false);
 
 function perPageData() {
@@ -63,34 +58,42 @@ function perPageSelected(option) {
   perPage.value = option;
 };
 
-function handlePrevious() {
-  currentPage.value--;
 
+
+function checkNextAndPrevious() {
   if (currentPage.value === 1) {
     hasPrevious.value = false;
   }
 
-  if (currentPage.value < cars.value.length / perPage.value) {
+  else {
+    hasPrevious.value = true;
+  }
+
+  if (currentPage.value === Math.ceil(cars.value.length / perPage.value)) {
+    hasNext.value = false;
+  }
+
+  else {
     hasNext.value = true;
   }
 }
 
 function handleNext() {
-  console.log("parent")
-  console.log(currentPage.value)
   currentPage.value++;
 
-  if (currentPage.value > 1) {
-    hasPrevious.value = true;
-  }
+  checkNextAndPrevious();
+}
 
-  if (currentPage.value === cars.value.length / perPage.value) {
-    hasNext.value = false;
-  }
+function handlePrevious() {
+  currentPage.value--;
+
+  checkNextAndPrevious();
 }
 
 watch(perPage, () => {
   selectedCars.value = perPageData();
+  currentPage.value = 1;
+  checkNextAndPrevious();
 });
 
 watch(currentPage, () => {
