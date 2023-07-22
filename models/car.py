@@ -31,7 +31,7 @@ class Car(Base, BaseModel):
         self.image = image
         self.condition = condition
         self.url = url
-        self.base_image = base64.b64encode(image).decode("utf-8")
+        self.base_image = "data:image/jpeg;base64," + base64.b64encode(image).decode("utf-8")
         self.session_id = session_id
         BaseModel.__init__(self, id)
 
