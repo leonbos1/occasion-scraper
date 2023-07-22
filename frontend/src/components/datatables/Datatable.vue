@@ -1,11 +1,15 @@
 <template>
     <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <div class="flex flex-col items-center justify-center w-full h-32">
-            <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
-            <paginationComponent class="w-1/4 ml-auto" :current-page="currentPage"
-                :total-pages="Math.ceil(data.length / perPage)" :has-previous="hasPrevious" :has-next="hasNext"
-                @previous="handlePrevious" @next="handleNext" />
+        <div class="flex flex-row w-full h-32">
+            <div class="flex flex-row items-center justify-start w-1/4">
+                <PerPageComponent @option-selected="perPageSelected" />
+            </div>
+            <div class="flex flex-row items-center justify-center w-1/2">
+                <PaginationComponent :current-page="currentPage" :total-pages="Math.ceil(data.length / perPage)"
+                    :has-previous="hasPrevious" :has-next="hasNext" @previous="handlePrevious" @next="handleNext" />
+            </div>
         </div>
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs">
@@ -20,7 +24,7 @@
                     <tr v-for="row in selectedData" :key="row.id" class="border-b border-gray-200">
                         <td v-for="column in columns" :key="column" class="px-4 py-3">
                             <template v-if="column === 'base_image'">
-                                <img :src="row[column]" class="w-10 h-10" />
+                                <img :src="'data:image/png;base64,' + row[column]" class="w-10 h-10" />
                             </template>
                             <template v-else>
                                 <span>{{ row[column] }}</span>
@@ -38,8 +42,8 @@
   
 <script setup>
 import { ref, onMounted, watch, defineProps } from 'vue';
-import perPageComponent from './PerPageComponent.vue';
-import paginationComponent from './PaginationComponent.vue';
+import PerPageComponent from './perPageComponent.vue';
+import PaginationComponent from './paginationComponent.vue';
 
 const data = ref([]);
 const columns = ref([]);
@@ -95,6 +99,12 @@ function handlePrevious() {
 watch(perPage, () => {
     selectedData.value = perPageData();
     currentPage.value = 1;
+
+    checkNextAndPrevious();
+});
+
+watch(currentPage, () => {
+    selectedData.value = perPageData();
 
     checkNextAndPrevious();
 });

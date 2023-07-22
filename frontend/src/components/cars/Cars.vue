@@ -8,18 +8,15 @@
 import { ref, onMounted, watch } from 'vue';
 import Datatable from '../datatables/Datatable.vue';
 import fixBase64Image from '../../utils/imagehelper.js';
+import CarRepository from '../../services/CarRepository';
 
 const cars = ref([]);
 const columns = ref([]);
 
-
 onMounted(async () => {
   try {
-    const response = await fetch('http://192.168.68.138:8000/cars');
-    const data = await response.json();
-    cars.value = data;
+    cars.value = await CarRepository.getAllCars();
     columns.value = Object.keys(cars.value[0]);
-    fixBase64Image(cars);
 
   } catch (error) {
     console.error('Failed to fetch cars:', error);
