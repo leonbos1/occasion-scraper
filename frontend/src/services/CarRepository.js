@@ -7,7 +7,8 @@ class CarRepository {
     }
 
     async getAllCars() {
-        const response = await this.get('/cars');
+        var url = '/cars';
+        const response = await this.get(url);
 
         return await response.json();
     }
@@ -19,7 +20,7 @@ class CarRepository {
     }
 
     async get(url) {
-        const response = await fetch(this.api_url + url,{
+        const response = await fetch(this.api_url + url, {
             headers: {
                 'X-API-Key': this.api_key
             }

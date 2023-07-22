@@ -14,8 +14,9 @@
             <table class="w-full text-sm text-left">
                 <thead class="text-xs">
                     <tr>
-                        <th v-for="column in columns" :key="column"
-                            class="px-4 py-3 text-gray-500 uppercase tracking-wider">
+                        <th v-for="column in columns" :key="column" class="px-4 py-3 text-gray-500 uppercase tracking-wider"
+                            @click="setOrderBy(column)">
+
                             {{ column }}
                         </th>
                     </tr>
@@ -24,7 +25,7 @@
                     <tr v-for="row in selectedData" :key="row.id" class="border-b border-gray-200">
                         <td v-for="column in columns" :key="column" class="px-4 py-3">
                             <template v-if="column === 'base_image'">
-                                <img :src="'data:image/png;base64,' + row[column]" class="w-10 h-10" />
+                                <img :src="'data:image/png;base64,' + row[column]" class="w-1/2 h-1/2 " />
                             </template>
                             <template v-else>
                                 <span>{{ row[column] }}</span>
@@ -42,8 +43,8 @@
   
 <script setup>
 import { ref, onMounted, watch, defineProps } from 'vue';
-import PerPageComponent from './perPageComponent.vue';
-import PaginationComponent from './paginationComponent.vue';
+import PerPageComponent from './PerPageComponent.vue';
+import PaginationComponent from './PaginationComponent.vue';
 
 const data = ref([]);
 const columns = ref([]);
@@ -55,6 +56,32 @@ const perPage = ref(10);
 const currentPage = ref(1);;
 const hasNext = ref(true);
 const hasPrevious = ref(false);
+const order_by = ref('id');
+
+function orderBy(column) {
+    data.value.sort((a, b) => {
+        if (!isNaN(a[column]) && !isNaN(b[column])) {
+            return a[column] - b[column];
+        }
+
+        else {
+            return a[column].localeCompare(b[column]);
+        }
+    });
+}
+
+function setOrderBy(column) {
+    if (order_by.value === column) {
+        data.value.reverse();
+    }
+
+    else {
+        order_by.value = column;
+        orderBy(column);
+    }
+
+    selectedData.value = perPageData();
+}
 
 function perPageData() {
     const start = (currentPage.value - 1) * perPage.value;

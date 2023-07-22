@@ -7,10 +7,11 @@ router = APIRouter()
 
 
 @router.get("/cars")
-def get_cars():
+def get_cars(order_by: str = "created", order: str = "desc"):
     session = get_session()
 
-    cars = session.query(Car).all()
+    cars = session.query(Car).order_by(
+        getattr(getattr(Car, order_by), order)()).all()
 
     for car in cars:
         car.image = None
