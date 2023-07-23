@@ -1,50 +1,85 @@
 <template>
-    <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <div class="flex flex-row w-full h-32">
-            <div class="flex flex-row items-center justify-start w-1/4">
-                <PerPageComponent @option-selected="perPageSelected" />
-            </div>
-            <div class="flex flex-row items-center justify-center w-1/2">
-                <PaginationComponent :current-page="currentPage" :total-pages="Math.ceil(data.length / perPage)"
-                    :has-previous="hasPrevious" :has-next="hasNext" @previous="handlePrevious" @next="handleNext" />
-            </div>
-        </div>
+    <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <div class="flex flex-col">
+            <div class="-m-1.5 overflow-x-auto">
+                <div class="p-1.5 min-w-full inline-block align-middle">
+                    <div
+                        class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
+                        <div
+                            class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex flex-row w-full h-32">
+                                <div class="flex flex-row items-center justify-start w-1/4">
+                                    <PerPageComponent @option-selected="perPageSelected" />
+                                </div>
+                                <div class="flex flex-row items-center justify-center w-1/2">
+                                    <PaginationComponent :current-page="currentPage"
+                                        :total-pages="Math.ceil(data.length / perPage)" :has-previous="hasPrevious"
+                                        :has-next="hasNext" @previous="handlePrevious" @next="handleNext" />
+                                </div>
+                                <div class="flex flex-row items-center justify-center w-1/2">
+                                    <SearchComponent @search="handleSearch" />
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left">
-                <thead class="text-xs">
-                    <tr>
-                        <th v-for="column in columns" :key="column" class="px-4 py-3 text-gray-500 uppercase tracking-wider"
-                            @click="setOrderBy(column)">
-
-                            {{ column }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in selectedData" :key="row.id" class="border-b border-gray-200">
-                        <td v-for="column in columns" :key="column" class="px-4 py-3">
-                            <template v-if="column === 'base_image'">
-                                <img :src="'data:image/png;base64,' + row[column]" class="w-1/2 h-1/2 " />
-                            </template>
-                            <template v-else>
-                                <span>{{ row[column] }}</span>
-                            </template>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="flex flex-col items-center justify-center w-full h-32">
-            <perPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-slate-800">
+                                    <tr>
+                                        <th v-for="column in columns" :key="column" scope="col"
+                                            class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="setOrderBy(column)">
+                                            <div class="flex items-center gap-x-2">
+                                                <span
+                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-200">
+                                                    {{ column }}
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr v-for="row in selectedData" :key="row.id">
+                                        <td v-for="column in columns" :key="column" class="h-px w-px whitespace-nowrap">
+                                            <div class="pl-6 py-3">
+                                                <template v-if="column === 'base_image'">
+                                                    <img :src="'data:image/png;base64,' + row[column]"
+                                                        class="w-1/2 h-1/2 " />
+                                                </template>
+                                                <template v-else>
+                                                    <span>{{ row[column] }}</span>
+                                                </template>
+                                            </div>
+                                        </td>
+                                        <td class="h-px w-px whitespace-nowrap">
+                                            <div class="px-6 py-1.5">
+                                                <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                                                    data-hs-overlay="#hs-modal-signup">
+                                                    Edit
+                                                </a>
+                                                <EditComponent :car="row" v-if="row" @edit="handleEdit" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex flex-col items-center justify-center w-full h-32">
+                            <PerPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
   
 <script setup>
-import { ref, onMounted, watch, defineProps } from 'vue';
+import { ref, onMounted, watch, defineProps, defineEmits } from 'vue';
 import PerPageComponent from './PerPageComponent.vue';
 import PaginationComponent from './PaginationComponent.vue';
+import SearchComponent from './SearchComponent.vue';
+import EditComponent from './EditComponent.vue';
 
 const data = ref([]);
 const columns = ref([]);
@@ -52,11 +87,18 @@ const columns = ref([]);
 const props = defineProps(['inputData', 'inputColumns']);
 
 const selectedData = ref([]);
+const filteredData = ref([]);
 const perPage = ref(10);
 const currentPage = ref(1);;
 const hasNext = ref(true);
 const hasPrevious = ref(false);
 const order_by = ref('id');
+
+const emit = defineEmits(['edit']);
+
+function handleEdit(car) {
+    emit('edit', car);
+}
 
 function orderBy(column) {
     data.value.sort((a, b) => {
@@ -86,7 +128,8 @@ function setOrderBy(column) {
 function perPageData() {
     const start = (currentPage.value - 1) * perPage.value;
     const end = currentPage.value * perPage.value;
-    return data.value.slice(start, end);
+
+    return filteredData.value.slice(start, end);
 }
 
 function perPageSelected(option) {
@@ -123,6 +166,27 @@ function handlePrevious() {
     checkNextAndPrevious();
 }
 
+function handleSearch(search) {
+    console.log(search);
+    if (search === '') {
+        filteredData.value = data.value;
+    }
+
+    else {
+        filteredData.value = data.value.filter((row) => {
+            return Object.values(row).some((column) => {
+                return String(column).toLowerCase().includes(search.toLowerCase());
+            });
+        });
+    }
+
+    currentPage.value = 1;
+
+    selectedData.value = perPageData();
+
+    checkNextAndPrevious();
+}
+
 watch(perPage, () => {
     selectedData.value = perPageData();
     currentPage.value = 1;
@@ -147,6 +211,7 @@ watch(props.inputData, () => {
 onMounted(() => {
     data.value = props.inputData;
     columns.value = props.inputColumns;
+    filteredData.value = data.value;
     selectedData.value = perPageData();
     currentPage.value = 1;
 

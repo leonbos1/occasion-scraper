@@ -19,6 +19,18 @@ class CarRepository {
         return await response.json();
     }
 
+    async updateCar(car) {
+        const response = await fetch(this.api_url + `/cars/${car.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(car),
+        });
+
+        return response;
+    }
+
     async get(url) {
         const response = await fetch(this.api_url + url, {
             headers: {

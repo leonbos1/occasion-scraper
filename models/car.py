@@ -1,10 +1,12 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, BLOB
-from models.base import BaseModel
-from extensions import Base
+from ..models.base import BaseModel
+from ..extensions import db
 import base64
 from sqlalchemy.dialects.mysql import LONGTEXT
+from flask_restful import fields
 
-class Car(Base, BaseModel):
+
+class Car(BaseModel, db.Model):
     __tablename__ = 'cars'
 
     brand = Column(String(50))
@@ -31,9 +33,29 @@ class Car(Base, BaseModel):
         self.image = image
         self.condition = condition
         self.url = url
-        self.base_image = "data:image/jpeg;base64," + base64.b64encode(image).decode("utf-8")
+        self.base_image = "data:image/jpeg;base64," + \
+            base64.b64encode(image).decode("utf-8")
         self.session_id = session_id
         BaseModel.__init__(self, id)
 
     def __repr__(self):
         return f"<Car(id={self.id}, brand={self.brand}, model={self.model}, price={self.price}, mileage={self.mileage}, first_registration={self.first_registration}, vehicle_type={self.vehicle_type}, location={self.location}, condition={self.condition}, url={self.url}, session_id={self.session_id}, created={self.created}, updated={self.updated})>"
+
+
+resource_fields = {
+    'id': fields.String,
+    'brand': fields.String,
+    'model': fields.String,
+    'price': fields.Integer,
+    'mileage': fields.Integer,
+    'first_registration': fields.Integer,
+    'vehicle_type': fields.String,
+    'location': fields.String,
+    'image': fields.Raw,
+    'condition': fields.String,
+    'url': fields.String,
+    'base_image': fields.String,
+    'session_id': fields.String,
+    'created': fields.Integer,
+    'updated': fields.Integer
+}
