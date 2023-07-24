@@ -42,16 +42,16 @@ class Car(BaseModel, db.Model):
         return f"<Car(id={self.id}, brand={self.brand}, model={self.model}, price={self.price}, mileage={self.mileage}, first_registration={self.first_registration}, vehicle_type={self.vehicle_type}, location={self.location}, condition={self.condition}, url={self.url}, session_id={self.session_id}, created={self.created}, updated={self.updated})>"
 
 
-resource_fields = {
+car_fields = {
     'id': fields.String,
     'brand': fields.String,
     'model': fields.String,
-    'price': fields.Integer,
+    'price': fields.String,
     'mileage': fields.Integer,
     'first_registration': fields.Integer,
     'vehicle_type': fields.String,
     'location': fields.String,
-    'image': fields.Raw,
+    'image': fields.String,
     'condition': fields.String,
     'url': fields.String,
     'base_image': fields.String,

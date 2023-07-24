@@ -1,0 +1,2 @@
+FLASK_APP=occasion-scraper
+FLASK_ENV=development
