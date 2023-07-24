@@ -4,6 +4,8 @@ from flask_cors import CORS
 from .extensions import url, db
 
 from .routes.cars import cars
+from .routes.blueprints import blueprints
+from .routes.users import users
 
 def create_app():
     app = Flask(__name__)
@@ -18,5 +20,7 @@ def create_app():
         db.create_all()
 
     app.register_blueprint(cars, url_prefix="/cars")
+    app.register_blueprint(blueprints, url_prefix="/blueprints")
+    app.register_blueprint(users, url_prefix="/users")
 
     return app

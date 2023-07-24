@@ -1,8 +1,12 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from models.base import BaseModel
-from extensions import Base
+from ..models.base import BaseModel
 
-class BluePrint(Base, BaseModel):
+from ..extensions import db
+
+from flask_restful import fields
+
+
+class BluePrint(BaseModel, db.Model):
     __tablename__ = 'blueprints'
 
     brand = Column(String(50))
@@ -35,20 +39,22 @@ class BluePrint(Base, BaseModel):
 
     def __repr__(self):
         return f"<BluePrint(id={self.id}, brand={self.brand}, model={self.model}, min_price={self.min_price}, max_price={self.max_price}, min_mileage={self.min_mileage}, max_mileage={self.max_mileage}, min_first_registration={self.min_first_registration}, max_first_registration={self.max_first_registration}, vehicle_type={self.vehicle_type}, owner_id={self.owner_id}, created={self.created}, updated={self.updated})>"
-  
-    @property
-    def attributes(self):
-        return [
-            'brand',
-            'model',
-            'min_price',
-            'max_price',
-            'min_mileage',
-            'max_mileage',
-            'min_first_registration',
-            'max_first_registration',
-            'vehicle_type',
-            'city',
-            'max_distance_from_home',
-            'owner_id'
-        ]
+
+
+blueprint_fields = {
+    'id': fields.String,
+    'brand': fields.String,
+    'model': fields.String,
+    'min_price': fields.Integer,
+    'max_price': fields.Integer,
+    'min_mileage': fields.Integer,
+    'max_mileage': fields.Integer,
+    'min_first_registration': fields.Integer,
+    'max_first_registration': fields.Integer,
+    'vehicle_type': fields.String,
+    'city': fields.String,
+    'max_distance_from_home': fields.Integer,
+    'owner_id': fields.String,
+    'created': fields.Integer,
+    'updated': fields.Integer
+}
