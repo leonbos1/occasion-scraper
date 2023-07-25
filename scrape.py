@@ -165,7 +165,7 @@ def convert_to_year(first_registration: str):
 
         else:
             return int(first_registration.split("-")[1])
-        
+
     except:
         logger.log_error(f"Could not convert {first_registration} to year")
         return 696969
@@ -205,6 +205,7 @@ def save_session_to_db(scrape_session: ScrapeSession):
 
     session.commit()
 
+
 class Logger:
     def __init__(self, session_id):
         self.session_id = session_id
@@ -218,10 +219,9 @@ class Logger:
 
         print(f"{datetime.datetime.now()} - {level} - {message}")
 
-        
         session.add(log)
         session.commit()
-        
+
     def log_error(self, message):
         self.log(message, 3)
 
