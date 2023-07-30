@@ -6,6 +6,8 @@ from .extensions import url, db
 from .routes.cars import cars
 from .routes.blueprints import blueprints
 from .routes.users import users
+from .routes.subscriptions import subscriptions
+from .routes.scrape_sessions import scrape_sessions
 
 def create_app():
     app = Flask(__name__)
