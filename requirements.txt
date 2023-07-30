@@ -4,3 +4,4 @@ urllib3>=1.26.15,<2
 sqlalchemy==1.4.41
 requests
 pymysql
+flask_sqlalchemy
