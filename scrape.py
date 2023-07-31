@@ -64,7 +64,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 1):
+    for i in range(0, 30):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
