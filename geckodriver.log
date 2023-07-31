@@ -564,3 +564,29 @@ Dynamically enable window occlusion 1
 JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
 JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
 JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1690822266595	geckodriver	INFO	Listening on 127.0.0.1:63805
+1690822269631	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileF4aypJ"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1690822269843	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1690822269891	Marionette	INFO	Listening on port 63818
+Read port: 63818
+1690822270043	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+JavaScript error: , line 0: NS_ERROR_NOT_AVAILABLE
+1:63847
+1690822276388	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofile4jXc75"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1690822276584	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1690822276626	Marionette	INFO	Listening on port 63859
+Read port: 63859
+1690822276752	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+JavaScript error: , line 0: NS_ERROR_NOT_AVAILABLE

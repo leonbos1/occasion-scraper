@@ -6,19 +6,19 @@ import os
 import json
 import time
 from sqlalchemy.orm import Session
-from utills import mail
+from .utills import mail
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from extensions import Base, CREDENTIALS, url
-from models.car import Car
-from models.scrape_session import ScrapeSession
-from models.blueprint import BluePrint
-from models.subscription import Subscription
-from models.user import User
-from models.log import Log
+from .extensions import Base, CREDENTIALS, url
+from .models.car import Car
+from .models.scrape_session import ScrapeSession
+from .models.blueprint import BluePrint
+from .models.subscription import Subscription
+from .models.user import User
+from .models.log import Log
 import datetime
 
-with open("emails.json", "r") as f:
+with open("./occasion-scraper/emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
 
 engine = sqlalchemy.create_engine(url)
@@ -29,9 +29,9 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def main():
+def start():
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -42,6 +42,7 @@ def main():
     blueprints = session.query(BluePrint).all()
 
     for blueprint in blueprints:
+        print(blueprint)
         scrape_blueprint(driver, cars, blueprint)
 
 
@@ -63,7 +64,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 100):
+    for i in range(0, 1):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
@@ -233,4 +234,4 @@ class Logger:
 
 
 if __name__ == "__main__":
-    main()
+    start()

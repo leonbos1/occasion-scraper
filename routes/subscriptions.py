@@ -10,7 +10,7 @@ subscriptions = Blueprint("subscriptions", __name__)
 
 @subscriptions.route("", methods=["GET"])
 @marshal_with(subscription_fields)
-def get_users():
-    users = Subscription.query.all()
+def get_subscriptions():
+    subscriptions = Subscription.query.all()
 
-    return users
+    return subscriptions

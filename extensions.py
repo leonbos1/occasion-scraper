@@ -5,7 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
-CREDENTIALS = json.load(open("./occasion-scraper/credentials.json"))
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+CREDENTIALS = json.load(open(os.path.join(basedir, 'credentials.json')))
 
 username = CREDENTIALS["username"]
 password = CREDENTIALS["password"]

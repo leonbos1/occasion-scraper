@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer
 from ..models.base import BaseModel
-from ..extensions import Base
+from ..extensions import db
 from flask_restful import fields
 
-class ScrapeSession(Base, BaseModel):
+class ScrapeSession(db.Model, BaseModel):
     __tablename__ = 'sessions'
 
     started = Column(Integer)

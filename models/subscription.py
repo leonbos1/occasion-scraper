@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, ForeignKey
 from ..models.base import BaseModel
-from ..extensions import Base
+from ..extensions import db
 from flask_restful import fields
 
-class Subscription(Base, BaseModel):
+class Subscription(db.Model, BaseModel):
     __tablename__ = 'subscriptions'
 
     email = Column(String(50), ForeignKey('users.email'))

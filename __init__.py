@@ -8,6 +8,7 @@ from .routes.blueprints import blueprints
 from .routes.users import users
 from .routes.subscriptions import subscriptions
 from .routes.scrape_sessions import scrape_sessions
+from .routes.logs import logs
 
 def create_app():
     app = Flask(__name__)
@@ -24,5 +25,8 @@ def create_app():
     app.register_blueprint(cars, url_prefix="/cars")
     app.register_blueprint(blueprints, url_prefix="/blueprints")
     app.register_blueprint(users, url_prefix="/users")
+    app.register_blueprint(subscriptions, url_prefix="/subscriptions")
+    app.register_blueprint(scrape_sessions, url_prefix="/scrape_sessions")
+    app.register_blueprint(logs, url_prefix="/logs")
 
     return app

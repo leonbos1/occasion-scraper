@@ -18,7 +18,7 @@ class Car(BaseModel, db.Model):
     location = Column(String(50))
     image = Column(BLOB)
     condition = Column(String(50))
-    url = Column(String(100))
+    url = Column(String(1000))
     base_image = Column(LONGTEXT)
     session_id = Column(String(36), ForeignKey('sessions.id'))
 
