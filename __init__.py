@@ -10,6 +10,8 @@ from .routes.subscriptions import subscriptions
 from .routes.scrape_sessions import scrape_sessions
 from .routes.logs import logs
 
+from .scrape import start
+
 def create_app():
     app = Flask(__name__)
     cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -28,5 +30,9 @@ def create_app():
     app.register_blueprint(subscriptions, url_prefix="/subscriptions")
     app.register_blueprint(scrape_sessions, url_prefix="/scrape_sessions")
     app.register_blueprint(logs, url_prefix="/logs")
+
+    @app.route("/start", methods=["GET"])
+    def index():
+        start()
 
     return app

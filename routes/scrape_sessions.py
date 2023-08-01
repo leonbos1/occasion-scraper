@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_restful import marshal, fields, abort, Resource
 from flask_restful import marshal_with, reqparse
-from ..scrape import start
 
 from ..extensions import db
 
@@ -15,9 +14,3 @@ def get_scrape_sessions():
     users = ScrapeSession.query.all()
 
     return users
-
-@scrape_sessions.route("start", methods=["GET"])
-def start_scraper():
-    start()
-
-    return jsonify({"message": "Scrape started"})
