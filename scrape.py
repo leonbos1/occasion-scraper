@@ -31,7 +31,7 @@ session = Session()
 
 def start():
     options = webdriver.FirefoxOptions()
-    options.headless = False
+    options.headless = True
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
