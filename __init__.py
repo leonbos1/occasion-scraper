@@ -35,4 +35,6 @@ def create_app():
     def index():
         start()
 
+	return "Success", 200
+
     return app
