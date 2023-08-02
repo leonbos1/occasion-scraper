@@ -18,6 +18,8 @@ from .models.user import User
 from .models.log import Log
 import datetime
 
+BASE_URL = 'https://www.autoscout24.nl/lst'
+
 with open("./occasion-scraper/emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
 
@@ -45,11 +47,22 @@ def start():
         print(blueprint)
         scrape_blueprint(driver, cars, blueprint)
 
+    driver.close()
+
 
 def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     global logger
 
-    url = f"https://www.autoscout24.nl/lst?atype=C&cy=NL&desc=0&fuel=b&kmfrom={blueprint.min_mileage}&powertype=hp&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+    url = BASE_URL
+
+    if blueprint.brand != None:
+        url += f"/{blueprint.brand}"
+
+    if blueprint.model != None:
+        url += f"/{blueprint.model}"
+
+    url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+    
     print(url)
     driver.get(url)
 
@@ -64,7 +77,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 30):
+    for i in range(0, 1):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
@@ -126,11 +139,25 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     save_session_to_db(scrape_session)
 
     if len(new_cars) > 0:
-        mail.send_email(new_cars, CREDENTIALS, EMAILS)
+        emails = get_emails(blueprint)
+
+        mail.send_email(new_cars, CREDENTIALS, emails)
         logger.log_info("Email sent")
 
-    driver.close()
     logger.log_info("Scrape session ended")
+
+
+def get_emails(blueprint: BluePrint):
+    subscriptions = session.query(Subscription).all()
+    emails = []
+
+    for subscription in subscriptions:
+        if subscription.blueprint_id == blueprint.id:
+            user = session.query(User).filter_by(
+                id=subscription.user_id).first()
+            emails.append(user.email)
+
+    return emails
 
 
 def click_more_vehicles(driver: webdriver):
