@@ -9,14 +9,11 @@
                     </div>
 
                     <div class="grid gap-y-4">
-                        <!--for all properties in car object, create a form input
-
-                             -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6" v-for="property in properties"
                             :key="property.id">
                             <label class="block text-sm mb-2 dark:text-white"> {{ property }} </label>
                             <div class="relative">
-                                <input type="text" :name="property" :value="car[property]"
+                                <input type="text" :name="property" :value="item[property]"
                                     @input="updateProperty(property, $event.target.value)"
                                     class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400" />
                                 <div class="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
@@ -29,7 +26,7 @@
                             </div>
                         </div>
                     </div>
-                    <button @click="edit(car)"
+                    <button @click="edit(item)"
                         class="mt-4 block w-full py-3 px-4 rounded-md bg-blue-500 text-white font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:bg-blue-700">
                         Edit
                     </button>
@@ -45,21 +42,21 @@ import { defineEmits, onMounted, ref, watch, withDefaults, defineProps } from 'v
 const emit = defineEmits();
 
 const props = defineProps({
-    car: Object,
+    item: Object,
 });
 
 const updateProperty = (property, value) => {
-    props.car[property] = value;
+    props.item[property] = value;
 }
 
 const properties = ref([]);
 
-function edit(car) {
-    emit('edit', car);
+function edit(item) {
+    emit('edit', item);
 }
 
 onMounted(() => {
-    properties.value = Object.keys(props.car);
+    properties.value = Object.keys(props.item);
 })
 </script>
   

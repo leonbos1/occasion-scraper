@@ -43,8 +43,7 @@
                                         <td v-for="column in columns" :key="column" class="h-px w-px whitespace-nowrap">
                                             <div class="pl-6 py-3">
                                                 <template v-if="column === 'base_image'">
-                                                    <img :src="row[column]"
-                                                        class="w-1/2 h-1/2 " />
+                                                    <img :src="row[column]" class="w-1/2 h-1/2 " />
                                                 </template>
                                                 <template v-else>
                                                     <span>{{ row[column] }}</span>
@@ -54,14 +53,15 @@
                                         <td class="h-px w-px whitespace-nowrap">
                                             <div class="px-6 py-1.5">
                                                 <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                                    data-hs-overlay="#hs-modal-signup">
+                                                    data-hs-overlay="#hs-modal-signup" @click="editItem = row">
                                                     Edit
                                                 </a>
-                                                <EditComponent :car="row" v-if="row" @edit="handleEdit" />
+
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
+                                <EditComponent :item="editItem" v-if="editItem" @edit="handleEdit" />
                             </table>
                         </div>
                         <div class="flex flex-col items-center justify-center w-full h-32">
@@ -93,11 +93,12 @@ const currentPage = ref(1);;
 const hasNext = ref(true);
 const hasPrevious = ref(false);
 const order_by = ref('id');
+const editItem = ref(null);
 
 const emit = defineEmits(['edit']);
 
-function handleEdit(car) {
-    emit('edit', car);
+function handleEdit(item) {
+    emit('edit', item);
 }
 
 function orderBy(column) {
