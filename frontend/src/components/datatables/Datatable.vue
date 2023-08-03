@@ -43,7 +43,7 @@
                                         <td v-for="column in columns" :key="column" class="h-px w-px whitespace-nowrap">
                                             <div class="pl-6 py-3">
                                                 <template v-if="column === 'base_image'">
-                                                    <img :src="'data:image/png;base64,' + row[column]"
+                                                    <img :src="row[column]"
                                                         class="w-1/2 h-1/2 " />
                                                 </template>
                                                 <template v-else>

@@ -15,7 +15,7 @@ def get_cars():
 
     return cars
 
-@cars.route("/<int:id>", methods=["GET"])
+@cars.route("/<string:id>", methods=["GET"])
 @marshal_with(car_fields)
 def get_car(id):
     car = Car.query.filter_by(id=id).first()
@@ -43,10 +43,12 @@ def create_car():
 
     return car
 
-@cars.route("/<int:id>", methods=["PUT"])
+@cars.route("/<string:id>", methods=["PUT"])
 @marshal_with(car_fields)
 def update_car(id):
     car = Car.query.filter_by(id=id).first()
+
+    request.json["image"] = bytes(request.json["image"], "utf-8")
 
     if not car:
         abort(404, message="Car not found")
