@@ -28,7 +28,7 @@ def get_car(id):
 
 @cars.route("/", methods=["POST"])
 @marshal_with(car_fields)
-@remove_disallowed_properties(disallowed_props=["id"])
+@remove_disallowed_properties()
 def create_car():
     request_json = request._cached_json
 

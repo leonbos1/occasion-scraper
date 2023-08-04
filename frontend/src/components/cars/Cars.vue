@@ -20,7 +20,7 @@ onMounted(async () => {
   try {
     cars.value = await CarRepository.getAllCars();
 
-    columns.value = ['brand', 'model', 'year', 'price', 'base_image'];
+    columns.value = ['brand', 'model', 'first_registration', 'price', 'location', 'url', 'base_image'];
 
   } catch (error) {
     console.error('Failed to fetch cars:', error);

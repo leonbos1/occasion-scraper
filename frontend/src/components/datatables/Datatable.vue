@@ -45,6 +45,12 @@
                                                 <template v-if="column === 'base_image'">
                                                     <img :src="row[column]" class="w-1/2 h-1/2 " />
                                                 </template>
+                                                <template v-else-if="column.toLowerCase() === 'url'">
+                                                    <a :href="row[column]" target="_blank"
+                                                        class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium">
+                                                        URL
+                                                    </a>
+                                                </template>
                                                 <template v-else>
                                                     <span>{{ row[column] }}</span>
                                                 </template>
