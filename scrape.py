@@ -150,7 +150,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
 
 def get_emails(blueprint: BluePrint):
-    subscriptions = session.query(Subscription).all()
     subscriptions = session.query(Subscription).filter_by(
         blueprint_id=blueprint.id).all()
     
