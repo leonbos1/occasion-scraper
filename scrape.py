@@ -44,7 +44,6 @@ def start():
     blueprints = session.query(BluePrint).all()
 
     for blueprint in blueprints:
-        print(blueprint)
         scrape_blueprint(driver, cars, blueprint)
 
     driver.close()
@@ -77,7 +76,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 1):
+    for i in range(0, 100):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
@@ -104,7 +103,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 image = request.content
 
             except NoSuchElementException:
-                path = os.path.abspath("no-picture.png")
+                path = os.path.abspath("./occasion-scraper/no-picture.png")
                 with open(path, "rb") as f:
                     image = f.read()
 
@@ -120,6 +119,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                       mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
                       location=location, image=image, condition=mileage, url=href, session_id=scrape_session.id)
+            print(car.id)
             cars.append(car)
 
         driver.execute_script("window.scrollBy(0, -300);")
@@ -137,6 +137,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     scrape_session.ended = time.time()
     scrape_session.new_cars = len(new_cars)
     save_session_to_db(scrape_session)
+
+    session = Session()
 
     if len(new_cars) > 0:
         emails = get_emails(blueprint)
