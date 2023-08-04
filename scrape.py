@@ -151,13 +151,13 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
 def get_emails(blueprint: BluePrint):
     subscriptions = session.query(Subscription).all()
+    subscriptions = session.query(Subscription).filter_by(
+        blueprint_id=blueprint.id).all()
+    
     emails = []
 
     for subscription in subscriptions:
-        if subscription.blueprint_id == blueprint.id:
-            user = session.query(User).filter_by(
-                id=subscription.user_id).first()
-            emails.append(user.email)
+            emails.append(subscription.email)
 
     return emails
 
@@ -203,12 +203,14 @@ def convert_to_year(first_registration: str):
 
 def get_new_cars(cars: list):
     new_cars = []
+    new_car_ids = []
 
     for car in cars:
         car_from_db = session.query(Car).filter(Car.id == car.id).first()
 
-        if car_from_db == None:
+        if car_from_db == None and car.id not in new_car_ids:
             new_cars.append(car)
+            new_car_ids.append(car.id)
 
     return new_cars
 
