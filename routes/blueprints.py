@@ -43,7 +43,7 @@ def create_blueprint():
     return blueprint
 
 
-@blueprint_fields.route("/<string:id>", methods=["PUT"])
+@blueprints.route("/<string:id>", methods=["PUT"])
 @marshal_with(blueprint_fields)
 def update_blueprint(id):
     blueprint = BluePrint.query.filter_by(id=id).first()
