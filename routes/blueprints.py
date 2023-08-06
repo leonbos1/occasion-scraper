@@ -42,16 +42,22 @@ def create_blueprint():
 
     return blueprint
 
-@blueprints.route("/<string:id>", methods=["PUT"])
+
+@blueprint_fields.route("/<string:id>", methods=["PUT"])
 @marshal_with(blueprint_fields)
 def update_blueprint(id):
-    blueprint = BluePrint.query.get(id)
+    blueprint = BluePrint.query.filter_by(id=id).first()
 
     if not blueprint:
-        abort(404, message="Blueprint {} doesn't exist".format(id))
+        abort(404, message="blueprint not found")
 
-    data = request.get_json()
-    blueprint.update(data)
+    request_json = request._cached_json
+
+    blueprint_properties = vars(blueprint)
+
+    for prop in request_json:
+        if prop in blueprint_properties:
+            setattr(blueprint, prop, request_json[prop])
 
     db.session.commit()
 
