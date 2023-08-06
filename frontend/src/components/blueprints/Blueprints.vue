@@ -1,6 +1,6 @@
 <template>
     <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <Datatable :input-data="blueprints" v-if="blueprints.length > 0" :input-columns="columns" @order-by="order_by" @edit="handleEdit" />
+      <Datatable :input-data="blueprints" v-if="blueprints.length > 0" :input-columns="columns" @order-by="order_by" @edit="handleEdit" @create="handleCreate" />
     </div>
   </template>
   
@@ -14,6 +14,11 @@
   
   function handleEdit(blueprint) {
     BlueprintRepository.updateBlueprint(blueprint);
+  }
+
+  function handleCreate(blueprint) {
+    console.log('handleCreate', blueprint);
+    BlueprintRepository.createBlueprint(blueprint);
   }
   
   onMounted(async () => {

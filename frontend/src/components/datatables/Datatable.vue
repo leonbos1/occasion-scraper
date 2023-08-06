@@ -19,6 +19,12 @@
                                 <div class="flex flex-row items-center justify-center w-1/2">
                                     <SearchComponent @search="handleSearch" />
                                 </div>
+                                <div class="flex flex-row items-center justify-center w-1/2">
+                                    <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                                        data-hs-overlay="#hs-modal-create" @click="editItem = null">
+                                        Create
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
@@ -68,6 +74,7 @@
                                     </tr>
                                 </tbody>
                                 <EditComponent :item="editItem" v-if="editItem" @edit="handleEdit" />
+                                <CreateComponent :item="createItem" v-if="createItem" @create="handleCreate" />
                             </table>
                         </div>
                         <div class="flex flex-col items-center justify-center w-full h-32">
@@ -86,6 +93,7 @@ import PerPageComponent from './PerPageComponent.vue';
 import PaginationComponent from './PaginationComponent.vue';
 import SearchComponent from './SearchComponent.vue';
 import EditComponent from './EditComponent.vue';
+import CreateComponent from './CreateComponent.vue';
 
 const data = ref([]);
 const columns = ref([]);
@@ -100,11 +108,16 @@ const hasNext = ref(true);
 const hasPrevious = ref(false);
 const order_by = ref('id');
 const editItem = ref(null);
+const createItem = ref(null);
 
-const emit = defineEmits(['edit']);
+const emit = defineEmits(['edit', 'create']);
 
 function handleEdit(item) {
     emit('edit', item);
+}
+
+function handleCreate(item) {
+    emit('create', item);
 }
 
 function orderBy(column) {
@@ -174,7 +187,6 @@ function handlePrevious() {
 }
 
 function handleSearch(search) {
-    console.log(search);
     if (search === '') {
         filteredData.value = data.value;
     }
@@ -223,6 +235,12 @@ onMounted(() => {
     currentPage.value = 1;
 
     checkNextAndPrevious();
+
+    createItem.value = columns.value.reduce((acc, column) => {
+        acc[column] = '';
+
+        return acc;
+    }, {});
 });
 
 </script>

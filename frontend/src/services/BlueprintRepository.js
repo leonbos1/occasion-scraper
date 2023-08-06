@@ -31,6 +31,18 @@ class BlueprintRepository {
         return response;
     }
 
+    async createBlueprint(blueprint) {
+        const response = await fetch(this.api_url + '/blueprints', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(blueprint),
+        });
+
+        return response;
+    }
+
     async get(url) {
         const response = await fetch(this.api_url + url, {
             headers: {
