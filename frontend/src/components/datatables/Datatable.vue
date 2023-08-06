@@ -89,11 +89,11 @@
   
 <script setup>
 import { ref, onMounted, watch, defineProps, defineEmits } from 'vue';
-import PerPageComponent from './PerPageComponent.vue';
-import PaginationComponent from './PaginationComponent.vue';
-import SearchComponent from './SearchComponent.vue';
-import EditComponent from './EditComponent.vue';
-import CreateComponent from './CreateComponent.vue';
+import PerPageComponent from '@/components/datatables/PerPageComponent.vue';
+import PaginationComponent from '@/components/datatables/PaginationComponent.vue';
+import SearchComponent from '@/components/datatables/SearchComponent.vue';
+import EditComponent from '@/components/datatables/EditComponent.vue'
+import CreateComponent from '@/components/datatables/CreateComponent.vue'
 
 const data = ref([]);
 const columns = ref([]);
