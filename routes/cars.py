@@ -49,8 +49,6 @@ def update_car(id):
     if not car:
         abort(404, message="Car not found")
 
-    request.json["image"] = bytes(request.json["image"], "utf-8")
-
     request_json = request._cached_json
 
     car_properties = vars(car)

@@ -143,7 +143,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     if len(new_cars) > 0:
         emails = get_emails(blueprint)
 
-        mail.send_email(new_cars, CREDENTIALS, emails)
+        mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
         logger.log_info("Email sent")
 
     logger.log_info("Scrape session ended")

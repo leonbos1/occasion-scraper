@@ -3,7 +3,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import base64
 
-def send_email(cars: list, credentials, emails):
+def send_email(cars: list, credentials, emails, subject):
     from_email = credentials["email"]
     password = credentials["email_password"]
 
@@ -13,7 +13,7 @@ def send_email(cars: list, credentials, emails):
         message = MIMEMultipart()
         message["From"] = from_email
         message["To"] = email
-        message["Subject"] = "Nieuwe auto's op autoscout24"
+        message["Subject"] = f"Nieuwe auto's op autoscout24.nl - {subject}"
 
         message.attach(MIMEText(content, "html"))
 

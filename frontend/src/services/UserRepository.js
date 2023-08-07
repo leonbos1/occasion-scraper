@@ -21,7 +21,11 @@ class UserRepository {
 
     async updateUser(id, user) {
         const response = await fetch(this.api_url + `/users/${id}`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
         });
 
         return await response.json();

@@ -16,13 +16,12 @@ class Car(BaseModel, db.Model):
     first_registration = Column(Integer)
     vehicle_type = Column(String(50))
     location = Column(String(50))
-    image = Column(BLOB)
     condition = Column(String(50))
     url = Column(String(1000))
     base_image = Column(LONGTEXT)
     session_id = Column(String(36), ForeignKey('sessions.id'))
 
-    def __init__(self, id, brand, model, price, mileage, first_registration, vehicle_type, location, image, condition, url, session_id):
+    def __init__(self, id, brand, model, price, mileage, first_registration, vehicle_type, location, condition, url, session_id):
         self.brand = brand
         self.model = model
         self.price = price
@@ -30,7 +29,6 @@ class Car(BaseModel, db.Model):
         self.first_registration = first_registration
         self.vehicle_type = vehicle_type
         self.location = location
-        self.image = image
         self.condition = condition
         self.url = url
         self.base_image = "data:image/jpeg;base64," + \
@@ -51,7 +49,6 @@ car_fields = {
     'first_registration': fields.Integer,
     'vehicle_type': fields.String,
     'location': fields.String,
-    'image': fields.String,
     'condition': fields.String,
     'url': fields.String,
     'base_image': fields.String,

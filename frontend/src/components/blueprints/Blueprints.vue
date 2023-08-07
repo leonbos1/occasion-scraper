@@ -25,7 +25,7 @@
     try {
       blueprints.value = await BlueprintRepository.getAllBlueprints();
   
-      columns.value = ['brand', 'model', 'min_price', 'max_price', 'min_first_registration', 'max_first_registration', 'city', 'max_distance_from_home'];
+      columns.value = ['name', 'brand', 'model', 'min_price', 'max_price', 'min_first_registration', 'max_first_registration', 'city', 'max_distance_from_home'];
   
     } catch (error) {
       console.error('Failed to fetch blueprints:', error);

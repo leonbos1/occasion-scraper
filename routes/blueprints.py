@@ -6,6 +6,8 @@ from ..extensions import db
 
 from ..models.blueprint import BluePrint, blueprint_fields
 
+from ..middleware import remove_disallowed_properties
+
 blueprints = Blueprint("blueprints", __name__)
 
 @blueprints.route("", methods=["GET"])
@@ -45,6 +47,7 @@ def create_blueprint():
 
 @blueprints.route("/<string:id>", methods=["PUT"])
 @marshal_with(blueprint_fields)
+@remove_disallowed_properties()
 def update_blueprint(id):
     blueprint = BluePrint.query.filter_by(id=id).first()
 
