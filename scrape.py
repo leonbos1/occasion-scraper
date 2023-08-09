@@ -33,7 +33,7 @@ session = Session()
 
 def start():
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -60,7 +60,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     if blueprint.model != None:
         url += f"/{blueprint.model}"
 
-    url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+    url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch"
+
+    if blueprint.city:
+        url += f"&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
     
     print(url)
     driver.get(url)
@@ -76,7 +79,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 100):
+    for i in range(0, 20):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
