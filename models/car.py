@@ -21,7 +21,7 @@ class Car(BaseModel, db.Model):
     base_image = Column(LONGTEXT)
     session_id = Column(String(36), ForeignKey('sessions.id'))
 
-    def __init__(self, id, brand, model, price, mileage, first_registration, vehicle_type, location, condition, url, session_id):
+    def __init__(self, id, brand, model, price, mileage, first_registration, vehicle_type, location, condition, url, session_id, image):
         self.brand = brand
         self.model = model
         self.price = price

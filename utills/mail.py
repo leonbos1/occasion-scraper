@@ -48,8 +48,10 @@ def get_mail_content(cars: list):
         content += f"<td style='border: 1px solid black; padding: 5px;'>{car.first_registration}</td>"
         content += f"<td style='border: 1px solid black; padding: 5px;'>{car.location}</td>"
         content += f"<td style='border: 1px solid black; padding: 5px;'><a href='{car.url}'>Link</a></td>"
-        content += f"<td style='border: 1px solid black; padding: 5px;'><img src='data:image/png;base64,{base64.b64encode(car.image).decode('utf-8')}'></td>"
+        content += f"<td style='border: 1px solid black; padding: 5px;'><img src='{car.base_image}'></td>"
 
         content += "</tr>"
+
+    print(content)
 
     return content

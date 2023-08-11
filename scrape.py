@@ -32,6 +32,7 @@ session = Session()
 
 
 def start():
+    global logger
     options = webdriver.FirefoxOptions()
     options.headless = False
     driver = webdriver.Firefox(options=options)
@@ -41,12 +42,19 @@ def start():
 
     sleep(0.5)
 
-    blueprints = session.query(BluePrint).all()
+    try:
+        blueprints = session.query(BluePrint).all()
 
-    for blueprint in blueprints:
-        scrape_blueprint(driver, cars, blueprint)
+        for blueprint in blueprints:
+            scrape_blueprint(driver, cars, blueprint)
 
-    driver.close()
+        driver.close()
+
+    except Exception as e:
+        logger.log_error(str(e))
+
+        session = Session()
+        driver.close()
 
 
 def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
@@ -60,12 +68,25 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     if blueprint.model != None:
         url += f"/{blueprint.model}"
 
-    url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}&search_id=4ujb49prb0&sort=standard&source=detailsearch"
+    if blueprint.max_price > 0:
+        url += f"?priceto={blueprint.max_price}"
+
+    if blueprint.max_mileage > 0:
+        url += f"?kmto={blueprint.max_mileage}"
+
+    if blueprint.max_first_registration > 0:
+        url += f"?fregto={blueprint.max_first_registration}"
+
+    if blueprint.city != None and blueprint.max_distance_from_home > 0:
+        url += f"?zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+
+    # url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}"
 
     if blueprint.city:
         url += f"&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
-    
+
     print(url)
+    print("HEEEREEEE")
     driver.get(url)
 
     sleep(2)
@@ -79,7 +100,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 20):
+    for i in range(0, 1):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
@@ -121,8 +142,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             href = a_element.get_attribute("href")
             car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                       mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
-                      location=location, image=image, condition=mileage, url=href, session_id=scrape_session.id)
-            print(car.id)
+                      location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
             cars.append(car)
 
         driver.execute_script("window.scrollBy(0, -300);")
@@ -155,11 +175,11 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 def get_emails(blueprint: BluePrint):
     subscriptions = session.query(Subscription).filter_by(
         blueprint_id=blueprint.id).all()
-    
+
     emails = []
 
     for subscription in subscriptions:
-            emails.append(subscription.email)
+        emails.append(subscription.email)
 
     return emails
 

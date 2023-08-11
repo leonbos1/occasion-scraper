@@ -33,8 +33,12 @@ def create_app():
 
     @app.route("/start", methods=["GET"])
     def index():
-        start()
+        try:
+            start()
 
+        except Exception as e:
+            return str(e)
+        
         return "Started"
 
     return app
