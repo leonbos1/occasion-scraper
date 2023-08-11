@@ -34,7 +34,7 @@ session = Session()
 def start():
     global logger
     options = webdriver.FirefoxOptions()
-    options.headless = False
+    options.headless = True
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -51,9 +51,8 @@ def start():
         driver.close()
 
     except Exception as e:
-        logger.log_error(str(e))
-
-        session = Session()
+        print(e)
+        session.rollback()
         driver.close()
 
 
@@ -86,7 +85,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         url += f"&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
 
     print(url)
-    print("HEEEREEEE")
     driver.get(url)
 
     sleep(2)
@@ -100,7 +98,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 1):
+    for i in range(0, 20):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 
