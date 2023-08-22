@@ -52,6 +52,4 @@ def get_mail_content(cars: list):
 
         content += "</tr>"
 
-    print(content)
-
     return content

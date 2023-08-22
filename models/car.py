@@ -15,7 +15,7 @@ class Car(BaseModel, db.Model):
     mileage = Column(Integer)
     first_registration = Column(Integer)
     vehicle_type = Column(String(50))
-    location = Column(String(50))
+    location = Column(String(450))
     condition = Column(String(50))
     url = Column(String(1000))
     base_image = Column(LONGTEXT)

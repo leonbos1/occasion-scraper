@@ -67,22 +67,19 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     if blueprint.model != None:
         url += f"/{blueprint.model}"
 
+    url += f"?pricefrom={blueprint.min_price}"
+
     if blueprint.max_price > 0:
-        url += f"?priceto={blueprint.max_price}"
+        url += f"&priceto={blueprint.max_price}"
 
     if blueprint.max_mileage > 0:
-        url += f"?kmto={blueprint.max_mileage}"
+        url += f"&kmto={blueprint.max_mileage}"
 
     if blueprint.max_first_registration > 0:
-        url += f"?fregto={blueprint.max_first_registration}"
+        url += f"&fregto={blueprint.max_first_registration}"
 
     if blueprint.city != None and blueprint.max_distance_from_home > 0:
-        url += f"?zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
-
-    # url += f"?atype=C&cy=NL&desc=0&fregfrom={blueprint.min_first_registration}&fregto={blueprint.max_first_registration}&fuel=b&kmfrom={blueprint.min_mileage}&kmto={blueprint.max_mileage}&powertype=hp&pricefrom={blueprint.min_price}&priceto={blueprint.max_price}"
-
-    if blueprint.city:
-        url += f"&ustate=N%2CU&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+        url += f"&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
 
     print(url)
     driver.get(url)
