@@ -3,7 +3,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-URL = "https://leonbos.nl:5000/start"
+URL = "http://leonbos.nl:5000/start"
 
 @sched.scheduled_job('cron', day_of_week='mon-sun', hour=7)
 def morning_scheduled_job():
