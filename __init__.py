@@ -12,6 +12,7 @@ from .routes.logs import logs
 
 from .scrape import start
 
+
 def create_app():
     app = Flask(__name__)
     cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -38,7 +39,7 @@ def create_app():
 
         except Exception as e:
             return str(e)
-        
+
         return "Started"
 
     return app
