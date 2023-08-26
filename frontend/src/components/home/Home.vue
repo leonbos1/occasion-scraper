@@ -14,6 +14,3 @@ const start = () => {
 }
 
 </script>
-  
-<style scoped></style>
-  
