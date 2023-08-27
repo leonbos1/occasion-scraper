@@ -67,7 +67,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     if blueprint.model != None:
         url += f"/{blueprint.model}"
 
-    url += f"?pricefrom={blueprint.min_price}"
+
+    url += "?cy=NL"
+
+    url += f"&pricefrom={blueprint.min_price}"
 
     if blueprint.max_price > 0:
         url += f"&priceto={blueprint.max_price}"
@@ -77,6 +80,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     if blueprint.max_first_registration > 0:
         url += f"&fregto={blueprint.max_first_registration}"
+
+    url += "&ustate=N%2CU"
 
     if blueprint.city != None and blueprint.max_distance_from_home > 0:
         url += f"&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
@@ -95,7 +100,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     logger = Logger(scrape_session.id)
     logger.log_info("Scrape session started")
 
-    for i in range(0, 20):
+    for i in range(0, 1):
         sleep(1)
         articles = main.find_elements_by_tag_name("article")
 

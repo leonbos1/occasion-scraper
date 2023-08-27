@@ -9,11 +9,26 @@ from ..models.car import Car, car_fields
 
 cars = Blueprint("cars", __name__)
 
+#endpoint to get first 100 cars
+@cars.route("/first100", methods=["GET"])
+@marshal_with(car_fields)
+def get_first100_cars():
+    cars = Car.query.limit(100).all()
+
+    print(f"{len(cars)} cars fetched from db")
+
+    return cars
+
 
 @cars.route("", methods=["GET"])
 @marshal_with(car_fields)
 def get_cars():
     cars = Car.query.all()
+
+    for car in cars:
+        car.base_image = ""
+
+    print(f"{len(cars)} cars fetched from db")
 
     return cars
 

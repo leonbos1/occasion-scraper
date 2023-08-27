@@ -13,6 +13,13 @@ class CarRepository {
         return await response.json();
     }
 
+    async getTop100Cars() {
+        var url = '/cars/first100';
+        const response = await this.get(url);        
+
+        return await response.json();
+    }
+
     async getCarById(id) {
         const response = await this.get(`/cars/${id}`);
 
