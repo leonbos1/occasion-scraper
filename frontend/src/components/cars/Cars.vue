@@ -45,6 +45,10 @@ async function addNewCars(newCars) {
   var newCarsIds = newCars.map(car => car.id);
   var carsIds = cars.value.map(car => car.id);
 
+  newCars.forEach(car => {
+    car.url = CarRepository.api_url + '/cars/image/' + car.id;
+  });
+
   var newCarsIdsNotInCarsIds = newCarsIds.filter(id => !carsIds.includes(id));
 
   var newCarsNotInCars = newCars.filter(car => newCarsIdsNotInCarsIds.includes(car.id));

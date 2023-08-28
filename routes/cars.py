@@ -40,6 +40,14 @@ def get_car(id):
 
     return car
 
+@cars.route("/image/<string:id>", methods=["GET"])
+def get_car_image(id):
+    car = Car.query.filter_by(id=id).first()
+
+    if car is None:
+        abort(404, message="Car not found")
+
+    return car.base_image
 
 @cars.route("/", methods=["POST"])
 @marshal_with(car_fields)

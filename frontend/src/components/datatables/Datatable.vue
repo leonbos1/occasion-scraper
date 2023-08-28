@@ -49,7 +49,11 @@
                                         <td v-for="column in columns" :key="column" class="h-px w-px whitespace-nowrap">
                                             <div class="pl-6 py-3">
                                                 <template v-if="column === 'base_image'">
-                                                    <img :src="row[column]" class="w-1/2 h-1/2 " />
+                                                    <img v-if="row[column] !== ''" :src="row[column]"
+                                                        class="w-1/2 h-1/2 " />
+
+                                                    <img v-else :src="setBaseImage(row)" class="w-1/2 h-1/2 " />
+
                                                 </template>
                                                 <template v-else-if="column.toLowerCase() === 'url'">
                                                     <a :href="row[column]" target="_blank"
@@ -118,6 +122,20 @@ function handleEdit(item) {
 
 function handleCreate(item) {
     emit('create', item);
+}
+
+function setBaseImage(row) {
+    if (row.base_image === '') {
+        //api request to row.url to get the base_image
+
+        var url = row.url;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                row.base_image = data;
+            });
+    }
 }
 
 function orderBy(column) {
