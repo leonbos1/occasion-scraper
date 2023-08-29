@@ -126,9 +126,7 @@ function handleCreate(item) {
 
 function setBaseImage(row) {
     if (row.base_image === '') {
-        //api request to row.url to get the base_image
-
-        var url = row.url;
+        var url = row.image_url;
 
         fetch(url)
             .then(response => response.text())
