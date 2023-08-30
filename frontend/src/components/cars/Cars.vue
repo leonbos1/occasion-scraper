@@ -1,8 +1,6 @@
 <template>
-  <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <Datatable :input-data="cars" v-if="cars.length > 0" :input-columns="columns" @order-by="order_by" @edit="handleEdit"
       :key="datatableKey" />
-  </div>
 </template>
 
 <script setup>

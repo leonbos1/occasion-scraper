@@ -1,90 +1,85 @@
 <template>
-    <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <div class=" w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div class="flex flex-col">
-            <div class="-m-1.5 overflow-x-auto">
-                <div class="p-1.5 min-w-full inline-block align-middle">
-                    <div
-                        class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
-                        <div
-                            class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
-                            <div class="flex flex-row w-full h-32">
-                                <div class="flex flex-row items-center justify-start w-1/4">
-                                    <PerPageComponent @option-selected="perPageSelected" />
-                                </div>
-                                <div class="flex flex-row items-center justify-center w-1/2">
-                                    <PaginationComponent :current-page="currentPage"
-                                        :total-pages="Math.ceil(data.length / perPage)" :has-previous="hasPrevious"
-                                        :has-next="hasNext" @previous="handlePrevious" @next="handleNext" />
-                                </div>
-                                <div class="flex flex-row items-center justify-center w-1/2">
-                                    <SearchComponent @search="handleSearch" />
-                                </div>
-                                <div class="flex flex-row items-center justify-center w-1/2">
-                                    <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                        data-hs-overlay="#hs-modal-create" @click="editItem = null">
-                                        Create
-                                    </a>
-                                </div>
-                            </div>
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
+                <div
+                    class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-row w-full h-32">
+                        <div class="flex flex-row items-center justify-start w-1/4">
+                            <PerPageComponent @option-selected="perPageSelected" />
                         </div>
-
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-slate-800">
-                                    <tr>
-                                        <th v-for="column in columns" :key="column" scope="col"
-                                            class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="setOrderBy(column)">
-                                            <div class="flex items-center gap-x-2">
-                                                <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-200">
-                                                    {{ column }}
-                                                </span>
-                                            </div>
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-right"></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                    <tr v-for="row in selectedData" :key="row.id">
-                                        <td v-for="column in columns" :key="column" class="h-px w-px whitespace-nowrap">
-                                            <div class="pl-6 py-3">
-                                                <template v-if="column === 'base_image'">
-                                                    <img v-if="row[column] !== ''" :src="row[column]"
-                                                        class="w-1/2 h-1/2 " />
-
-                                                    <img v-else :src="setBaseImage(row)" class="w-1/2 h-1/2 " />
-
-                                                </template>
-                                                <template v-else-if="column.toLowerCase() === 'url'">
-                                                    <a :href="row[column]" target="_blank"
-                                                        class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium">
-                                                        URL
-                                                    </a>
-                                                </template>
-                                                <template v-else>
-                                                    <span>{{ row[column] }}</span>
-                                                </template>
-                                            </div>
-                                        </td>
-                                        <td class="h-px w-px whitespace-nowrap">
-                                            <div class="px-6 py-1.5">
-                                                <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                                    data-hs-overlay="#hs-modal-signup" @click="editItem = row">
-                                                    Edit
-                                                </a>
-
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <EditComponent :item="editItem" v-if="editItem" @edit="handleEdit" />
-                                <CreateComponent :item="createItem" v-if="createItem" @create="handleCreate" />
-                            </table>
+                        <div class="flex flex-row items-center justify-center w-1/2">
+                            <PaginationComponent :current-page="currentPage" :total-pages="Math.ceil(data.length / perPage)"
+                                :has-previous="hasPrevious" :has-next="hasNext" @previous="handlePrevious"
+                                @next="handleNext" />
                         </div>
-                        <div class="flex flex-col items-center justify-center w-full h-32">
-                            <PerPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+                        <div class="flex flex-row items-center justify-center w-1/2">
+                            <SearchComponent @search="handleSearch" />
+                        </div>
+                        <div class="flex flex-row items-center justify-center w-1/2">
+                            <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                                data-hs-overlay="#hs-modal-create" @click="editItem = null">
+                                Create
+                            </a>
                         </div>
                     </div>
+                </div>
+
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="min-w-full max-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-slate-800">
+                            <tr>
+                                <th v-for="column in columns" :key="column" scope="col"
+                                    class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="setOrderBy(column)">
+                                    <div class="flex items-center gap-x-2">
+                                        <span
+                                            class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-200">
+                                            {{ column }}
+                                        </span>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr v-for="row in selectedData" :key="row.id" class="w-1/12">
+                                <td v-for="column in columns" :key="column" class="h-px whitespace-nowrap overflow-hidden w-px">
+                                    <div class="pl-6 py-3">
+                                        <template v-if="column === 'base_image'">
+                                            <img v-if="row[column] !== ''" :src="row[column]" class="w-1/2 h-1/2 " />
+
+                                            <img v-else :src="setBaseImage(row)" class="w-1/2 h-1/2 " />
+
+                                        </template>
+                                        <template v-else-if="column.toLowerCase() === 'url'">
+                                            <a :href="row[column]" target="_blank"
+                                                class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium">
+                                                URL
+                                            </a>
+                                        </template>
+                                        <template v-else>
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">{{ row[column] }}</span>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td class="h-px w-px whitespace-nowrap">
+                                    <div class="px-6 py-1.5">
+                                        <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                                            data-hs-overlay="#hs-modal-signup" @click="editItem = row">
+                                            Edit
+                                        </a>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <EditComponent :item="editItem" v-if="editItem" @edit="handleEdit" />
+                        <CreateComponent :item="createItem" v-if="createItem" @create="handleCreate" />
+                    </table>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full h-32">
+                    <PerPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
                 </div>
             </div>
         </div>
