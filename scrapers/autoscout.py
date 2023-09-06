@@ -97,7 +97,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     save_session_to_db(scrape_session)
 
     logger = Logger(scrape_session.id)
-    logger.log_info("Scrape session started")
+    logger.log_info("Scrape session started for autoscout")
 
     for i in range(0, 20):
         sleep(1)
