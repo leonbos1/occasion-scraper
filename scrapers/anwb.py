@@ -89,7 +89,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     main = driver.find_element_by_xpath(
         "//section[contains(@data-test, 'occasions-results')]")
-    
+
     scroll = 500
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
