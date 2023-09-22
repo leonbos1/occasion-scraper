@@ -17,6 +17,7 @@ from ..models.subscription import Subscription
 from ..models.user import User
 from ..models.log import Log
 import datetime
+from uuid import uuid4
 
 BASE_URL = 'https://www.gaspedaal.nl'
 
@@ -64,8 +65,11 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
     if blueprint.brand is not None:
         url += "/" + blueprint.brand
 
-    if blueprint.model is not None:
+    elif blueprint.model is not None:
         url += "/" + blueprint.model
+
+    else:
+        url += "/zoeken"
 
     url += "?bmin=" + str(blueprint.min_first_registration) + \
         "&bmax=" + str(blueprint.max_first_registration)
@@ -74,7 +78,8 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
         "&pmax=" + str(blueprint.max_price)
 
     if blueprint.city is not None:
-        url += "&pc=" + blueprint.city
+        postal_code = blueprint.city.split(" ")[0]
+        url += "&pc=" + postal_code
 
     if blueprint.max_distance_from_home is not None:
         url += "&strl=" + str(blueprint.max_distance_from_home)
@@ -100,8 +105,14 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
     accept_cookies(driver)
 
     # class is flex w-full max-w-screen-xl flex-col self-center px-l
-    main = driver.find_element_by_class_name(
-        "flex.w-full.max-w-screen-xl.flex-col.self-center.px-l")
+    try:
+        main = driver.find_element_by_class_name(
+            "flex.w-full.max-w-screen-xl.flex-col.self-center.px-l")
+        
+    except NoSuchElementException:
+        print("No cars found")
+        return
+    
     scroll = 500
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
@@ -112,20 +123,20 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
     for i in range(0, 20):
         sleep(1)
 
-        articles = main.find_elements_by_class_name(
-            "flex w-full min-w-[250px] cursor-pointer items-start justify-center rounded border border-solid border-perano p-m hover:border-scienceblue mb-xs")
+        articles = main.find_elements_by_css_selector(
+            "div.min-w-\[250px\]:nth-child(1)")
 
-        for article in articles:
+        for i, article in enumerate(articles, start=1):
             driver.execute_script(f"window.scrollBy(0, {scroll});")
-
+            
             sleep(0.2)
 
-            location = article.find_element_by_class_name(
-                "font-normal text-sm mb-xxs truncate md:text-base").text
+            location = article.find_element_by_css_selector(
+                f"div.min-w-\[250px\]:nth-child({i}) > div:nth-child(1) > a:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > p:nth-child(2)").text
 
             try:
-                img = article.find_element_by_class_name(
-                    "aspect-[4/3] md:h-[135px] md:w-[180px]").get_attribute("src")
+                img = article.find_element_by_css_selector(
+                    f"div.min-w-\[250px\]:nth-child({i}) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1) > img:nth-child(1)").get_attribute("src")
                 req = requests.get(img)
                 image = req.content
 
@@ -135,8 +146,8 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
                     image = f.read()
 
             try:
-                mileage = article.find_element_by_class_name(
-                    "inline-flex rounded-sm bg-zircon px-xs py-0 text-base font-normal text-ebony group-[.bg-zircon]:bg-white").text
+                mileage = article.find_element_by_css_selector(
+                    f"div.min-w-\[250px\]:nth-child({i}) > div:nth-child(1) > a:nth-child(1) > div:nth-child(2) > div:nth-child(2) > p:nth-child(1) > span:nth-child(2)").text
                 mileage = mileage.replace("km", "")
                 mileage = mileage.replace(".", "")
                 mileage = int(mileage)
@@ -158,13 +169,15 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
                 brand = title[0]
                 model = title[1]
 
-            first_registration = article.find_element_by_class_name(
-                "inline-flex rounded-sm bg-zircon px-xs py-0 text-base font-normal text-ebony group-[.bg-zircon]:bg-white mr-1").text
-            price = article.find_element_by_class_name(
-                "font-bold text-xl text-white").text
+            first_registration = article.find_element_by_css_selector(
+                f"div.min-w-\[250px\]:nth-child({i}) > div:nth-child(1) > a:nth-child(1) > div:nth-child(2) > div:nth-child(2) > p:nth-child(1) > span:nth-child(1)").text
+            price = article.find_element_by_css_selector(
+                f"div.min-w-\[250px\]:nth-child({i}) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(1)").text
             url = ''
 
-            car = Car(brand=brand, model=model, price=price,
+            id = uuid4()
+
+            car = Car(id=id, brand=brand, model=model, price=price,
                       mileage=mileage, first_registration=first_registration, url=url, image=image, condition=mileage, vehicle_type='c', location=location, session_id=scrape_session.id)
 
             cars.append(car)
@@ -189,10 +202,8 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
 
     if len(new_cars) > 0:
         emails = get_emails(blueprint)
-
-        for email in emails:
-            mail.send_mail(email, new_cars)
-            logger.log_info("Email sent")
+        mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
+        logger.log_info("Email sent")
 
     logger.log_info("Scrape session ended")
 

@@ -34,6 +34,7 @@ class Car(BaseModel, db.Model):
         self.base_image = "data:image/jpeg;base64," + \
             base64.b64encode(image).decode("utf-8")
         self.session_id = session_id
+
         BaseModel.__init__(self, id)
 
     def __repr__(self):
