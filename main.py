@@ -1,7 +1,7 @@
 import requests
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-URL = "http://example.com"
+URL = "http://leonbos.nl:5000/start"
 
 sched = BlockingScheduler()
 
