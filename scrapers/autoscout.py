@@ -6,10 +6,10 @@ import os
 import json
 import time
 from sqlalchemy.orm import Session
-from ..utills import mail
+from ..utills import mail, logger
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from ..extensions import Base, CREDENTIALS, url
+from ..extensions import Base, CREDENTIALS, url, session
 from ..models.car import Car
 from ..models.scrape_session import ScrapeSession
 from ..models.blueprint import BluePrint
@@ -23,18 +23,10 @@ BASE_URL = 'https://www.autoscout24.nl/lst'
 with open("./occasion-scraper/emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
 
-engine = sqlalchemy.create_engine(url)
-
-Base.metadata.create_all(bind=engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
 def start():
-    global logger
+    global _logger
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -57,7 +49,7 @@ def start():
 
 
 def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
-    global logger
+    global _logger
 
     url = BASE_URL
 
@@ -96,8 +88,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
 
-    logger = Logger(scrape_session.id)
-    logger.log_info("Scrape session started for autoscout")
+    _logger = logger.Logger(scrape_session.id)
+    _logger.log_info("Scrape session started for autoscout")
 
     for i in range(0, 20):
         sleep(1)
@@ -150,11 +142,11 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             next_page(driver)
 
         except:
-            logger.log_info(f"No next page, {i} pages scraped")
+            _logger.log_info(f"No next page, {i} pages scraped")
             break
 
     new_cars = get_new_cars(cars)
-    logger.log_info(f"{len(new_cars)} new cars found")
+    _logger.log_info(f"{len(new_cars)} new cars found")
     save_cars_to_db(new_cars)
     scrape_session.ended = time.time()
     scrape_session.new_cars = len(new_cars)
@@ -166,9 +158,9 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         emails = get_emails(blueprint)
 
         mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
-        logger.log_info("Email sent")
+        _logger.log_info("Email sent")
 
-    logger.log_info("Scrape session ended")
+    _logger.log_info("Scrape session ended")
 
 
 def get_emails(blueprint: BluePrint):
@@ -218,7 +210,7 @@ def convert_to_year(first_registration: str):
             return int(first_registration.split("-")[1])
 
     except:
-        logger.log_error(f"Could not convert {first_registration} to year")
+        _logger.log_error(f"Could not convert {first_registration} to year")
         return 696969
 
 
@@ -242,10 +234,10 @@ def save_cars_to_db(cars: list):
             session.add(car)
 
         session.commit()
-        logger.log_info(f"{len(cars)} new cars saved to db")
+        _logger.log_info(f"{len(cars)} new cars saved to db")
 
     except Exception as e:
-        logger.log_error(e)
+        _logger.log_error(e)
 
 
 def save_session_to_db(scrape_session: ScrapeSession):
@@ -257,32 +249,6 @@ def save_session_to_db(scrape_session: ScrapeSession):
             {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
 
     session.commit()
-
-
-class Logger:
-    def __init__(self, session_id):
-        self.session_id = session_id
-
-    def log(self, message, level):
-        log = Log(
-            message=message,
-            level=level,
-            session_id=self.session_id
-        )
-
-        print(f"{datetime.datetime.now()} - {level} - {message}")
-
-        session.add(log)
-        session.commit()
-
-    def log_error(self, message):
-        self.log(message, 3)
-
-    def log_warning(self, message):
-        self.log(message, 2)
-
-    def log_info(self, message):
-        self.log(message, 1)
 
 
 if __name__ == "__main__":

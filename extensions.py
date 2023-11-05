@@ -3,6 +3,7 @@ import pymysql
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
 
 import os
@@ -24,6 +25,13 @@ engine = create_engine(url)
 Session = sessionmaker(bind=engine)
 
 db = SQLAlchemy()
+
+engine = sqlalchemy.create_engine(url)
+
+#Base.metadata.create_all(bind=engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
 
 def get_session():
     return Session()
