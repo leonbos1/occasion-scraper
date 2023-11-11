@@ -26,7 +26,7 @@ with open("./occasion-scraper/emails.json", "r") as f:
 def start():
     global _logger
     options = webdriver.FirefoxOptions()
-    options.headless = False
+    options.headless = True
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
