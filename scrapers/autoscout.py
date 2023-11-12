@@ -7,21 +7,18 @@ import json
 import time
 from sqlalchemy.orm import Session
 from ..utills import mail, logger
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-from ..extensions import Base, CREDENTIALS, url, session
+from ..extensions import CREDENTIALS, session
 from ..models.car import Car
 from ..models.scrape_session import ScrapeSession
 from ..models.blueprint import BluePrint
 from ..models.subscription import Subscription
-from ..models.user import User
-from ..models.log import Log
-import datetime
+from ..utills.database import get_new_cars, save_cars_to_db, save_session_to_db
 
 BASE_URL = 'https://www.autoscout24.nl/lst'
 
 with open("./occasion-scraper/emails.json", "r") as f:
     EMAILS = json.load(f)["emails"]
+
 
 def start():
     global _logger
@@ -147,12 +144,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     new_cars = get_new_cars(cars)
     _logger.log_info(f"{len(new_cars)} new cars found")
-    save_cars_to_db(new_cars)
+    save_cars_to_db(new_cars, _logger)
     scrape_session.ended = time.time()
     scrape_session.new_cars = len(new_cars)
     save_session_to_db(scrape_session)
-
-    session = Session()
 
     if len(new_cars) > 0:
         emails = get_emails(blueprint)
@@ -212,43 +207,6 @@ def convert_to_year(first_registration: str):
     except:
         _logger.log_error(f"Could not convert {first_registration} to year")
         return 696969
-
-
-def get_new_cars(cars: list):
-    new_cars = []
-    new_car_ids = []
-
-    for car in cars:
-        car_from_db = session.query(Car).filter(Car.id == car.id).first()
-
-        if car_from_db == None and car.id not in new_car_ids:
-            new_cars.append(car)
-            new_car_ids.append(car.id)
-
-    return new_cars
-
-
-def save_cars_to_db(cars: list):
-    try:
-        for car in cars:
-            session.add(car)
-
-        session.commit()
-        _logger.log_info(f"{len(cars)} new cars saved to db")
-
-    except Exception as e:
-        _logger.log_error(e)
-
-
-def save_session_to_db(scrape_session: ScrapeSession):
-    if session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
-        session.add(scrape_session)
-
-    else:
-        session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
-            {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
-
-    session.commit()
 
 
 if __name__ == "__main__":
