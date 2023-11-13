@@ -21,6 +21,6 @@ scrape_session_fields = {
     'started': fields.Integer,
     'ended': fields.Integer,
     'new_cars': fields.Integer,
-    'created': fields.Integer,
-    'updated': fields.Integer
+    'created': fields.String,
+    'updated': fields.String
 }

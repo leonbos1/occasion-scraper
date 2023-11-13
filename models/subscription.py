@@ -13,6 +13,6 @@ subscription_fields = {
     'id': fields.String,
     'email': fields.String,
     'blueprint_id': fields.String,
-    'created': fields.Integer,
-    'updated': fields.Integer
+    'created': fields.String,
+    'updated': fields.String
 }

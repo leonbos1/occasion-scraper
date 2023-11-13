@@ -58,6 +58,6 @@ blueprint_fields = {
     'max_distance_from_home': fields.Integer,
     'name': fields.String,
     'owner_id': fields.String,
-    'created': fields.Integer,
-    'updated': fields.Integer
+    'created': fields.String,
+    'updated': fields.String
 }

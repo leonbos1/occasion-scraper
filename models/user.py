@@ -24,6 +24,6 @@ user_fields = {
     'id': fields.String,
     'email': fields.String,
     'password': fields.String,
-    'created': fields.Integer,
-    'updated': fields.Integer
+    'created': fields.String,
+    'updated': fields.String
 }

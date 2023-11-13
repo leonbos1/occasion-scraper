@@ -54,6 +54,6 @@ car_fields = {
     'url': fields.String,
     'base_image': fields.String,
     'session_id': fields.String,
-    'created': fields.Integer,
-    'updated': fields.Integer
+    'created': fields.String,
+    'updated': fields.String
 }
