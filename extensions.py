@@ -25,12 +25,10 @@ engine = create_engine(url)
 Session = sessionmaker(bind=engine)
 
 db = SQLAlchemy()
-
+print("Initialized SQLAlchemy")
 engine = sqlalchemy.create_engine(url)
 
 #Base.metadata.create_all(bind=engine)
-
-Session = sessionmaker(bind=engine)
 session = Session()
 
 def get_session():
