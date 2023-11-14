@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, String
 from ..models.base import BaseModel
 from ..extensions import db
 from flask_restful import fields
@@ -7,7 +7,7 @@ class ScrapeSession(db.Model, BaseModel):
     __tablename__ = 'sessions'
 
     started = Column(Integer)
-    ended = Column(Integer)
+    ended = Column(String)
     new_cars = Column(Integer)
     
     def __init__(self):
@@ -19,7 +19,7 @@ class ScrapeSession(db.Model, BaseModel):
 scrape_session_fields = {
     'id': fields.String,
     'started': fields.Integer,
-    'ended': fields.Integer,
+    'ended': fields.String,
     'new_cars': fields.Integer,
     'created': fields.String,
     'updated': fields.String

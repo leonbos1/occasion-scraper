@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from time import sleep
 import requests
 import os
@@ -24,7 +27,7 @@ with open("./occasion-scraper/emails.json", "r") as f:
 def start():
     global _logger
     options = webdriver.FirefoxOptions()
-    options.headless = True
+    options.headless = False
     driver = webdriver.Firefox(options=options)
 
     driver.maximize_window()
@@ -89,64 +92,81 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     _logger = logger.Logger(scrape_session.id)
     _logger.log_info("Scrape session started for autoscout")
 
-    try:
-
-        for i in range(0, 20):
-            sleep(1)
+    for i in range(0, 20):
+        driver.execute_script("window.scrollTo(0, 0);")
+        sleep(2)
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "article")))
             articles = main.find_elements_by_tag_name("article")
+        except:
+            _logger.log_error("No articles found")
+            break
 
-            for article in articles:
+        for article in articles:
+            try:
                 driver.execute_script(f"window.scrollBy(0, {scroll});")
 
-                sleep(0.2)
+            except:
+                _logger.log_error("Could not scroll")
 
-                try:
-                    location_span = article.find_element_by_class_name(
-                        "SellerInfo_address__txoNV")
-                    location_text = location_span.text.split("•")
-                    location = location_text[1]
+            sleep(0.2)
 
-                except Exception as e:
-                    all_elements = article.find_elements_by_tag_name("span")
-                    location = all_elements[-1].text
+            try:
+                location_span = article.find_element_by_xpath(
+                    ".//span[contains(@class, 'SellerInfo_address__txoNV')]")
+                location_text = location_span.text.split("•")
+                location = location_text[1]
 
-                try:
-                    img = article.find_element_by_class_name(
-                        "NewGallery_img__bi92g")
-                    image = img.get_attribute("src")
-                    request = requests.get(image)
-                    image = request.content
+            except Exception as e:
+                all_elements = article.find_elements_by_tag_name("span")
+                location = all_elements[-1].text
 
-                except NoSuchElementException:
-                    path = os.path.abspath("./occasion-scraper/no-picture.png")
-                    with open(path, "rb") as f:
-                        image = f.read()
+            try:
+                img = article.find_element_by_class_name(
+                    "NewGallery_img__bi92g")
+                image = img.get_attribute("src")
+                request = requests.get(image)
+                image = request.content
 
-                try:
-                    mileage = int(article.get_attribute("data-mileage"))
+            except NoSuchElementException:
+                _logger.log_warning("Could not find image")
+                path = os.path.abspath("./occasion-scraper/no-picture.png")
+                with open(path, "rb") as f:
+                    image = f.read()
 
-                except:
-                    mileage = 0
+            try:
+                mileage = int(article.get_attribute("data-mileage"))
 
+            except:
+                _logger.log_warning("Could not find mileage")
+                mileage = 0
+
+            try:
                 a_element = article.find_element_by_xpath(
                     ".//a[contains(@class, 'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l')]")
                 href = a_element.get_attribute("href")
+            except Exception as e:
+                _logger.log_error("Could not find href")
+
+            try:
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                         mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
                         location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
                 cars.append(car)
+            except Exception as e:
+                _logger.log_error("Could not create car object: " + str(e))
 
-            driver.execute_script("window.scrollBy(0, -300);")
+        try:
+            driver.execute_script("window.scrollBy(0, -50);")
+        except:
+            _logger.log_error("Could not scroll")
 
-            try:
-                next_page(driver)
+        try:
+            next_page(driver)
 
-            except:
-                _logger.log_info(f"No next page, {i} pages scraped")
-                break
-
-    except Exception as e:
-        _logger.log_error(f"Temp error: {e}")
+        except:
+            _logger.log_info(f"No next page, {i} pages scraped")
+            break
 
     new_cars = get_new_cars(cars)
     _logger.log_info(f"{len(new_cars)} new cars found")
