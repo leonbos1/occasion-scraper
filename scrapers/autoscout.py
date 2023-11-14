@@ -29,6 +29,7 @@ def start():
     options = webdriver.FirefoxOptions()
     options.headless = True
     driver = webdriver.Firefox(options=options)
+    driver.set_window_size(1920, 5000)
     cars = []
 
     sleep(0.5)
