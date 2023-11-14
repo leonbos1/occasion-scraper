@@ -29,8 +29,6 @@ def start():
     options = webdriver.FirefoxOptions()
     options.headless = True
     driver = webdriver.Firefox(options=options)
-
-    driver.maximize_window()
     cars = []
 
     sleep(0.5)
