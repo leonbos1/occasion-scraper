@@ -84,18 +84,20 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     accept_cookies(driver)
 
     main = driver.find_element_by_class_name("ListPage_main__L0gsf")
-    scroll = 500
+    scroll = 600
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
 
     _logger = logger.Logger(scrape_session.id)
-    _logger.log_info("Scrape session started for autoscout")
+    _logger.log_info(
+        "Scrape session started for autoscout with blueprint: " + blueprint.name)
 
     for i in range(0, 20):
         driver.execute_script("window.scrollTo(0, 0);")
         sleep(2)
         try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "article")))
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.TAG_NAME, "article")))
             articles = main.find_elements_by_tag_name("article")
         except:
             _logger.log_error("No articles found")
@@ -104,11 +106,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         for article in articles:
             try:
                 driver.execute_script(f"window.scrollBy(0, {scroll});")
+                print(article.get_attribute("data-model"))
 
             except:
                 _logger.log_error("Could not scroll")
-
-            sleep(0.2)
 
             try:
                 location_span = article.find_element_by_xpath(
@@ -121,13 +122,16 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 location = all_elements[-1].text
 
             try:
+                WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
+                    (By.CLASS_NAME, "NewGallery_img__bi92g")))
+
                 img = article.find_element_by_class_name(
                     "NewGallery_img__bi92g")
                 image = img.get_attribute("src")
                 request = requests.get(image)
                 image = request.content
 
-            except NoSuchElementException:
+            except Exception as e:
                 _logger.log_warning("Could not find image")
                 path = os.path.abspath("./occasion-scraper/no-picture.png")
                 with open(path, "rb") as f:
@@ -149,16 +153,12 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
             try:
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
-                        mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
-                        location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
+                          mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
+                          location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
                 cars.append(car)
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
-
-        try:
-            driver.execute_script("window.scrollBy(0, -50);")
-        except:
-            _logger.log_error("Could not scroll")
+                print("===Article===: " + article.text)
 
         try:
             next_page(driver)
