@@ -108,10 +108,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             break
 
         for article in articles:
-            id = article.get_attribute("id")
-
             try:
-                driver.execute_script(f"window.scrollBy(0, {scroll});")
+                article.execute_script(f"window.scrollBy(0, {scroll});")
 
             except:
                 _logger.log_error("Could not scroll")
@@ -127,7 +125,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 location = all_elements[-1].text
 
             try:
-                WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
+                WebDriverWait(driver, 1).until(EC.visibility_of_element_located(
                     (By.CLASS_NAME, "NewGallery_img__bi92g")))
 
                 img = article.find_element_by_class_name(
@@ -157,13 +155,11 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 _logger.log_error("Could not find href")
 
             try:
-                sleep(1)
-                article = driver.find_element_by_id(id)
-                
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                           mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
                           location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
                 cars.append(car)
+
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
                 _logger.log_info("article text: " + article.text)
