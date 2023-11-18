@@ -103,7 +103,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             break
 
         for article in articles:
-            id = article.get_attribute("data-guid")
+            id = article.get_attribute("id")
 
             try:
                 driver.execute_script(f"window.scrollBy(0, {scroll});")
