@@ -152,14 +152,12 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 _logger.log_error("Could not find href")
 
             try:
-                #fix to prevent stale element exception
-                _logger.log_info("Creating car object")
+                sleep(1)
                 article = main.find_element_by_xpath(f"//article[@id='{id}']")
-                _logger.log_info("Found article")
+                
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                           mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
                           location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
-                _logger.log_info("Car object created")
                 cars.append(car)
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
