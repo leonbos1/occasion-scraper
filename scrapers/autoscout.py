@@ -25,9 +25,9 @@ with open("./occasion-scraper/emails.json", "r") as f:
 
 def start():
     global _logger
-    options = webdriver.ChromeOptions()
-    options.headless = False
-    driver = webdriver.Chrome(options=options)
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    driver = webdriver.Firefox(options=options)
     cars = []
 
     sleep(0.5)
