@@ -28,7 +28,6 @@ def start():
     options = webdriver.FirefoxOptions()
     options.headless = False
     driver = webdriver.Firefox(options=options)
-    driver.set_window_size(1920, 5000)
     cars = []
 
     sleep(0.5)
@@ -43,6 +42,7 @@ def start():
 
     except Exception as e:
         print(e)
+        print("Error occured, closing driver")
         session.rollback()
         driver.close()
 
@@ -87,7 +87,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
 
-    _logger = logger.Logger(scrape_session.id)
     _logger.log_info(
         "Scrape session started for autoscout with blueprint: " + blueprint.name)
 
@@ -105,7 +104,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         for article in articles:
             try:
                 driver.execute_script(f"window.scrollBy(0, {scroll});")
-                print(article.get_attribute("data-model"))
 
             except:
                 _logger.log_error("Could not scroll")
@@ -157,7 +155,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 cars.append(car)
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
-                print("===Article===: " + article.text)
 
         try:
             next_page(driver)
