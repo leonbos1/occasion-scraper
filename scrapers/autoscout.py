@@ -27,6 +27,7 @@ def start():
     global _logger
     options = webdriver.FirefoxOptions()
     options.headless = True
+    driver.set_window_size(1280, 800)
     driver = webdriver.Firefox(options=options)
     cars = []
 
