@@ -109,7 +109,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
         for article in articles:
             try:
-                article.execute_script(f"window.scrollBy(0, {scroll});")
+                driver.execute_script(f"window.scrollBy(0, {scroll});")
 
             except:
                 _logger.log_error("Could not scroll")
