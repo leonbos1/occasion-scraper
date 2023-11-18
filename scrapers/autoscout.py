@@ -103,6 +103,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             break
 
         for article in articles:
+            id = article.get_attribute("data-guid")
+
             try:
                 driver.execute_script(f"window.scrollBy(0, {scroll});")
 
@@ -150,6 +152,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 _logger.log_error("Could not find href")
 
             try:
+                #fix to prevent stale element exception
+                article = main.find_element_by_xpath(f"//article[@data-guid='{id}']")
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
                           mileage=mileage, first_registration=convert_to_year(article.get_attribute("data-first-registration")), vehicle_type=article.get_attribute("data-vehicle-type"),
                           location=location, condition=mileage, url=href, session_id=scrape_session.id, image=image)
