@@ -38,8 +38,7 @@ def create_app():
             start()
 
         except Exception as e:
-            with open("logs.txt", "a") as f:
-                f.write(str(e))
+            print(e)
 
             return "Failed"
 

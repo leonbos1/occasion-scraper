@@ -25,9 +25,9 @@ with open("./occasion-scraper/emails.json", "r") as f:
 
 def start():
     global _logger
-    options = webdriver.FirefoxOptions()
-    options.headless = True
-    driver = webdriver.Firefox(options=options)
+    options = webdriver.Chrome()
+    options.headless = False
+    driver = webdriver.Chrome(options=options)
     cars = []
 
     sleep(0.5)
@@ -161,9 +161,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 cars.append(car)
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
-                _logger.log_error("main is " + str(main))
-                _logger.log_error("article is " + str(article))
-                _logger.log_error("model in article is " + str(article.get_attribute("data-model")))
 
         try:
             next_page(driver)
