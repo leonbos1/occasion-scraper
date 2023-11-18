@@ -38,9 +38,7 @@ def create_app():
             start()
 
         except Exception as e:
-            print(e)
-
-            return "Failed"
+            return e
 
         return "Started"
 

@@ -27,8 +27,12 @@ def start():
     global _logger
     options = webdriver.FirefoxOptions()
     options.headless = True
-    driver.set_window_size(1280, 800)
+    options.add_argument("--headless")
+    options.add_argument("--no-proxy-server")
+    options.add_argument("--log-level=3")
     driver = webdriver.Firefox(options=options)
+    driver.set_window_size(1280, 800)
+
     cars = []
 
     sleep(0.5)
