@@ -166,8 +166,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
         try:
             next_page(driver)
+            sleep(2)
 
-        except:
+        except Exception as e:
+            _logger.log_warning("Error occured while going to next page " + str(e))
             _logger.log_info(f"No next page, {i} pages scraped")
             break
 
@@ -206,13 +208,9 @@ def click_more_vehicles(driver: webdriver):
 
 
 def next_page(driver: webdriver):
-    try:
-        button = driver.find_element_by_xpath(
+    button = driver.find_element_by_xpath(
             "//button[contains(@aria-label, 'Ga naar volgende pagina')]")
-        button.click()
-
-    except NoSuchElementException:
-        print("No next page")
+    button.click()
 
 
 def accept_cookies(driver: webdriver):
