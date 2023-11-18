@@ -26,7 +26,7 @@ with open("./occasion-scraper/emails.json", "r") as f:
 def start():
     global _logger
     options = webdriver.FirefoxOptions()
-    options.headless = False
+    options.headless = True
     driver = webdriver.Firefox(options=options)
     cars = []
 
@@ -87,6 +87,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
 
+    _logger = logger.Logger(scrape_session.id)
     _logger.log_info(
         "Scrape session started for autoscout with blueprint: " + blueprint.name)
 
