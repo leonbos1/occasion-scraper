@@ -166,6 +166,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 cars.append(car)
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
+                _logger.log_info("article text: " + article.text)
+                _logger.log_info("main text: " + main.text)
 
         try:
             next_page(driver)
