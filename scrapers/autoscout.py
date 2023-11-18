@@ -208,6 +208,7 @@ def next_page(driver: webdriver):
     button = driver.find_element_by_xpath(
             "//button[contains(@aria-label, 'Ga naar volgende pagina')]")
     button.click()
+    sleep(2)
 
 
 def accept_cookies(driver: webdriver):
