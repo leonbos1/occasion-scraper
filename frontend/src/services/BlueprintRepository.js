@@ -13,6 +13,25 @@ class BlueprintRepository {
         return await response.json();
     }
 
+    async getBlueprintsByPage(page, size) {
+        var url = '/blueprints/' + page + '/' + size;
+        try {
+            const response = await this.get(url);
+
+            return await response.json();
+        }
+        catch (error) {
+            return []
+        }
+    }
+
+    async getMaxPage(size) {
+        var url = '/blueprints/max_page/' + size;
+        const response = await this.get(url);
+
+        return await response.json();
+    }
+
     async getBlueprintById(id) {
         const response = await this.get(`/blueprints/${id}`);
 

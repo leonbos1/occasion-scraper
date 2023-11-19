@@ -177,11 +177,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     scrape_session.new_cars = len(new_cars)
     save_session_to_db(scrape_session)
 
-    if len(new_cars) > 0:
-        emails = get_emails(blueprint)
+    emails = get_emails(blueprint)
 
-        mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
-        _logger.log_info("Email sent")
+    mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
+    _logger.log_info("Email sent")
 
     _logger.log_info("Scrape session ended")
 

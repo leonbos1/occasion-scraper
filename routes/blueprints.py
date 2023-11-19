@@ -27,6 +27,21 @@ def get_blueprint(id):
 
     return blueprint
 
+@blueprints.route("/<int:page_number>/<int:per_page>", methods=["GET"])
+@marshal_with(blueprint_fields)
+def get_blueprints_page(page_number, per_page):
+    page = BluePrint.query.paginate(page=page_number, per_page=per_page)
+
+    blueprints = page.items
+
+    return blueprints
+
+@blueprints.route("/max_page/<int:per_page>", methods=["GET"])
+def get_max_page(per_page):
+    max_page = BluePrint.query.paginate(per_page=per_page).pages
+
+    return jsonify(max_page)
+
 @blueprints.route("", methods=["POST"])
 @marshal_with(blueprint_fields)
 def create_blueprint():

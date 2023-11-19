@@ -10,7 +10,7 @@
                             <PerPageComponent @option-selected="perPageSelected" />
                         </div>
                         <div class="flex flex-row items-center justify-center w-1/2">
-                            <PaginationComponent :current-page="currentPage" :total-pages="Math.ceil(data.length / perPage)"
+                            <PaginationComponent :current-page="currentPage" :maximum-page="maximumPage"
                                 :has-previous="hasPrevious" :has-next="hasNext" @previous="handlePrevious"
                                 @next="handleNext" />
                         </div>
@@ -43,8 +43,9 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr v-for="row in selectedData" :key="row.id" class="w-1/12">
-                                <td v-for="column in columns" :key="column" class="h-px whitespace-nowrap overflow-hidden w-px">
+                            <tr v-for="row in data" :key="row.id" class="w-1/12">
+                                <td v-for="column in columns" :key="column"
+                                    class="h-px whitespace-nowrap overflow-hidden w-px">
                                     <div class="pl-6 py-3">
                                         <template v-if="column === 'base_image'">
                                             <img v-if="row[column] !== ''" :src="row[column]" class="w-1/2 h-1/2 " />
@@ -59,7 +60,9 @@
                                             </a>
                                         </template>
                                         <template v-else>
-                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">{{ row[column] }}</span>
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">{{
+                                                    row[column] }}</span>
                                         </template>
                                     </div>
                                 </td>
@@ -97,13 +100,11 @@ import CreateComponent from '@/components/datatables/CreateComponent.vue'
 const data = ref([]);
 const columns = ref([]);
 
-const props = defineProps(['inputData', 'inputColumns']);
+const props = defineProps(['inputData', 'inputColumns', 'maximumPage']);
 
-const selectedData = ref([]);
-const filteredData = ref([]);
 const perPage = ref(10);
 const currentPage = ref(1);;
-const hasNext = ref(true);
+const hasNext = ref(false);
 const hasPrevious = ref(false);
 const order_by = ref('id');
 const editItem = ref(null);
@@ -118,6 +119,14 @@ function handleEdit(item) {
 function handleCreate(item) {
     emit('create', item);
 }
+
+watch(perPage, (newVal) => {
+    emit('updatePerPage', newVal);
+});
+
+watch(currentPage, (newVal) => {
+    emit('updateCurrentPage', newVal);
+});
 
 function setBaseImage(row) {
     if (row.base_image === '') {
@@ -153,19 +162,22 @@ function setOrderBy(column) {
         orderBy(column);
     }
 
-    selectedData.value = perPageData();
+    currentPage.value = 1;
 }
 
-function perPageData() {
-    const start = (currentPage.value - 1) * perPage.value;
-    const end = currentPage.value * perPage.value;
-
-    return filteredData.value.slice(start, end);
+function handleNext() {
+    if (hasNext.value) {
+        currentPage.value++;
+        checkNextAndPrevious();
+    }
 }
 
-function perPageSelected(option) {
-    perPage.value = option;
-};
+function handlePrevious() {
+    if (hasPrevious.value) {
+        currentPage.value--;
+        checkNextAndPrevious();
+    }
+}
 
 function checkNextAndPrevious() {
     if (currentPage.value === 1) {
@@ -176,7 +188,7 @@ function checkNextAndPrevious() {
         hasPrevious.value = true;
     }
 
-    if (currentPage.value === Math.ceil(data.value.length / perPage.value)) {
+    if (currentPage.value === props.maximumPage) {
         hasNext.value = false;
     }
 
@@ -185,16 +197,8 @@ function checkNextAndPrevious() {
     }
 }
 
-function handleNext() {
-    currentPage.value++;
-
-    checkNextAndPrevious();
-}
-
-function handlePrevious() {
-    currentPage.value--;
-
-    checkNextAndPrevious();
+function perPageSelected(selectedOption) {
+    perPage.value = selectedOption;
 }
 
 function handleSearch(search) {
@@ -212,46 +216,27 @@ function handleSearch(search) {
 
     currentPage.value = 1;
 
-    selectedData.value = perPageData();
-
     checkNextAndPrevious();
 }
 
 watch(perPage, () => {
-    selectedData.value = perPageData();
-    currentPage.value = 1;
-
-    checkNextAndPrevious();
+    console.log('per page changed');
 });
 
 watch(currentPage, () => {
-    selectedData.value = perPageData();
-
-    checkNextAndPrevious();
+    console.log('current page changed');
 });
 
-watch(props.inputData, () => {
+watch(() => props.inputData, () => {
     data.value = props.inputData;
-    selectedData.value = perPageData();
-    currentPage.value = 1;
-
-    checkNextAndPrevious();
 });
 
 onMounted(() => {
     data.value = props.inputData;
+
     columns.value = props.inputColumns;
-    filteredData.value = data.value;
-    selectedData.value = perPageData();
-    currentPage.value = 1;
 
     checkNextAndPrevious();
-
-    createItem.value = columns.value.reduce((acc, column) => {
-        acc[column] = '';
-
-        return acc;
-    }, {});
 });
 
 </script>

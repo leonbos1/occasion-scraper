@@ -1,21 +1,4 @@
 <template>
-    <!--
-    <div>
-        <button
-            class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-150 bg-white border border-gray-300 rounded-md active:bg-gray-100 hover:bg-gray-100 focus:outline-none focus:shadow-outline-blue"
-            @click="handlePrevious">
-            Previous
-        </button>
-        <span class="px-4 py-2 text-sm font-medium leading-5 text-white">
-            Page {{ currentPage }} of {{ totalPages }}
-        </span>
-        <button
-            class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-150 bg-white border border-gray-300 rounded-md active:bg-gray-100 hover:bg-gray-100 focus:outline-none focus:shadow-outline-blue"
-            @click="handleNext">
-            Next
-        </button>
-    </div>
-    -->
     <div>
         <div class="inline-flex gap-x-2">
             <button type="button" @click="handlePrevious"
@@ -27,7 +10,11 @@
                 </svg>
                 Prev
             </button>
-
+            <div class="flex items-center gap-x-1 text-white">
+                <span>{{ currentPage }}</span>
+                <span>/</span>
+                <span>{{ maximumPage }}</span>
+            </div>
             <button type="button" @click="handleNext"
                 class="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800">
                 Next
@@ -42,7 +29,7 @@
 </template>
   
 <script setup>
-import { defineEmits, ref, watch, withDefaults, defineProps } from 'vue';
+import { defineEmits, defineProps } from 'vue';
 
 const emit = defineEmits();
 
@@ -51,7 +38,7 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    totalPages: {
+    maximumPage: {
         type: Number,
         required: true,
     },

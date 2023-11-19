@@ -13,11 +13,37 @@ class CarRepository {
         return await response.json();
     }
 
-    async getTop100Cars() {
-        var url = '/cars/first100';
-        const response = await this.get(url);        
+    async getCarsByPage(page, size) {
+        var url = '/cars/' + page + '/' + size;
+        try {
+            const response = await this.get(url);
+
+            return await response.json();
+        }
+        catch (error) {
+            return []
+        }
+    }
+
+    async getMaxPage(size) {
+        var url = '/cars/max_page/' + size;
+        const response = await this.get(url);
 
         return await response.json();
+    }
+
+    async getRecentCars(amount) {
+        var url = '/cars/recent/' + amount;
+
+        try {
+        const response = await this.get(url);
+
+        return await response.json();
+        }
+
+        catch (error) {
+            return []
+        }
     }
 
     async getCarById(id) {

@@ -9,17 +9,6 @@ from ..models.car import Car, car_fields
 
 cars = Blueprint("cars", __name__)
 
-#endpoint to get first 100 cars
-@cars.route("/first100", methods=["GET"])
-@marshal_with(car_fields)
-def get_first100_cars():
-    cars = Car.query.limit(100).all()
-
-    print(f"{len(cars)} cars fetched from db")
-
-    return cars
-
-
 @cars.route("", methods=["GET"])
 @marshal_with(car_fields)
 def get_cars():
@@ -32,6 +21,20 @@ def get_cars():
 
     return cars
 
+@cars.route("/<int:page_number>/<int:per_page>", methods=["GET"])
+@marshal_with(car_fields)
+def get_cars_page(page_number, per_page):
+    page = Car.query.paginate(page=page_number, per_page=per_page)
+
+    cars = page.items
+
+    return cars
+
+@cars.route("/max_page/<int:per_page>", methods=["GET"])
+def get_max_page(per_page):
+    max_page = Car.query.paginate(per_page=per_page).pages
+
+    return jsonify(max_page)
 
 @cars.route("/<string:id>", methods=["GET"])
 @marshal_with(car_fields)
@@ -39,6 +42,13 @@ def get_car(id):
     car = Car.query.filter_by(id=id).first()
 
     return car
+
+@cars.route("/recent/<int:count>", methods=["GET"])
+@marshal_with(car_fields)
+def get_recent_cars(count):
+    cars = Car.query.order_by(Car.created.desc()).limit(count).all()
+
+    return cars
 
 @cars.route("/image/<string:id>", methods=["GET"])
 def get_car_image(id):

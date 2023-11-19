@@ -1,7 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import base64
 
 def send_email(cars: list, credentials, emails, subject):
     from_email = credentials["email"]
