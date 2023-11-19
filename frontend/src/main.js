@@ -7,6 +7,7 @@ import Home from './components/home/Home.vue';
 import Users from './components/users/Users.vue';
 import Blueprints from './components/blueprints/Blueprints.vue';
 import Tests from './components/test/Tests.vue';
+import Dashboard from './components/dashboard/Dashboard.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,7 +16,8 @@ const router = createRouter({
     { path: '/cars', component: Cars },
     { path: '/users', component: Users},
     { path: '/blueprints', component: Blueprints},
-    { path: '/tests', component: Tests}
+    { path: '/tests', component: Tests},
+    { path: '/dashboard', component: Dashboard},
   ],
 });
 

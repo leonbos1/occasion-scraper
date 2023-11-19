@@ -6,7 +6,7 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             <div v-for="(car, index) in cars.slice(0, 5)" :key="index"
-                class="car-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-max">
                 <img :src="car.base_image || setBaseImage(car)" class="w-full h-48 object-cover" />
 
                 <div class="p-4">
@@ -19,7 +19,8 @@
                     }}</span></p>
                     <p class="text-sm text-gray-600">Locatie: <span class="text-gray-800">{{ car.location }}</span></p>
                     <a :href="car.url" target="_blank"
-                        class="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200 text-center">Bekijk
+                        class="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200 text-center bottom-0">
+                        Bekijk
                         Details</a>
                 </div>
             </div>

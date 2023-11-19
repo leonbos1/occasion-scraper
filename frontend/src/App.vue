@@ -31,7 +31,7 @@ export default {
 @import 'tailwindcss/utilities';
 
 .container {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 20px;
 }
@@ -41,7 +41,7 @@ export default {
 }
 
 .nav {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;

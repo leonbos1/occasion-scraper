@@ -199,6 +199,7 @@ function checkNextAndPrevious() {
 
 function perPageSelected(selectedOption) {
     perPage.value = selectedOption;
+    currentPage.value = 1;
 }
 
 function handleSearch(search) {
