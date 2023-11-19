@@ -35,13 +35,11 @@ Installation
 
 bash
 
-git clone https://github.com/yourusername/your-repo-name.git
+git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/leonbos1/occasion-scraper.git)
 
     Change into the project directory:
 
 bash
-
-cd your-repo-name
 
 Usage
 
@@ -61,12 +59,5 @@ Before running the application, make sure to configure the following settings:
     Email Configuration: In config.py, provide your email configuration settings, including your email address, SMTP server details, and app password (if necessary) for sending email notifications.
 
     Scheduled Execution: The application is set to run at 7 AM and 7 PM by default. You can adjust the schedule in car_scraping.py using the schedule library.
-
-Contributing
-
-Contributions are welcome! If you have any ideas or improvements to suggest, feel free to open an issue or create a pull request.
-License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
 
 Happy car hunting! If you have any questions or encounter any issues, please don't hesitate to open an issue.
