@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white border-gray-200 dark:bg-gray-900">
+  <nav class="bg-white border-gray-200 dark:bg-gray-900 w-screen">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <div class="w-full md:block md:w-auto" id="navbar-default">
         <ul
@@ -25,7 +25,7 @@ export default {
         { id: 2, label: 'Cars', url: '/cars' },
         { id: 3, label: 'Blueprints', url: '/blueprints' },
         { id: 4, label: 'Users', url: '/users' },
-        { id: 5, label: 'Dashboard', url: '/dashboard'}
+        { id: 5, label: 'Dashboard', url: '/dashboard' }
       ],
     };
   },

@@ -1,7 +1,7 @@
 <template>
-  <div class="container" id="app">
-    <Nav class="nav" />
-    <div class="content">
+  <div class="container m-auto">
+    <div class="max-w-screen-xl mx-auto p-0 pb-4 flex flex-col items-center">
+      <Nav class="bg-white border-gray-200 dark:bg-gray-900 w-full" />
       <router-view />
     </div>
   </div>
@@ -30,23 +30,10 @@ export default {
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-.container {
-  max-width: 90%;
-  margin: 0 auto;
-  padding: 20px;
+body {
+  margin: 0
 }
-
-.content {
-  margin-top: 60px;
-}
-
-.nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: #f2f2f2;
-  padding: 10px;
-  z-index: 9999;
+h1 {
+  margin-top: 0;
 }
 </style>

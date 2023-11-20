@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
-from flask_restful import marshal, fields, abort, Resource
-from flask_restful import marshal_with, reqparse
+from flask_restful import abort
+from flask_restful import marshal_with
+from sqlalchemy import func
 
 from ..extensions import db
 from ..middleware import remove_disallowed_properties
@@ -93,3 +94,9 @@ def update_car(id):
     db.session.commit()
 
     return car
+
+@cars.route("/brands", methods=["GET"])
+def get_brands():
+    brands = db.session.query(Car.brand, func.count(Car.brand)).group_by(Car.brand).all()
+
+    return {brand: count for brand, count in brands}
