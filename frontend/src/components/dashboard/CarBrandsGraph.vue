@@ -7,9 +7,9 @@
 import DashboardRepository from '../../services/DashboardRepository';
 import { ref, onMounted } from 'vue';
 import { Pie } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, CategoryScale, LinearScale, BarElement, ArcElement } from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, ArcElement } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, CategoryScale, LinearScale, BarElement, ArcElement);
+ChartJS.register(Title, Tooltip, ArcElement);
 
 const data = ref({});
 const loaded = ref(false);
