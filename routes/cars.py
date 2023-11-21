@@ -39,7 +39,7 @@ def get_cars_page(page_number, per_page):
     for car in cars:
         car.created = car.created.split('.')[0]
         car.updated = car.updated.split('.')[0]
-    sleep(3)
+
     return cars
 
 @cars.route("/max_page/<int:per_page>", methods=["GET"])
