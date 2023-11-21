@@ -13,7 +13,7 @@
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10 h-max">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-max">
-                <CarBrandsGraph />
+
             </div>
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-max">
             </div>
@@ -27,6 +27,5 @@
 <script setup>
 
 import CarsScrapedGraph from './CarsScrapedGraph.vue';
-import CarBrandsGraph from './CarBrandsGraph.vue';
 
 </script>
