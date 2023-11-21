@@ -24,13 +24,22 @@ def get_cars():
 
     return cars
 
-@cars.route("/<int:page_number>/<int:per_page>", methods=["GET"])
+@cars.route("/<int:page_number>/<int:per_page>", methods=["POST"])
 @marshal_with(car_fields)
 def get_cars_page(page_number, per_page):
-    page = Car.query.paginate(page=page_number, per_page=per_page)
+    request_json = request.json
+
+    order_by = request_json.get("order_by", "created")
+    order_direction = request_json.get("order_direction", "desc")
+
+    page = Car.query.order_by(getattr(Car, order_by).desc() if order_direction == "desc" else getattr(Car, order_by)).paginate(page=page_number, per_page=per_page)
 
     cars = page.items
 
+    for car in cars:
+        car.created = car.created.split('.')[0]
+        car.updated = car.updated.split('.')[0]
+    sleep(3)
     return cars
 
 @cars.route("/max_page/<int:per_page>", methods=["GET"])

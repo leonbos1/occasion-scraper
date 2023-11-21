@@ -13,14 +13,28 @@ class CarRepository {
         return await response.json();
     }
 
-    async getCarsByPage(page, size) {
+    async getCarsByPage(page, size, orderBy="created", orderDirection="desc") {
         var url = '/cars/' + page + '/' + size;
+
         try {
-            const response = await this.get(url);
+            var properties = {
+                order_by: orderBy,
+                order_direction: orderDirection
+            }
+
+            const response = await fetch(this.api_url + url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': this.api_key
+                },
+                body: JSON.stringify(properties),
+            });
 
             return await response.json();
         }
         catch (error) {
+            console.log(error);
             return []
         }
     }

@@ -1,6 +1,7 @@
 <template>
-  <Datatable :input-data="cars" v-if="cars.length > 0" :input-columns="columns" :maximumPage="maxPage" @order-by="order_by" @edit="handleEdit"
-    :key="datatableKey" @updatePerPage="handlePerPageUpdate" @updateCurrentPage="handleCurrentPageUpdate" />
+  <Datatable :input-data="cars" v-if="cars.length > 0" :input-columns="columns" :maximumPage="maxPage" :loading="loading"
+    @order-by="order_by" @edit="handleEdit" :key="datatableKey" @updatePerPage="handlePerPageUpdate"
+    @updateCurrentPage="handleCurrentPageUpdate" />
 </template>
 
 <script setup>
@@ -14,6 +15,19 @@ const datatableKey = ref(0);
 const perPage = ref(10);
 const currentPage = ref(1);
 const maxPage = ref(1000);
+const orderBy = ref('created');
+const orderDirection = ref('desc');
+const loading = ref(true);
+
+function handleOrderBy(column) {
+  if (orderBy.value === column) {
+    orderDirection.value = orderDirection.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    orderDirection.value = 'asc';
+  }
+
+  setPageCars(currentPage.value, perPage.value);
+}
 
 function handleEdit(car) {
   CarRepository.updateCar(car);
@@ -36,7 +50,7 @@ onMounted(async () => {
   try {
     setPageCars(currentPage.value, perPage.value);
 
-    columns.value = ['brand', 'model', 'first_registration', 'price', 'mileage', 'location', 'url', 'base_image'];
+    columns.value = ['created', 'brand', 'model', 'first_registration', 'price', 'mileage', 'location', 'url', 'base_image'];
 
     setMaxPage();
   } catch (error) {
@@ -45,15 +59,15 @@ onMounted(async () => {
 });
 
 async function setPageCars(page, size) {
-  var newCars = await CarRepository.getCarsByPage(page, size);
+  loading.value = true;
+  var newCars = await CarRepository.getCarsByPage(page, size, orderBy.value, orderDirection.value);
+  loading.value = false;
 
   cars.value = newCars;
 }
 
 async function setMaxPage() {
   maxPage.value = await CarRepository.getMaxPage(perPage.value);
-
-  console.log('maxPage.value:', maxPage.value);
 }
 
 
