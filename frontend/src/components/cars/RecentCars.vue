@@ -39,8 +39,7 @@ onMounted(async () => {
     try {
         columns.value = ['brand', 'model', 'first_registration', 'price', 'mileage', 'location', 'url', 'base_image'];
 
-        cars.value = await CarRepository.getRecentCars(5);
-        console.log(cars.value);
+        cars.value = await CarRepository.getRecentCars(5);;
     } catch (error) {
         console.error('Failed to fetch cars:', error);
     }

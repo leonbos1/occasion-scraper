@@ -8,6 +8,8 @@ from ..middleware import remove_disallowed_properties
 
 from ..models.car import Car, car_fields
 
+from time import sleep
+
 cars = Blueprint("cars", __name__)
 
 @cars.route("", methods=["GET"])
@@ -98,5 +100,7 @@ def update_car(id):
 @cars.route("/brands", methods=["GET"])
 def get_brands():
     brands = db.session.query(Car.brand, func.count(Car.brand)).group_by(Car.brand).all()
+
+    sleep(1)
 
     return {brand: count for brand, count in brands}
