@@ -1,7 +1,7 @@
 <template>
   <Datatable :input-data="cars" v-if="cars.length > 0" :input-columns="columns" :maximumPage="maxPage" :loading="loading"
-    @order-by="order_by" @edit="handleEdit" :key="datatableKey" @updatePerPage="handlePerPageUpdate"
-    @updateCurrentPage="handleCurrentPageUpdate" />
+    :order-by="orderBy" @edit="handleEdit" :key="datatableKey" @updatePerPage="handlePerPageUpdate"
+    @updateCurrentPage="handleCurrentPageUpdate" @order_by="handleOrderBy" />
 </template>
 
 <script setup>
@@ -25,6 +25,8 @@ function handleOrderBy(column) {
   } else {
     orderDirection.value = 'asc';
   }
+
+  orderBy.value = column;
 
   setPageCars(currentPage.value, perPage.value);
 }

@@ -32,7 +32,8 @@ def get_cars_page(page_number, per_page):
     order_by = request_json.get("order_by", "created")
     order_direction = request_json.get("order_direction", "desc")
 
-    page = Car.query.order_by(getattr(Car, order_by).desc() if order_direction == "desc" else getattr(Car, order_by)).paginate(page=page_number, per_page=per_page)
+    query = Car.query.order_by(getattr(Car, order_by).desc() if order_direction == "desc" else getattr(Car, order_by))
+    page = query.paginate(page=page_number, per_page=per_page)
 
     cars = page.items
 

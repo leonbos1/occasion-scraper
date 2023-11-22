@@ -44,7 +44,7 @@
                         <thead class="bg-gray-50 dark:bg-slate-800">
                             <tr>
                                 <th v-for="column in columns" :key="column" scope="col"
-                                    class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="setOrderBy(column)">
+                                    class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="handleOrderBy(column)">
                                     <div class="flex items-center gap-x-2">
                                         <span
                                             class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-200">
@@ -113,18 +113,16 @@ import CreateComponent from '@/components/datatables/CreateComponent.vue'
 const data = ref([]);
 const columns = ref([]);
 
-const props = defineProps(['inputData', 'inputColumns', 'maximumPage', 'loading']);
+const props = defineProps(['inputData', 'inputColumns', 'maximumPage', 'loading','order_by']);
 
 const perPage = ref(10);
 const currentPage = ref(1);;
 const hasNext = ref(false);
 const hasPrevious = ref(false);
-const order_by = ref('id');
 const editItem = ref(null);
 const createItem = ref(null);
-const defaultLoading = ref(true);
 
-const emit = defineEmits(['edit', 'create']);
+const emit = defineEmits(['edit', 'create', 'order_by']);
 
 function handleEdit(item) {
     emit('edit', item);
@@ -142,6 +140,11 @@ watch(currentPage, (newVal) => {
     emit('updateCurrentPage', newVal);
 });
 
+function handleOrderBy(column) {
+    currentPage.value = 1;
+    emit('order_by', column);
+}
+
 function setBaseImage(row) {
     if (row.base_image === '') {
         var url = row.image_url;
@@ -152,31 +155,6 @@ function setBaseImage(row) {
                 row.base_image = data;
             });
     }
-}
-
-function orderBy(column) {
-    data.value.sort((a, b) => {
-        if (!isNaN(a[column]) && !isNaN(b[column])) {
-            return a[column] - b[column];
-        }
-
-        else {
-            return a[column].localeCompare(b[column]);
-        }
-    });
-}
-
-function setOrderBy(column) {
-    if (order_by.value === column) {
-        data.value.reverse();
-    }
-
-    else {
-        order_by.value = column;
-        orderBy(column);
-    }
-
-    currentPage.value = 1;
 }
 
 function handleNext() {

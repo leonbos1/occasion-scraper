@@ -47,7 +47,6 @@ def get_max_page(per_page):
 def create_blueprint():
     data = request.get_json()
 
-    #set all empty fields to None
     for key in data:
         if data[key] == "":
             data[key] = None
