@@ -2,10 +2,15 @@ from flask import Blueprint, jsonify, request
 from flask_restful import marshal, fields, abort, Resource
 from flask_restful import marshal_with, reqparse
 
+from sqlalchemy.orm import joinedload
+
 from ..extensions import db
 
-from ..models.subscription import Subscription, subscription_fields, subscription_fields_with_blueprint
+from ..models.subscription import Subscription, subscription_fields
 from ..models.blueprint import BluePrint
+
+import datetime
+import uuid
 
 subscriptions = Blueprint("subscriptions", __name__)
 
@@ -17,7 +22,7 @@ def get_subscriptions():
     return subscriptions
 
 @subscriptions.route("/<int:page_number>/<int:per_page>", methods=["POST"])
-@marshal_with(subscription_fields_with_blueprint)
+@marshal_with(subscription_fields)
 def get_subscriptions_by_page(page_number, per_page):
     request_json = request.json
 
@@ -37,7 +42,7 @@ def get_subscriptions_by_page(page_number, per_page):
 
     return subscriptions
 
-@subscriptions.route("/<int:subscription_id>", methods=["GET"])
+@subscriptions.route("/<string:subscription_id>", methods=["GET"])
 @marshal_with(subscription_fields)
 def get_subscription(subscription_id):
     subscription = Subscription.query.get(subscription_id)
@@ -50,13 +55,20 @@ def get_subscription(subscription_id):
 @subscriptions.route("", methods=["POST"])
 @marshal_with(subscription_fields)
 def create_subscription():
+    print(request.json)
+
     subscription = Subscription(**request.json)
+
+    subscription.id = str(uuid.uuid4())
+    subscription.created = datetime.datetime.now()
+    subscription.updated = datetime.datetime.now()
+
     db.session.add(subscription)
     db.session.commit()
 
     return subscription, 201
 
-@subscriptions.route("/<int:subscription_id>", methods=["PUT"])
+@subscriptions.route("/<string:subscription_id>", methods=["PUT"])
 @marshal_with(subscription_fields)
 def update_subscription(subscription_id):
     subscription = Subscription.query.get(subscription_id)
@@ -69,10 +81,10 @@ def update_subscription(subscription_id):
 
     return subscription, 200
 
-@subscriptions.route("/<int:subscription_id>", methods=["DELETE"])
+@subscriptions.route("/<string:subscription_id>", methods=["DELETE"])
 @marshal_with(subscription_fields)
 def delete_subscription(subscription_id):
-    subscription = Subscription.query.get(subscription_id)
+    subscription = Subscription.query.options(joinedload('blueprint')).get(subscription_id)
 
     if not subscription:
         abort(404, message="Subscription {} doesn't exist".format(subscription_id))

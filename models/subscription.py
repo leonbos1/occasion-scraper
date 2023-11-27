@@ -18,14 +18,6 @@ class Subscription(db.Model, BaseModel):
 subscription_fields = {
     'id': fields.String,
     'email': fields.String,
-    'blueprint_id': fields.String,
-    'created': fields.String,
-    'updated': fields.String
-}
-
-subscription_fields_with_blueprint = {
-    'id': fields.String,
-    'email': fields.String,
     'blueprint': fields.Nested(blueprint_fields),
     'created': fields.String,
     'updated': fields.String
