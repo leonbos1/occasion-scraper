@@ -21,9 +21,6 @@ from uuid import uuid4
 
 BASE_URL = 'https://www.gaspedaal.nl'
 
-with open("./occasion-scraper/emails.json", "r") as f:
-    EMAILS = json.load(f)["emails"]
-
 engine = sqlalchemy.create_engine(url)
 
 Base.metadata.create_all(bind=engine)

@@ -20,9 +20,6 @@ import datetime
 
 BASE_URL = 'https://www.autoscout24.nl/lst'
 
-with open("./occasion-scraper/emails.json", "r") as f:
-    EMAILS = json.load(f)["emails"]
-
 def start():
     global _logger
     options = webdriver.FirefoxOptions()

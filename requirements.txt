@@ -6,3 +6,5 @@ requests
 pymysql
 flask_sqlalchemy
 paramiko
+flask_cors
+flask_restful
