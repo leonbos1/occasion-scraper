@@ -1,6 +1,6 @@
 <template>
-    <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <div class=" w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border rounded-xl">
+        <div class="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
             <div v-if="loading || subscriptions.length === 0"
                 class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-10">
                 <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
@@ -14,14 +14,14 @@
                 </svg>
                 <span class="sr-only">Loading...</span>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col h-auto">
                 <div
-                    class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
+                    class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700 h-[75vh]">
                     <div
                         class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
                         <div class="flex flex-row w-full h-32">
                             <div class="flex flex-row items-center justify-start w-1/4">
-                                <PerPageComponent @option-selected="perPageSelected" />
+                                <PerPageComponent @option-selected="handlePerPageUpdate" />
                             </div>
                             <div class="flex flex-row items-center justify-center w-1/2">
                                 <PaginationComponent :current-page="currentPage" :maximum-page="maximumPage"
@@ -33,15 +33,19 @@
                             </div>
                             <div class="flex flex-row items-center justify-center w-1/2">
                                 <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                    data-hs-overlay="#hs-modal-create" @click="editItem = null">
+                                    data-hs-overlay="#hs-modal-create" @click="editSubscription = null">
                                     Create
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                        <table class="min-w-full max-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <EditSubscriptionComponent :subscription="editSubscription" v-if="editSubscription" />
+                    <CreateSubscriptionComponent :subscription="createItem" v-if="createItem" @create="handleCreate" />
+
+                    <div class="relative h-96 overflow-x-auto shadow-md sm:rounded-lg">
+
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-slate-800">
                                 <tr>
                                     <th v-for="column in columns" :key="column" scope="col"
@@ -83,7 +87,7 @@
                                     <td class="h-px w-px whitespace-nowrap">
                                         <div class="px-6 py-1.5">
                                             <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                                data-hs-overlay="#hs-modal-signup" @click="editItem = row">
+                                                data-hs-overlay="#hs-modal-signup" @click="editSubscription = row">
                                                 Edit
                                             </a>
 
@@ -91,12 +95,10 @@
                                     </td>
                                 </tr>
                             </tbody>
-                            <EditSubscriptionComponent :item="editItem" v-if="editItem" @edit="handleEdit" />
-                            <CreateSubscriptionComponent :item="createItem" v-if="createItem" @create="handleCreate" />
                         </table>
                     </div>
                     <div class="flex flex-col items-center justify-center w-full h-32">
-                        <PerPageComponent class="w-1/4 mr-auto" @option-selected="perPageSelected" />
+                        <PerPageComponent class="w-1/4 mr-auto" @option-selected="handlePerPageUpdate" />
                     </div>
                 </div>
             </div>
@@ -117,53 +119,45 @@ const subscriptions = ref([]);
 const columns = ref([]);
 const perPage = ref(10);
 const currentPage = ref(1);
-const maxPage = ref(1000);
+const maximumPage = ref(1);
 const loading = ref(true);
 const data = ref([]);
-
+const editSubscription = ref(null);
 
 async function setMaxPage() {
-    maxPage.value = await SubscriptionRepository.getMaxPage(perPage.value);
+    maximumPage.value = await SubscriptionRepository.getMaxPage(perPage.value);
 }
 
-function handlePerPageUpdate(newVal) {
+async function handlePerPageUpdate(newVal) {
     perPage.value = newVal;
     currentPage.value = 1;
-    setPageSubscriptions(currentPage.value, perPage.value);
+    await setPageSubscriptions(currentPage.value, perPage.value);
     setMaxPage();
 }
 
-function handleCurrentPageUpdate(newVal) {
+async function handleCurrentPageUpdate(newVal) {
     currentPage.value = newVal;
 
-    setPageSubscriptions(currentPage.value, perPage.value);
+    await setPageSubscriptions(currentPage.value, perPage.value);
 }
 
 async function setPageSubscriptions(page, size) {
-    var newSubscriptions = await SubscriptionRepository.getSubscriptionsByPage(page, size);
+    subscriptions.value = await SubscriptionRepository.getSubscriptionsByPage(page, size);
 
-    subscriptions.value = newSubscriptions.map(subscription => {
-        return {
-            created: subscription.created,
-            updated: subscription.updated,
-            email: subscription.user.email,
-            blueprint_name: subscription.blueprint.name,
-        }
-    })
+    console.log(subscriptions.value);
 
     loading.value = false;
 }
 
 onMounted(async () => {
     try {
-        setPageSubscriptions(currentPage.value, perPage.value);
+        await setPageSubscriptions(currentPage.value, perPage.value);
+
+        console.log(subscriptions.value);
 
         columns.value = ['created', 'updated', 'email', 'blueprint_name'];
 
         await setMaxPage();
-
-        console.log('Subscriptions:', subscriptions.value);
-
     } catch (error) {
         console.error('Failed to fetch subscriptions:', error);
     }
