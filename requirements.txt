@@ -4,7 +4,9 @@ urllib3>=1.26.15,<2
 sqlalchemy==1.4.41
 requests
 pymysql
-flask_sqlalchemy
 paramiko
-flask_cors
-flask_restful
+flask==2.3.2
+flask_sqlalchemy==3.0.3
+flask_cors==3.0.10
+flask_restful==0.3.10
+schedule==1.2.1

@@ -1,12 +1,9 @@
 import requests
-from apscheduler.schedulers.blocking import BlockingScheduler
+import schedule
+from time import sleep
 
 URL = "http://leonbos.nl:5000/start"
 
-sched = BlockingScheduler()
-
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=7)
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=19)
 def scheduled_job():
     response = requests.get(URL)
     if response.status_code == 200:
@@ -14,4 +11,9 @@ def scheduled_job():
     else:
         print("Failed to make GET request.")
 
-sched.start()
+schedule.every().day.at("07:00", "Europe/Amsterdam").do(scheduled_job)
+schedule.every().day.at("19:00", "Europe/Amsterdam").do(scheduled_job)
+
+while True:
+    schedule.run_pending()
+    sleep(10)
