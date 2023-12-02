@@ -17,4 +17,4 @@ EXPOSE 5000
 ENV FLASK_APP __init__.py
 
 # Run the Flask app when the container launches
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=192.168.68.131"]
