@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
-from flask_restful import abort
-from flask_restful import marshal_with
-from sqlalchemy import func
+from flask_restful import abort, marshal_with, marshal
+from sqlalchemy import func, inspect
 
 from ..extensions import db
 from ..middleware import remove_disallowed_properties
@@ -12,15 +11,16 @@ from time import sleep
 
 cars = Blueprint("cars", __name__)
 
-@cars.route("", methods=["GET"])
 @marshal_with(car_fields)
+@cars.route("", methods=["GET"])
 def get_cars():
-    cars = Car.query.all()
-
-    for car in cars:
-        car.base_image = ""
+    columns = [c_attr for c_attr in inspect(Car).attrs if c_attr.key != 'base_image']
+    
+    cars = Car.query.with_entities(*columns).all()
 
     print(f"{len(cars)} cars fetched from db")
+
+    cars = [car._asdict() for car in cars]
 
     return cars
 
