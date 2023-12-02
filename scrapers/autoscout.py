@@ -6,8 +6,6 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import requests
 import os
-import json
-import time
 from sqlalchemy.orm import Session
 from ..utills import mail, logger
 from ..extensions import CREDENTIALS, session
@@ -219,15 +217,25 @@ def accept_cookies(driver: webdriver):
 
 def convert_to_year(first_registration: str):
     try:
-        if first_registration.lower() == "new":
-            return 2023
+        lowered_registration = first_registration.lower()
 
+        if lowered_registration == "new":
+            return 2023
+        
+        if lowered_registration == "used":
+            return 2010
+        
+        if lowered_registration[2] == "-":
+            return int(lowered_registration[3:])
+        
+        if lowered_registration[2] == "/":
+            return int(lowered_registration[3:])
+        
         else:
-            return int(first_registration.split("-")[1])
+            return 2010
 
     except:
-        _logger.log_error(f"Could not convert {first_registration} to year")
-        return 696969
+        return 2010
 
 
 if __name__ == "__main__":
