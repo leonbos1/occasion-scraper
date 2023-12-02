@@ -7,7 +7,7 @@ class ScrapeSession(db.Model, BaseModel):
     __tablename__ = 'sessions'
 
     started = Column(Integer)
-    ended = Column(String)
+    ended = Column(String(255))
     new_cars = Column(Integer)
     
     def __init__(self):

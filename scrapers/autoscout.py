@@ -8,7 +8,7 @@ import requests
 import os
 from sqlalchemy.orm import Session
 from ..utills import mail, logger
-from ..extensions import CREDENTIALS, session
+from ..extensions import session
 from ..models.car import Car
 from ..models.scrape_session import ScrapeSession
 from ..models.blueprint import BluePrint
@@ -174,7 +174,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     emails = get_emails(blueprint)
 
-    mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
+    mail.send_email(new_cars, emails, blueprint.name)
     _logger.log_info("Email sent")
 
     _logger.log_info("Scrape session ended")

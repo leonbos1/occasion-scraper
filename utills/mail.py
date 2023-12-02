@@ -1,10 +1,11 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from ..extensions import email, email_password
 
-def send_email(cars: list, credentials, emails, subject):
-    from_email = credentials["email"]
-    password = credentials["email_password"]
+def send_email(cars: list, emails, subject):
+    from_email = email
+    password = email_password
 
     content = get_mail_content(cars)
 

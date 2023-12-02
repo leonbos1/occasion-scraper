@@ -1,34 +1,40 @@
-import json
-import pymysql
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import sqlalchemy
-from flask_sqlalchemy import SQLAlchemy
-
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
-CREDENTIALS = json.load(open(os.path.join(basedir, 'credentials.json')))
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from flask_sqlalchemy import SQLAlchemy
+import pymysql
 
-username = CREDENTIALS["username"]
-password = CREDENTIALS["password"]
-hostname = CREDENTIALS["hostname"]
-port = CREDENTIALS["port"]
-database = CREDENTIALS["database"]
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
 
+# pymysql is used as MySQLdb
 pymysql.install_as_MySQLdb()
 
-url = f'mysql://{username}:{password}@{hostname}:{port}/{database}'
+# Retrieve environment variables
+username = os.getenv("username")
+password = os.getenv("password")
+hostname = os.getenv("hostname", "db")
+port = os.getenv("port", "3306")
+database = os.getenv("database")
+email = os.getenv("email")
+email_password = os.getenv("email_password")
 
+# Database URL
+url = f'mysql+pymysql://{username}:{password}@{hostname}:{port}/{database}'
+
+# SQLAlchemy setup
 Base = declarative_base()
 engine = create_engine(url)
 Session = sessionmaker(bind=engine)
 
 db = SQLAlchemy()
 print("Initialized SQLAlchemy")
-engine = sqlalchemy.create_engine(url)
 
-#Base.metadata.create_all(bind=engine)
+# Uncomment this if you want to create tables at startup
+# Base.metadata.create_all(bind=engine)
+
 session = Session()
 
 def get_session():

@@ -3,13 +3,12 @@ from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import requests
 import os
-import json
 import time
 from sqlalchemy.orm import Session
 from ..utills import mail
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from ..extensions import Base, CREDENTIALS, url
+from ..extensions import Base, url
 from ..models.car import Car
 from ..models.scrape_session import ScrapeSession
 from ..models.blueprint import BluePrint
@@ -199,7 +198,7 @@ def scrape_blueprint(driver: webdriver, cars, blueprint: BluePrint):
 
     if len(new_cars) > 0:
         emails = get_emails(blueprint)
-        mail.send_email(new_cars, CREDENTIALS, emails, blueprint.name)
+        mail.send_email(new_cars, emails, blueprint.name)
         logger.log_info("Email sent")
 
     logger.log_info("Scrape session ended")
