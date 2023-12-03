@@ -28,12 +28,18 @@ def save_cars_to_db(cars: list, logger):
         logger.log_error(e)
 
 
-def save_session_to_db(scrape_session: ScrapeSession):
-    if session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
-        session.add(scrape_session)
+def save_session_to_db(scrape_session: ScrapeSession, logger):
+    try:
+        if session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
+            session.add(scrape_session)
 
-    else:
-        session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
-            {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
+        else:
+            session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
+                {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
+            
+        logger.log_info("Scrape session saved to db")
+            
+    except Exception as e:
+        logger.log_error(e)
 
     session.commit()

@@ -131,9 +131,12 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
             except Exception as e:
                 _logger.log_warning("Could not find image")
-                path = os.path.abspath("./occasion-scraper/no-picture.png")
-                with open(path, "rb") as f:
-                    image = f.read()
+                try:
+                    path = os.path.abspath("./no-picture.png")
+                    with open(path, "rb") as f:
+                        image = f.read()
+                except:
+                    _logger.log_error("Could not find no-picture.png")
 
             try:
                 mileage = int(article.get_attribute("data-mileage"))
@@ -170,7 +173,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     save_cars_to_db(new_cars, _logger)
     scrape_session.ended = datetime.datetime.now()
     scrape_session.new_cars = len(new_cars)
-    save_session_to_db(scrape_session)
+    save_session_to_db(scrape_session, _logger)
 
     emails = get_emails(blueprint)
 
