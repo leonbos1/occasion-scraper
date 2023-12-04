@@ -19,6 +19,7 @@ import datetime
 BASE_URL = 'https://www.autoscout24.nl/lst'
 
 def start():
+    print("Starting autoscout scraper")
     global _logger
     options = webdriver.FirefoxOptions()
     options.headless = True
@@ -27,6 +28,8 @@ def start():
     options.add_argument("--log-level=3")
     driver = webdriver.Firefox(options=options)
     driver.set_window_size(1280, 800)
+
+    print("Driver started")
 
     cars = []
 
@@ -49,7 +52,7 @@ def start():
 
 def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     global _logger
-
+    print("here")
     url = BASE_URL
 
     if blueprint.brand != None:
@@ -75,17 +78,21 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     if blueprint.city != None and blueprint.max_distance_from_home > 0:
         url += f"&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
-
+    print("1")
     print(url)
     driver.get(url)
 
     sleep(2)
     accept_cookies(driver)
 
+    print("2")
+
     main = driver.find_element_by_class_name("ListPage_main__L0gsf")
     scroll = 600
     scrape_session = ScrapeSession()
     save_session_to_db(scrape_session)
+
+    print("3")
 
     _logger = logger.Logger(scrape_session.id)
     _logger.log_info(
@@ -101,6 +108,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         except:
             _logger.log_error("No articles found")
             break
+
+        print("4")
 
         for article in articles:
             try:
@@ -118,6 +127,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             except Exception as e:
                 all_elements = article.find_elements_by_tag_name("span")
                 location = all_elements[-1].text
+
+            print("5")
 
             try:
                 WebDriverWait(driver, 1).until(EC.visibility_of_element_located(
@@ -138,6 +149,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 except:
                     _logger.log_error("Could not find no-picture.png")
 
+            print("6")
+
             try:
                 mileage = int(article.get_attribute("data-mileage"))
 
@@ -145,12 +158,16 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
                 _logger.log_warning("Could not find mileage")
                 mileage = 0
 
+            print("7")    
+
             try:
                 a_element = article.find_element_by_xpath(
                     ".//a[contains(@class, 'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l')]")
                 href = a_element.get_attribute("href")
             except Exception as e:
                 _logger.log_error("Could not find href")
+
+            print("8")
 
             try:
                 car = Car(id=article.get_attribute("data-guid"), brand=article.get_attribute("data-make"), model=article.get_attribute("data-model"), price=article.get_attribute("data-price"),
@@ -161,12 +178,16 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
             except Exception as e:
                 _logger.log_error("Could not create car object: " + str(e))
 
+            print("9")    
+
         try:
             next_page(driver)
 
         except Exception as e:
             _logger.log_info(f"No next page, {i} pages scraped")
             break
+
+        print("10")
 
     new_cars = get_new_cars(cars)
     _logger.log_info(f"{len(new_cars)} new cars found")
