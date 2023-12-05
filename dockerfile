@@ -19,7 +19,7 @@ RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckod
     tar -xvzf geckodriver-v0.33.0-linux-aarch64.tar.gz && \
     rm geckodriver-v0.33.0-linux-aarch64.tar.gz && \
     chmod +x geckodriver && \
-    mv geckodriver /usr/local/bin/6
+    mv geckodriver /usr/local/bin/
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
