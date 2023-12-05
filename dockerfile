@@ -15,11 +15,11 @@ RUN apt-get update && \
     apt-get install -y firefox-esr
 
 # Install Geckodriver
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz && \
-    tar -xvzf geckodriver-v0.30.0-linux64.tar.gz && \
-    rm geckodriver-v0.30.0-linux64.tar.gz && \
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux-aarch64.tar.gz && \
+    tar -xvzf geckodriver-v0.33.0-linux-aarch64.tar.gz && \
+    rm geckodriver-v0.33.0-linux-aarch64.tar.gz && \
     chmod +x geckodriver && \
-    mv geckodriver /usr/local/bin/
+    mv geckodriver /usr/local/bin/6
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
