@@ -25,7 +25,7 @@ def save_cars_to_db(cars: list, logger):
         logger.log_info(f"{len(cars)} new cars saved to db")
 
     except Exception as e:
-        logger.log_error(e)
+        logger.log_error(str(e))
 
 
 def save_session_to_db(scrape_session: ScrapeSession, logger):
@@ -37,9 +37,8 @@ def save_session_to_db(scrape_session: ScrapeSession, logger):
             session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
                 {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
             
+        session.commit()
         logger.log_info("Scrape session saved to db")
             
     except Exception as e:
-        logger.log_error(e)
-
-    session.commit()
+        logger.log_error(str(e))

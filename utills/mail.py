@@ -9,17 +9,17 @@ def send_email(cars: list, emails, subject):
 
     content = get_mail_content(cars)
 
-    for email in emails:
+    for mail in emails:
         message = MIMEMultipart()
         message["From"] = from_email
-        message["To"] = email
+        message["To"] = mail
         message["Subject"] = f"Nieuwe auto's op autoscout24.nl - {subject}"
 
         message.attach(MIMEText(content, "html"))
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(from_email, password)
-            smtp.sendmail(from_email, email, message.as_string())
+            smtp.sendmail(from_email, mail, message.as_string())
 
 
 def get_mail_content(cars: list):

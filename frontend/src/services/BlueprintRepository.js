@@ -1,9 +1,7 @@
-import credentials from '../../../credentials.json';
-
 class BlueprintRepository {
     constructor() {
-        this.api_url = credentials.api_url;
-        this.api_key = credentials.api_key;
+        this.api_url = import.meta.env.VITE_API_URL;
+        this.api_key = import.meta.env.VITE_API_KEY;
     }
 
     async getAllBlueprints() {
