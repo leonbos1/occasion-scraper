@@ -97,9 +97,6 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
     main = driver.find_element_by_class_name("ListPage_main__L0gsf")
     scroll = 600
 
-    _logger.log_info(
-        "Scrape session started for autoscout with blueprint: " + blueprint.name)
-
     for i in range(0, 20):
         driver.execute_script("window.scrollTo(0, 0);")
         sleep(3)
@@ -186,8 +183,11 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     try:
         emails = get_emails(blueprint)
+        for e in emails:
+            _logger.log_info("Email: " + e)
+            
     except Exception as e:
-        _logger.log_error("Could not get emails")
+        _logger.log_error("Could not get emails" + str(e))
         emails = []
 
     try:
@@ -207,7 +207,7 @@ def get_emails(blueprint: BluePrint):
     emails = []
 
     for subscription in subscriptions:
-        emails.append(subscription.email)
+        emails.append(subscription.user.email)
 
     return emails
 

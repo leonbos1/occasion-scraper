@@ -111,6 +111,10 @@ def update_car(id):
 def get_brands():
     brands = db.session.query(Car.brand, func.count(Car.brand)).group_by(Car.brand).all()
 
-    sleep(1)
-
     return {brand: count for brand, count in brands}
+
+@cars.route("/models", methods=["GET"])
+def get_models():
+    models = db.session.query(Car.model, func.count(Car.model)).group_by(Car.model).all()
+
+    return {model: count for model, count in models}

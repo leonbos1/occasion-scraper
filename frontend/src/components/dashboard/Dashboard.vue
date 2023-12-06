@@ -16,11 +16,11 @@
                 <CarBrandsTable />
             </div>
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex justify-center items-center">
+                <CarModelsTable />
             </div>
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex justify-center items-center">
             </div>
         </div>
-        <p>sample</p>
     </div>
 </template>
 
@@ -28,5 +28,6 @@
 
 import CarsScrapedGraph from './CarsScrapedGraph.vue';
 import CarBrandsTable from './CarBrandsTable.vue';
+import CarModelsTable from './CarModelsTable.vue';
 
 </script>

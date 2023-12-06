@@ -2,7 +2,7 @@
     <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border rounded-xl">
         <div class="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
             <div v-if="loading || subscriptions.length === 0"
-                class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-10">
+                class=" absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-10">
                 <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -48,46 +48,43 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-slate-800">
                                 <tr>
-                                    <th v-for="column in columns" :key="column" scope="col"
-                                        class="pl-6 lg:pl-3 xl:pl-0 pr-6 py-3 text-left" @click="handleOrderBy(column)">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-200">
-                                                {{ column }}
-                                            </span>
-                                        </div>
+                                    <th scope="col" class="px-6 py-3 text-left" @click="handleOrderBy('created')">Created
                                     </th>
+                                    <th scope="col" class="px-6 py-3 text-left">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left">Email</th>
                                     <th scope="col" class="px-6 py-3 text-right"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <tr v-for="row in subscriptions" :key="row.id" class="w-1/12">
-                                    <td v-for="column in columns" :key="column"
-                                        class="h-px whitespace-nowrap overflow-hidden w-px">
+                                <tr v-for="subscription in subscriptions" :key="subscription.id" class="w-1/12">
+                                    <td>
                                         <div class="pl-6 py-3">
-                                            <template v-if="column === 'base_image'">
-                                                <img v-if="row[column] !== ''" :src="row[column]" class="w-1/2 h-1/2 " />
-
-                                                <img v-else :src="setBaseImage(row)" class="w-1/2 h-1/2 " />
-
-                                            </template>
-                                            <template v-else-if="column.toLowerCase() === 'url'">
-                                                <a :href="row[column]" target="_blank"
-                                                    class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium">
-                                                    URL
-                                                </a>
-                                            </template>
-                                            <template v-else>
-                                                <span
-                                                    class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">{{
-                                                        row[column] }}</span>
-                                            </template>
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                                                {{ subscription.created }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="pl-6 py-3">
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                                                {{ subscription.blueprint.name }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="pl-6 py-3">
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                                                {{ subscription.user.email }}
+                                            </span>
                                         </div>
                                     </td>
                                     <td class="h-px w-px whitespace-nowrap">
                                         <div class="px-6 py-1.5">
                                             <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                                data-hs-overlay="#hs-modal-signup" @click="editSubscription = row">
+                                                data-hs-overlay="#hs-modal-signup" @click="editSubscription = subscription">
                                                 Edit
                                             </a>
 
@@ -116,12 +113,12 @@ import EditSubscriptionComponent from './EditSubscriptionComponent.vue';
 import CreateSubscriptionComponent from './CreateSubscriptionComponent.vue';
 
 const subscriptions = ref([]);
-const columns = ref([]);
 const perPage = ref(10);
 const currentPage = ref(1);
 const maximumPage = ref(1);
 const loading = ref(true);
-const data = ref([]);
+const orderBy = ref('created');
+const orderDirection = ref('desc');
 const editSubscription = ref(null);
 
 async function setMaxPage() {
@@ -135,14 +132,25 @@ async function handlePerPageUpdate(newVal) {
     setMaxPage();
 }
 
+async function handleOrderBy(column) {
+    if (column === orderBy.value) {
+        orderDirection.value = orderDirection.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        orderBy.value = column;
+        orderDirection.value = 'asc';
+    }
+
+    await setPageSubscriptions(currentPage.value, perPage.value, orderBy.value, orderDirection.value);
+}
+
 async function handleCurrentPageUpdate(newVal) {
     currentPage.value = newVal;
 
     await setPageSubscriptions(currentPage.value, perPage.value);
 }
 
-async function setPageSubscriptions(page, size) {
-    subscriptions.value = await SubscriptionRepository.getSubscriptionsByPage(page, size);
+async function setPageSubscriptions(page, size, orderBy = 'created', orderDirection = 'desc') {
+    subscriptions.value = await SubscriptionRepository.getSubscriptionsByPage(page, size, orderBy, orderDirection);
 
     console.log(subscriptions.value);
 
@@ -152,10 +160,6 @@ async function setPageSubscriptions(page, size) {
 onMounted(async () => {
     try {
         await setPageSubscriptions(currentPage.value, perPage.value);
-
-        console.log(subscriptions.value);
-
-        columns.value = ['created', 'updated', 'email', 'blueprint_name'];
 
         await setMaxPage();
     } catch (error) {
