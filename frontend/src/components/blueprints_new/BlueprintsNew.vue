@@ -80,7 +80,7 @@
                   <td class="h-px w-px whitespace-nowrap">
                     <div class="px-6 py-1.5">
                       <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                        data-hs-overlay="#hs-modal-signup" @click="editBlueprint = blueprint">
+                        @click="editBlueprint = blueprint" data-hs-overlay="#hs-modal-signup">
                         Edit
                       </a>
                     </div>
@@ -99,8 +99,13 @@
 </template>
   
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import BlueprintRepository from '../../services/BlueprintRepository';
+import PerPageComponent from '../datatables/PerPageComponent.vue';
+import PaginationComponent from '../datatables/PaginationComponent.vue';
+import SearchComponent from '../datatables/SearchComponent.vue';
+import EditBlueprintComponent from './EditBlueprintComponent.vue';
+import CreateBlueprintComponent from './CreateBlueprintComponent.vue';
 
 const blueprints = ref([]);
 const perPage = ref(10);
