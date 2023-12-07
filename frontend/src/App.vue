@@ -13,6 +13,7 @@ import Cars from './components/cars/Cars.vue';
 import Home from './components/home/Home.vue';
 import Users from './components/users/Users.vue';
 import Blueprints from './components/blueprints/Blueprints.vue';
+import BlueprintsNew from './components/blueprints_new/BlueprintsNew.vue';
 
 export default {
   components: {
@@ -20,7 +21,8 @@ export default {
     Cars,
     Home,
     Users,
-    Blueprints
+    Blueprints,
+    BlueprintsNew
   }
 };
 </script>

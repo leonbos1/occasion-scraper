@@ -26,7 +26,8 @@ export default {
         { id: 3, label: 'Blueprints', url: '/blueprints' },
         { id: 4, label: 'Users', url: '/users' },
         { id: 5, label: 'Dashboard', url: '/dashboard' },
-        { id: 6, label: 'Subscriptions', url: '/subscriptions'}
+        { id: 6, label: 'Subscriptions', url: '/subscriptions'},
+        { id: 7, label: 'Blueprints New', url: '/blueprints/new'}
       ],
     };
   },
