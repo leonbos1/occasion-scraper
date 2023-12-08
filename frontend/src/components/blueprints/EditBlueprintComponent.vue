@@ -10,26 +10,36 @@
                     </div>
                     <div class="grid gap-y-4 h-[90%]">
                         <div class="overflow-auto">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2 sm:gap-6">
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <label class="block text-sm mb-2 dark:text-white"> Created </label>
                                 <div class="relative">
-                                    <input type="text" :value=blueprint.created
-                                        class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" />
+                                    <span
+                                        class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400">
+                                        {{ blueprint.created }}
+                                    </span>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <label class="block text-sm mb-2 dark:text-white"> Updated </label>
                                 <div class="relative">
-                                    <input type="text" :value=blueprint.created
+                                    <span
+                                        class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400">
+                                        {{ blueprint.updated }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <label class="block text-sm mb-2 dark:text-white"> Name </label>
+                                <div class="relative">
+                                    <input v-model="blueprint.name" type="text" name="name" id="name"
                                         class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" />
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <label class="block text-sm mb-2 dark:text-white"> Users </label>
                                 <div class="relative">
-                                    <UserDropdown :subscriptions="blueprint.subscriptions"
-                                        label="Select users" v-model="selectedUsers"
-                                        @update:selectedItems="handleUpdateUsers" />
+                                    <UserDropdown :subscriptions="blueprint.subscriptions" label="Select users"
+                                        v-model="selectedUsers" @update:selectedItems="handleUpdateUsers" />
                                 </div>
                             </div>
                         </div>
@@ -73,15 +83,5 @@ function edit(blueprint) {
 function handleUpdateUsers(newVal) {
     selectedUsers.value = newVal;
 }
-
-function getAlreadySelectedUsers() {
-    return props.blueprint.subscriptions.map(subscription => subscription.user.id);
-}
-
-onMounted(async () => {
-    properties.value = Object.keys(props.blueprint);
-
-    console.log(getAlreadySelectedUsers());
-})
 </script>
   

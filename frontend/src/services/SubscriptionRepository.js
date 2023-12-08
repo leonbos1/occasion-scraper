@@ -75,6 +75,32 @@ class SubscriptionRepository {
         return await response.json();
     }
 
+    async updateSubscription(subscription) {
+        var url = '/subscriptions/' + subscription.id;
+        const response = await fetch(this.api_url + url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            },
+            body: JSON.stringify(subscription)
+        });
+
+        return await response.json();
+    }
+
+    async deleteSubscription(subscription) {
+        var url = '/subscriptions/' + subscription.id;
+        const response = await fetch(this.api_url + url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
 }
 
 export default new SubscriptionRepository();

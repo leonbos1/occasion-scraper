@@ -1,20 +1,119 @@
 <template>
-  <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-    <Datatable :input-data="blueprints" :maximum-page="maxPage" v-if="blueprints.length > 0" :input-columns="columns"
-      @order-by="order_by" @edit="handleEdit" @create="handleCreate" @updatePerPage="handlePerPageUpdate" @updateCurrentPage="handleCurrentPageUpdate" />
+  <div class="w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border rounded-xl">
+    <div class="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <div v-if="loading || blueprints.length === 0"
+        class=" absolute top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50 z-10">
+        <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+            fill="currentColor" />
+          <path
+            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+            fill="currentFill" />
+        </svg>
+        <span class="sr-only">Loading...</span>
       </div>
+      <div class="flex flex-col h-auto">
+        <div
+          class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700 h-[75vh]">
+          <div
+            class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
+            <div class="flex flex-row w-full h-32">
+              <div class="flex flex-row items-center justify-start w-1/4">
+                <PerPageComponent @option-selected="handlePerPageUpdate" />
+              </div>
+              <div class="flex flex-row items-center justify-center w-1/2">
+                <PaginationComponent :current-page="currentPage" :maximum-page="maximumPage" :has-previous="hasPrevious"
+                  :has-next="hasNext" @previous="handlePrevious" @next="handleNext" />
+              </div>
+              <div class="flex flex-row items-center justify-center w-1/2">
+                <SearchComponent @search="handleSearch" />
+              </div>
+              <div class="flex flex-row items-center justify-center w-1/2">
+                <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                  data-hs-overlay="#hs-modal-create" @click="editBlueprint = null">
+                  Create
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <EditBlueprintComponent :key="editBlueprint.id" @edit="handleEditBlueprint" :blueprint="editBlueprint"
+            v-if="editBlueprint" />
+          <CreateBlueprintComponent :blueprint="createItem" v-if="createItem" @create="handleCreate" />
+
+          <div class="relative h-96 overflow-x-auto shadow-md sm:rounded-lg">
+
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-slate-800">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left" @click="handleOrderBy('created')">Created
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left">Name</th>
+                  <th scope="col" class="px-6 py-3 text-left">Email</th>
+                  <th scope="col" class="px-6 py-3 text-right"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="blueprint in blueprints" :key="blueprint.id" class="w-1/12">
+                  <td>
+                    <div class="pl-6 py-3">
+                      <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                        {{ blueprint.created }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pl-6 py-3">
+                      <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                        {{ blueprint.name }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pl-6 py-3">
+                      <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-gray-500">
+                        {{ blueprint.name }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="h-px w-px whitespace-nowrap">
+                    <div class="px-6 py-1.5">
+                      <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
+                        @click="editBlueprint = blueprint" data-hs-overlay="#hs-modal-signup">
+                        Edit
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex flex-col items-center justify-center w-full h-32">
+            <PerPageComponent class="w-1/4 mr-auto" @option-selected="handlePerPageUpdate" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
   
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import Datatable from '../datatables/Datatable.vue';
 import BlueprintRepository from '../../services/BlueprintRepository';
+import SubscriptionRepository from '../../services/SubscriptionRepository';
+import PerPageComponent from '../datatables/PerPageComponent.vue';
+import PaginationComponent from '../datatables/PaginationComponent.vue';
+import SearchComponent from '../datatables/SearchComponent.vue';
+import EditBlueprintComponent from './EditBlueprintComponent.vue';
+import CreateBlueprintComponent from './CreateBlueprintComponent.vue';
 
 const blueprints = ref([]);
-const columns = ref([]);
 const perPage = ref(10);
 const currentPage = ref(1);
 const maxPage = ref(1000);
+const editBlueprint = ref(null);
 
 function handleEdit(blueprint) {
   BlueprintRepository.updateBlueprint(blueprint);
@@ -42,17 +141,44 @@ function handleCurrentPageUpdate(newVal) {
 }
 
 async function setPageBlueprints(page, size) {
-  var newBlueprints = await BlueprintRepository.getBlueprintsByPage(page, size);
-
-  blueprints.value = newBlueprints;
+  blueprints.value = await BlueprintRepository.getBlueprintsByPage(page, size);
 }
 
+
+async function handleEditBlueprint(blueprint, selectedUsers) {
+  await addNewUsersToBlueprint(blueprint, selectedUsers);
+
+  await removeOldUsersFromBlueprint(blueprint, selectedUsers);
+
+  await BlueprintRepository.updateBlueprint(blueprint);
+}
+
+async function addNewUsersToBlueprint(blueprint, selectedUsers) {
+  selectedUsers.forEach(async (user) => {
+    const subscription = blueprint.subscriptions.find(sub => sub.user.id === user);
+
+    if (!subscription) {
+      var newSubscription = {
+        user_id: user,
+        blueprint_id: blueprint.id
+      }
+
+      await SubscriptionRepository.addSubscription(newSubscription);
+    }
+  });
+}
+
+async function removeOldUsersFromBlueprint(blueprint, selectedUsers) {
+  blueprint.subscriptions.forEach(async (subscription) => {
+    if (!selectedUsers.includes(subscription.user.id)) {
+      await SubscriptionRepository.deleteSubscription(subscription);
+    }
+  });
+}
 
 onMounted(async () => {
   try {
     setPageBlueprints(currentPage.value, perPage.value);
-
-    columns.value = ['name', 'brand', 'model', 'min_price', 'max_price', 'min_first_registration', 'max_first_registration', 'city', 'max_distance_from_home'];
 
     await setMaxPage();
   } catch (error) {

@@ -1,18 +1,18 @@
 <template>
     <div @click="dropdownOpen = !dropdownOpen"
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         {{ label }}
-        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+        <svg class="w-2.5 h-2.5 ms-auto" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
         </svg>
     </div>
     <div v-if="dropdownOpen" class="...">
-        <div class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            <ul class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownCheckboxButton">
+        <div class="p-1 space-y-3 text-sm text-gray-700 dark:text-gray-200">
+            <ul class="p-1 space-y-3 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownCheckboxButton">
                 <li v-for="user in users" :key="user.id">
                     <div class="flex items-center">
                         <input type="checkbox" :id="user.id" class="..." :value="user.id" v-model="selectedItems">
-                        <label :for="user.id" class="ms-2 text-sm font-small text-gray-900 dark:text-gray-300">
+                        <label :for="user.id" class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">
                             {{ user.email }}
                         </label>
                     </div>

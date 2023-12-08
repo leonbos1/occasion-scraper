@@ -87,9 +87,8 @@ def update_subscription(subscription_id):
     if not subscription:
         abort(404, message="Subscription {} doesn't exist".format(subscription_id))
 
-    subscription.email = request.json.get("email", subscription.email)
-    subscription.blueprint_id = request.json.get(
-        "blueprint_id", subscription.blueprint_id)
+    subscription.blueprint_id = request.json.get("blueprint_id", subscription.blueprint_id)
+    subscription.user_id = request.json.get("user_id", subscription.user_id)
     subscription.updated = datetime.datetime.now()
     
     db.session.commit()
@@ -100,8 +99,7 @@ def update_subscription(subscription_id):
 @subscriptions.route("/<string:subscription_id>", methods=["DELETE"])
 @marshal_with(subscription_fields)
 def delete_subscription(subscription_id):
-    subscription = Subscription.query.options(
-        joinedload('blueprint')).get(subscription_id)
+    subscription = Subscription.query.get(subscription_id)
 
     if not subscription:
         abort(404, message="Subscription {} doesn't exist".format(subscription_id))
@@ -109,7 +107,7 @@ def delete_subscription(subscription_id):
     db.session.delete(subscription)
     db.session.commit()
 
-    return subscription, 200
+    return "Deleted!"#subscription, 200
 
 
 @subscriptions.route("/maxpage/<int:per_page>", methods=["GET"])
