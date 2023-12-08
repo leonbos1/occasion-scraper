@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from ..models.base import BaseModel
+from .subscription import subscription_fields
 
 from ..extensions import db
 
@@ -22,6 +23,8 @@ class BluePrint(BaseModel, db.Model):
     max_distance_from_home = Column(Integer)
     name = Column(String(50))
     owner_id = Column(String(36), ForeignKey('users.id'))
+
+    subscriptions = db.relationship('Subscription', backref='blueprint')
 
     def __init__(self, brand=None, model=None, min_price=None, max_price=None, min_mileage=None, max_mileage=None, min_first_registration=None, max_first_registration=None, vehicle_type=None, city=None, max_distance_from_home=None, name=None, owner_id=None):
         self.brand = brand
@@ -59,5 +62,6 @@ blueprint_fields = {
     'name': fields.String,
     'owner_id': fields.String,
     'created': fields.String,
-    'updated': fields.String
+    'updated': fields.String,
+    'subscriptions': fields.Nested(subscription_fields)
 }

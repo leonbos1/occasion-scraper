@@ -13,7 +13,7 @@ load_dotenv()
 pymysql.install_as_MySQLdb()
 
 # Retrieve environment variables
-username = os.getenv("username")
+username = os.getenv("root_username")
 password = os.getenv("password")
 hostname = os.getenv("hostname", "db")
 port = os.getenv("port", "3306")

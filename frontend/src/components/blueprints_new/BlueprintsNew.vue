@@ -39,7 +39,7 @@
             </div>
           </div>
 
-          <EditBlueprintComponent :blueprint="editBlueprint" v-if="editBlueprint" />
+          <EditBlueprintComponent :key="editBlueprint.id" @edit="handleEditBlueprint" :blueprint="editBlueprint" v-if="editBlueprint" />
           <CreateBlueprintComponent :blueprint="createItem" v-if="createItem" @create="handleCreate" />
 
           <div class="relative h-96 overflow-x-auto shadow-md sm:rounded-lg">
@@ -101,6 +101,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import BlueprintRepository from '../../services/BlueprintRepository';
+import SubscriptionRepository from '../../services/SubscriptionRepository';
 import PerPageComponent from '../datatables/PerPageComponent.vue';
 import PaginationComponent from '../datatables/PaginationComponent.vue';
 import SearchComponent from '../datatables/SearchComponent.vue';
@@ -142,6 +143,17 @@ async function setPageBlueprints(page, size) {
   blueprints.value = await BlueprintRepository.getBlueprintsByPage(page, size);
 }
 
+
+async function handleEditBlueprint(blueprint, selectedUsers) {
+  selectedUsers.forEach(async (user) => {
+    const subscription = {
+      blueprint_id: blueprint.id,
+      user_id: user
+    };
+    console.log(blueprint)
+    await SubscriptionRepository.addSubscription(subscription);
+  });
+}
 
 onMounted(async () => {
   try {

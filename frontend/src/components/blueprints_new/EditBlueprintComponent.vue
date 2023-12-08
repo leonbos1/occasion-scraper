@@ -27,8 +27,9 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <label class="block text-sm mb-2 dark:text-white"> Users </label>
                                 <div class="relative">
-                                    <SelectDropdown :items="users" keyProperty="id" displayProperty="email"
-                                        label="Select users" v-model="selectedUsers" @update:selectedItems="handleUpdateUsers" />
+                                    <UserDropdown :subscriptions="blueprint.subscriptions"
+                                        label="Select users" v-model="selectedUsers"
+                                        @update:selectedItems="handleUpdateUsers" />
                                 </div>
                             </div>
                         </div>
@@ -44,9 +45,9 @@
 </template>
   
 <script setup>
-import { defineEmits, onMounted, ref, defineProps, watch } from 'vue';
+import { defineEmits, onMounted, ref, defineProps } from 'vue';
 import UserRepository from '../../services/UserRepository';
-import SelectDropdown from '../dropdowns/SelectDropdown.vue';
+import UserDropdown from '../dropdowns/UserDropdown.vue';
 
 const emit = defineEmits();
 
@@ -57,7 +58,6 @@ const props = defineProps({
     }
 });
 
-const users = ref([]);
 const selectedUsers = ref([]);
 
 const updateProperty = (property, value) => {
@@ -67,17 +67,21 @@ const updateProperty = (property, value) => {
 const properties = ref([]);
 
 function edit(blueprint) {
-    emit('edit', blueprint);
+    emit('edit', blueprint, selectedUsers.value);
 }
 
 function handleUpdateUsers(newVal) {
     selectedUsers.value = newVal;
 }
 
+function getAlreadySelectedUsers() {
+    return props.blueprint.subscriptions.map(subscription => subscription.user.id);
+}
+
 onMounted(async () => {
     properties.value = Object.keys(props.blueprint);
 
-    users.value = await UserRepository.getAllUsers();
+    console.log(getAlreadySelectedUsers());
 })
 </script>
   

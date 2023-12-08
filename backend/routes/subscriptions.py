@@ -60,9 +60,14 @@ def get_subscription(subscription_id):
 @subscriptions.route("", methods=["POST"])
 @marshal_with(subscription_fields)
 def create_subscription():
-    print(request.json)
-
     subscription = Subscription(**request.json)
+
+    #check if there already is a subscription with the same blueprint_id and user_id
+    existing_subscription = Subscription.query.filter_by(
+        blueprint_id=subscription.blueprint_id, user_id=subscription.user_id).first()
+    
+    if existing_subscription:
+        abort(409, message="Subscription already exists")
 
     subscription.id = str(uuid.uuid4())
     subscription.created = datetime.datetime.now()

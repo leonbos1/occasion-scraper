@@ -6,17 +6,14 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
         </svg>
     </div>
-    <div v-if="dropdownOpen"
-        class="z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 overflow-hidden">
+    <div v-if="dropdownOpen" class="...">
         <div class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
             <ul class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownCheckboxButton">
-                <li v-for="item in items" :key="item[keyProperty]">
+                <li v-for="user in users" :key="user.id">
                     <div class="flex items-center">
-                        <input type="checkbox" :id="item[keyProperty]"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                            :value="item[keyProperty]" v-model="selectedItems">
-                        <label :for="item[keyProperty]" class="ms-2 text-sm font-small text-gray-900 dark:text-gray-300">
-                            {{ item[displayProperty] }}
+                        <input type="checkbox" :id="user.id" class="..." :value="user.id" v-model="selectedItems">
+                        <label :for="user.id" class="ms-2 text-sm font-small text-gray-900 dark:text-gray-300">
+                            {{ user.email }}
                         </label>
                     </div>
                 </li>
@@ -26,21 +23,31 @@
 </template>
 
 <script setup>
-import { defineEmits, onMounted, ref, defineProps, watch } from 'vue';
+import { defineEmits, ref, defineProps, watch, onMounted } from 'vue';
+import UserRepository from '../../services/UserRepository';
 
 const props = defineProps({
-    items: Array,
-    keyProperty: String,
-    displayProperty: String,
+    subscriptions: Array,
     label: String
 });
 
 const selectedItems = ref([]);
 const dropdownOpen = ref(false);
+const users = ref([]);
 
 const emit = defineEmits(['update:selectedItems']);
 
 watch(selectedItems, (newVal) => {
     emit('update:selectedItems', newVal);
 });
+
+onMounted(async () => {
+    users.value = await UserRepository.getAllUsers();
+    preselectSubscribedUsers();
+});
+
+function preselectSubscribedUsers() {
+    const subscribedUserIds = props.subscriptions.map(sub => sub.user.id);
+    selectedItems.value = users.value.filter(user => subscribedUserIds.includes(user.id)).map(user => user.id);
+}
 </script>
