@@ -45,7 +45,7 @@ car_fields = {
     'id': fields.String,
     'brand': fields.String,
     'model': fields.String,
-    'price': fields.String,
+    'price': fields.Integer,
     'mileage': fields.Integer,
     'first_registration': fields.Integer,
     'vehicle_type': fields.String,
