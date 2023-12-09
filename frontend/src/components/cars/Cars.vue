@@ -1,13 +1,30 @@
 <template>
-  <Datatable :input-data="cars" v-if="cars.length > 0" :input-columns="columns" :maximumPage="maxPage" :loading="loading"
-    :order-by="orderBy" @edit="handleEdit" :key="datatableKey" @updatePerPage="handlePerPageUpdate"
-    @updateCurrentPage="handleCurrentPageUpdate" @order_by="handleOrderBy" />
+  <div class="flex justify-between items-center mb-4">
+    <PaginationComponent :maximumPage="maxPage" :currentPage="currentPage" @next="handleNextPage" @previous="handlePreviousPage" class="max-w-[30%]" />
+    <PerPageComponent @option-selected="handlePerPageUpdate" class="max-w-[30%]" />
+  </div>
+  <div class="container mx-auto max-w-[70vw] px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div v-for="car in cars" :key="car.id" class="col-span-1 justify-center">
+      <div class="card">
+        <div class="">
+          <h1 class="font-bold">{{ car.brand }} {{ car.model }}</h1>
+          <p class="">{{ car.price }} €</p>
+          <p class="">{{ car.mileage }} km</p>
+          <p class="">{{ car.first_registration }}</p>
+          <p class="">{{ car.location }}</p>
+          <img :src="car.base_image" class="card-img-top" alt="...">
+          <a :href="car.url" class="btn btn-primary">Go to offer</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import Datatable from '../datatables/Datatable.vue';
 import CarRepository from '../../services/CarRepository';
+import PaginationComponent from '../datatables/PaginationComponent.vue';
+import PerPageComponent from '../datatables/PerPageComponent.vue';
 
 const cars = ref([]);
 const columns = ref([]);
@@ -35,6 +52,22 @@ function handleEdit(car) {
   CarRepository.updateCar(car);
 }
 
+function handlePreviousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+  console.log('handlePreviousPage', currentPage.value, maxPage.value);
+  setPageCars(currentPage.value, perPage.value);
+}
+
+function handleNextPage() {
+  if (currentPage.value < maxPage.value) {
+    currentPage.value++;
+  }
+  console.log('handleNextPage', currentPage.value, maxPage.value);
+  setPageCars(currentPage.value, perPage.value);
+}
+
 function handlePerPageUpdate(newVal) {
   perPage.value = newVal;
   currentPage.value = 1;
@@ -51,8 +84,6 @@ function handleCurrentPageUpdate(newVal) {
 onMounted(async () => {
   try {
     setPageCars(currentPage.value, perPage.value);
-
-    columns.value = ['created', 'brand', 'model', 'first_registration', 'price', 'mileage', 'location', 'url', 'base_image'];
 
     setMaxPage();
   } catch (error) {

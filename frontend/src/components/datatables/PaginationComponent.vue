@@ -10,7 +10,7 @@
                 </svg>
                 Prev
             </button>
-            <div class="flex items-center gap-x-1 text-white">
+            <div class="flex items-center gap-x-1 text-black">
                 <span>{{ currentPage }}</span>
                 <span>/</span>
                 <span>{{ maximumPage }}</span>
@@ -42,26 +42,14 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    hasPrevious: {
-        type: Boolean,
-        required: true,
-    },
-    hasNext: {
-        type: Boolean,
-        required: true,
-    },
 });
 
 function handlePrevious() {
-    if (props.hasPrevious) {
-        emit('previous');
-    }
+    emit('previous');
 }
 
 function handleNext() {
-    if (props.hasNext) {
-        emit('next');
-    }
+    emit('next');
 }
 
 </script>
