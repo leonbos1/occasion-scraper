@@ -44,7 +44,7 @@ export default {
         { id: 3, label: 'Blueprints', url: '/blueprints' },
         ...(role === '1' ? [{ id: 4, label: 'Users', url: '/users' }] : []),
         { id: 5, label: 'Dashboard', url: '/dashboard' },
-        ...(token ? [{ id: 8, label: 'Logout', url: '/logout' }] : [{ id: 6, label: 'Login', url: '/login' }, { id: 7, label: 'Register', url: '/register' }]),
+        ...(token ? [{ id: 8, label: 'Logout', url: '/logout' }, { id: 9, label: 'Profile', url: '/profile' }] : [{ id: 6, label: 'Login', url: '/login' }, { id: 7, label: 'Register', url: '/register' }]),
       ];
     });
 

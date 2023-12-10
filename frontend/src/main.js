@@ -12,6 +12,7 @@ import Login from './components/users/Login.vue';
 import Register from './components/users/Register.vue';
 import Logout from './components/users/Logout.vue';
 import store from './store';
+import profile from './components/users/Profile.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,6 +26,7 @@ const router = createRouter({
     { path: '/login', component: Login},
     { path: '/register', component: Register},
     { path: '/logout', component: Logout},
+    { path: '/profile', component: profile},
   ],
 });
 

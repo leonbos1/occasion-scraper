@@ -6,6 +6,7 @@ from ..extensions import db
 from ..utills.user import generate_token, user_is_owner
 
 from ..models.user import User, user_fields
+from ..models.subscription import Subscription
 
 from functools import wraps
 
@@ -133,6 +134,7 @@ def login():
 
     return jsonify({"token": user.token, "role": user.role})
 
+
 @users.route("/logout", methods=["POST"])
 @logged_in_required
 def logout(current_user):
@@ -140,3 +142,20 @@ def logout(current_user):
     db.session.commit()
 
     return jsonify({"message": "Logged out successfully"})
+
+@users.route("/profile", methods=["GET"])
+@logged_in_required
+def get_profile(current_user):
+
+    amount_of_blueprints_subscribed = Subscription.query.filter_by(user_id=current_user.id).count()
+
+    result = {
+        'email': current_user.email,
+        'role': current_user.role,
+        'created': current_user.created,
+        'updated': current_user.updated,
+        'amount_of_blueprints_subscribed': amount_of_blueprints_subscribed,
+        'amount_of_blueprints_created': 0
+    }
+
+    return jsonify(result)

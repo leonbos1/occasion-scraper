@@ -88,6 +88,12 @@ class UserRepository {
         return await response;
     }
 
+    async profile() {
+        const response = await this.get('/users/profile');
+
+        return await response.json();
+    }
+
     async get(url) {
         const response = await fetch(this.api_url + url, {
             headers: {
