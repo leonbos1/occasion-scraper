@@ -13,6 +13,7 @@ onMounted(async () => {
     await UserRepository.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('id');
     store.commit('setToken', '');
     store.commit('setRole', '0');
     router.push({ name: 'Home' });

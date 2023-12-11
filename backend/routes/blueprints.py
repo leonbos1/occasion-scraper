@@ -6,6 +6,8 @@ from ..extensions import db
 
 from ..models.blueprint import BluePrint, blueprint_fields
 
+from ..routes.users import logged_in_required, admin_required
+
 from ..middleware import remove_disallowed_properties
 
 blueprints = Blueprint("blueprints", __name__)
@@ -44,7 +46,8 @@ def get_max_page(per_page):
 
 @blueprints.route("", methods=["POST"])
 @marshal_with(blueprint_fields)
-def create_blueprint():
+@logged_in_required
+def create_blueprint(current_user):
     data = request.get_json()
 
     for key in data:
@@ -52,6 +55,7 @@ def create_blueprint():
             data[key] = None
 
     blueprint = BluePrint(**data)
+    blueprint.owner_id = current_user.id
 
     db.session.add(blueprint)
     db.session.commit()

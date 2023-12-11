@@ -132,7 +132,7 @@ def login():
     user.token = generate_token()
     db.session.commit()
 
-    return jsonify({"token": user.token, "role": user.role})
+    return jsonify({"token": user.token, "role": user.role, "id": user.id})
 
 
 @users.route("/logout", methods=["POST"])

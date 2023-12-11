@@ -39,6 +39,7 @@ const submitForm = async () => {
 
         localStorage.setItem('token', json.token);
         localStorage.setItem('role', json.role);
+        localStorage.setItem('id', json.id);
 
         if (response.status === 200) {
             store.commit('setToken', json.token);
