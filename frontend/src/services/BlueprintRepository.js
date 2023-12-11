@@ -60,10 +60,18 @@ class BlueprintRepository {
         return response;
     }
 
+    async getUsersBlueprints(size) {
+        var url = '/blueprints/user/' + size;
+        const response = await this.get(url);
+
+        return await response.json();
+    }
+
     async get(url) {
         const response = await fetch(this.api_url + url, {
             headers: {
-                'X-API-Key': this.api_key
+                'X-API-Key': this.api_key,
+                'Authorization': localStorage.getItem('token')
             }
         });
 

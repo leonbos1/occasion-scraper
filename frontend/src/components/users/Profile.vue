@@ -13,16 +13,26 @@
             </div>
         </div>
     </div>
+    <h1 class="text-2xl font-semibold mt-4">Your Subscriptions</h1>
+    <BlueprintsCardView v-if="blueprints.length > 0" :blueprints="blueprints" />
 </template>
   
 <script setup>
 import { onMounted, ref } from 'vue';
 import UserRepository from '../../services/UserRepository';
+import BlueprintsCardView from '../blueprints/BlueprintsCardView.vue';
+import BlueprintRepository from '../../services/BlueprintRepository';
+
+async function setPageBlueprints(size) {
+    blueprints.value = await BlueprintRepository.getUsersBlueprints(size);
+}
 
 const profile = ref({});
+const blueprints = ref([]);
 
 onMounted(async () => {
-    profile.value = await UserRepository.profile();
+    profile.value = await UserRepository.getProfile();
+    await setPageBlueprints(10);
 });
 </script>
   

@@ -15,25 +15,7 @@
       <FilterComponent @filter="handleFilter" />
     </div>
     <div class="flex-grow">
-      <div class="flex flex-wrap justify-center">
-        <div v-for="blueprint in blueprints" :key="blueprint.id" class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2">
-          <div class="bg-white shadow-lg rounded-lg overflow-hidden h-full">
-            <div class="p-4">
-              <h1 class="font-bold text-lg">{{ blueprint.name }}</h1>
-              <p class="text-gray-700">{{ blueprint.created }}</p>
-              <p class="text-gray-600">{{ blueprint.brand }} {{ blueprint.model }}</p>
-              <p class="text-gray-600">Build year: {{ blueprint.min_first_registration }} - {{ blueprint.max_first_registration }}</p>
-              <p class="text-gray-600 mb-4">Mileage: {{ blueprint.min_mileage }} - {{ blueprint.max_mileage }} km</p>
-              <div>
-                <button @click="handleSubscriptionChange(blueprint)" v-if="!blueprint.isSubscribed"
-                  class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Subscribe</button>
-                <button @click="handleSubscriptionChange(blueprint)" v-if="blueprint.isSubscribed"
-                  class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Unsubscribe</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <BlueprintsCardView v-if="blueprints.length > 0" :blueprints="blueprints" />
     </div>
   </div>
 </template>
@@ -44,6 +26,7 @@ import BlueprintRepository from '../../services/BlueprintRepository';
 import SubscriptionRepository from '../../services/SubscriptionRepository';
 import PerPageComponent from '../datatables/PerPageComponent.vue';
 import PaginationComponent from '../datatables/PaginationComponent.vue';
+import BlueprintsCardView from './BlueprintsCardView.vue';
 
 const blueprints = ref([]);
 const perPage = ref(10);
@@ -78,25 +61,7 @@ function handleCurrentPageUpdate(newVal) {
 
 async function setPageBlueprints(page, size) {
   blueprints.value = await BlueprintRepository.getBlueprintsByPage(page, size);
-
-  addUserIsSubscribed();
 }
-
-async function handleSubscriptionChange(blueprint) {
-  if (blueprint.isSubscribed) {
-    await SubscriptionRepository.deleteSubscription(blueprint.id);
-  } else {
-    var newSubscription = {
-      user_id: localStorage.getItem('id'),
-      blueprint_id: blueprint.id
-    }
-
-    await SubscriptionRepository.addSubscription(newSubscription);
-  }
-
-  blueprint.isSubscribed = !blueprint.isSubscribed;
-}
-
 
 async function handleEditBlueprint(blueprint, selectedUsers) {
   await addNewUsersToBlueprint(blueprint, selectedUsers);
@@ -127,22 +92,6 @@ async function removeOldUsersFromBlueprint(blueprint, selectedUsers) {
       await SubscriptionRepository.deleteSubscription(subscription);
     }
   });
-}
-
-function addUserIsSubscribed() {
-  var newBlueprints = [];
-
-  blueprints.value.forEach((blueprint) => {
-    blueprint.subscriptions.forEach((subscription) => {
-      if (subscription.user.id == localStorage.getItem('id')) {
-        blueprint.isSubscribed = true;
-      }
-    });
-
-    newBlueprints.push(blueprint);
-  });
-
-  blueprints.value = newBlueprints;
 }
 
 onMounted(async () => {

@@ -88,7 +88,7 @@ class UserRepository {
         return await response;
     }
 
-    async profile() {
+    async getProfile() {
         const response = await this.get('/users/profile');
 
         return await response.json();

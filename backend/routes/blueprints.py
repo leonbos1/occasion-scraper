@@ -62,6 +62,13 @@ def create_blueprint(current_user):
 
     return blueprint
 
+@blueprints.route("/user/<int:size>", methods=["GET"])
+@marshal_with(blueprint_fields)
+@logged_in_required
+def get_user_blueprints(current_user, size):
+    blueprints = BluePrint.query.filter_by(owner_id=current_user.id).limit(size).all()
+
+    return blueprints
 
 @blueprints.route("/<string:id>", methods=["PUT"])
 @marshal_with(blueprint_fields)
