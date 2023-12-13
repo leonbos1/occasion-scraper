@@ -13,8 +13,12 @@
             </div>
         </div>
     </div>
-    <h1 class="text-2xl font-semibold mt-4">Your Subscriptions</h1>
-    <BlueprintsCardView v-if="blueprints.length > 0" :blueprints="blueprints" />
+    <div v-if="blueprints.length > 0" class="bg-gray-100 p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-semibold mt-4">Your Blueprints</h1>
+            <BlueprintsCardView :blueprints="blueprints" />
+        </div>
+    </div>
 </template>
   
 <script setup>
