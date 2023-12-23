@@ -26,8 +26,8 @@ def debug(text):
 def start():
     global _logger
     options = webdriver.FirefoxOptions()
-    #options.headless = True
-    #options.add_argument("--headless")
+    options.headless = True
+    options.add_argument("--headless")
     options.add_argument("--no-proxy-server")
     options.add_argument("--log-level=3")
     driver = webdriver.Firefox(options=options)
