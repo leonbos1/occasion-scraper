@@ -18,6 +18,7 @@ import datetime
 
 BASE_URL = 'https://www.autoscout24.nl/lst'
 
+
 def debug(text):
     with open("./log.txt", "a") as f:
         f.write(text + "\n")
@@ -97,7 +98,8 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         main = driver.find_element_by_class_name("ListPage_main___0g2X")
     except Exception as e:
         _logger.log_error("Could not find main element")
-        main = driver.find_element_by_xpath("//main[contains(@class, 'ListPage_main')]")
+        main = driver.find_element_by_xpath(
+            "//main[contains(@class, 'ListPage_main')]")
     scroll = 600
 
     for i in range(0, 20):
@@ -188,7 +190,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         emails = get_emails(blueprint)
         for e in emails:
             _logger.log_info("Email: " + e)
-            
+
     except Exception as e:
         _logger.log_error("Could not get emails" + str(e))
         emails = []
@@ -197,7 +199,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         mail.send_email(new_cars, emails, blueprint.name)
     except Exception as e:
         _logger.log_error("Could not send email" + str(e))
-    
+
     _logger.log_info("Email sent")
 
     _logger.log_info("Scrape session ended")

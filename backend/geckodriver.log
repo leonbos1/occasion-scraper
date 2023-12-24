@@ -590,3 +590,262 @@ Read port: 63859
 [GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
 console.error: ({})
 JavaScript error: , line 0: NS_ERROR_NOT_AVAILABLE
+1703332997241	geckodriver	INFO	Listening on 127.0.0.1:61579
+1703333000252	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "--headless" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileZV2Znt"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333000457	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-headless"
+console.error: "Warning: unrecognized command line flag" "-log-level"
+1703333000503	Marionette	INFO	Listening on port 61591
+Read port: 61591
+1703333000619	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+1703333005003	Marionette	INFO	Stopped listening on port 61591
+JavaScript warning: https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js, line 1: Script terminated by timeout at:
+gt@https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js:1:45642
+k/o<@https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js:1:45700
+
+Dynamically enable window occlusion 1
+1703333047728	geckodriver	INFO	Listening on 127.0.0.1:61686
+1703333050758	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofilemD5Xqu"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333050967	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333051017	Marionette	INFO	Listening on port 61697
+Read port: 61697
+1703333051120	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1703333055990	Marionette	INFO	Stopped listening on port 61697
+JavaScript warning: https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js, line 1: Script terminated by timeout at:
+m/</r.proxy@https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js:1:17448
+
+Dynamically enable window occlusion 1
+1703333086114	geckodriver	INFO	Listening on 127.0.0.1:61778
+1703333089151	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileKTM9xf"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333089348	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333089400	Marionette	INFO	Listening on port 61790
+Read port: 61790
+1703333089519	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1703333094601	Marionette	INFO	Stopped listening on port 61790
+JavaScript warning: https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js, line 1: Script terminated by timeout at:
+gt@https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js:1:45642
+k/o<@https://www.autoscout24.nl/assets/external/showcar-ui/master/309/showcar-ui.js:1:45700
+
+Dynamically enable window occlusion 1
+1703333146841	geckodriver	INFO	Listening on 127.0.0.1:61894
+1703333149881	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileOPrZuE"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333150066	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333150117	Marionette	INFO	Listening on port 61905
+Read port: 61905
+1703333150223	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1703333154969	Marionette	INFO	Stopped listening on port 61905
+JavaScript warning: https://www.autoscout24.nl/lst?cy=NL&pricefrom=0&priceto=100000&ustate=N%2CU&zip=9901%20appingedam&zipr=5, line 312: Script terminated by timeout at:
+b/t</<@https://www.autoscout24.nl/lst?cy=NL&pricefrom=0&priceto=100000&ustate=N%2CU&zip=9901%20appingedam&zipr=5:312:2719
+
+Dynamically enable window occlusion 1
+1703333178257	geckodriver	INFO	Listening on 127.0.0.1:61989
+1703333181279	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofilempuLnZ"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333181459	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333181506	Marionette	INFO	Listening on port 62001
+Read port: 62001
+1703333181729	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1703333186136	Marionette	INFO	Stopped listening on port 62001
+JavaScript warning: https://www.autoscout24.nl/lst?cy=NL&pricefrom=0&priceto=100000&ustate=N%2CU&zip=9901%20appingedam&zipr=5, line 312: Script terminated by timeout at:
+b/d</<@https://www.autoscout24.nl/lst?cy=NL&pricefrom=0&priceto=100000&ustate=N%2CU&zip=9901%20appingedam&zipr=5:312:2719
+
+Dynamically enable window occlusion 1
+1703333224092	geckodriver	INFO	Listening on 127.0.0.1:62091
+1703333227105	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileXqZHdz"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333227285	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333227332	Marionette	INFO	Listening on port 62102
+Read port: 62102
+1703333227557	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.googletagmanager.com/gtm.js?id=GTM-WRHCNB line 5 > eval, line 2: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 782 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c, line 346: Script terminated by timeout at:
+mq.prototype.flush@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:346:62
+mq.prototype.push@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:345:207
+fq@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:342:789
+lG/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:500:178
+aa.Jk/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:451:126
+aa.Jk/c/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:450:420
+
+1703333236375	Marionette	INFO	Stopped listening on port 62102
+Dynamically enable window occlusion 1
+1703333358682	geckodriver	INFO	Listening on 127.0.0.1:62412
+1703333361707	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileORxL0y"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333361890	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333361940	Marionette	INFO	Listening on port 62425
+Read port: 62425
+1703333362313	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.googletagmanager.com/gtm.js?id=GTM-WRHCNB line 5 > eval, line 2: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 5582 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 1722 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c, line 452: Script terminated by timeout at:
+aa.wh@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:452:89
+get@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:450:119
+stop@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:450:87
+aa.Jk/c/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:450:412
+
+1703333382727	Marionette	INFO	Stopped listening on port 62425
+Dynamically enable window occlusion 1
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 51: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+fo is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 1893 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js, line 6: Script terminated by timeout at:
+a@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:12071
+78018/W/<@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:12542
+r@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:8359
+
+1703333393026	Marionette	INFO	Stopped listening on port 62638
+Dynamically enable window occlusion 1
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1703333492252	geckodriver	INFO	Listening on 127.0.0.1:62913
+1703333495287	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofilebCqeNc"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333495470	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333495518	Marionette	INFO	Listening on port 62925
+Read port: 62925
+1703333495626	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.googletagmanager.com/gtm.js?id=GTM-WRHCNB line 5 > eval, line 2: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 1125 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 7349 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1703333516891	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'uninitialized'.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 671 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c, line 112: Script terminated by timeout at:
+l@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:112:17
+lg/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:177:68
+l@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:112:62
+lg@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:177:35
+MF.prototype.flush@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:476:148
+aa.flush@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:496:440
+lG/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:500:201
+aa.Jk/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:451:126
+aa.Jk/c/<@https://www.googletagmanager.com/gtag/js?id=G-BGSHTTTQ7W&l=dataLayer&cx=c:450:420
+
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript warning: https://www.googletagmanager.com/gtm.js?id=GTM-WRHCNB line 5 > eval, line 2: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1703333525495	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 3770 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+console.log: "RemoteSettingsWorker error: DataError: IndexedDB: records, timestamps execute() Data provided to an operation does not meet requirements."
+console.error: (new RemoteSettingsWorkerError("DataError: IndexedDB: records, timestamps execute() Data provided to an operation does not meet requirements.", "resource://services-settings/RemoteSettingsWorker.sys.mjs", 34))
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 5021 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 1901 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 283 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js, line 6: Script terminated by timeout at:
+a@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:12071
+78018/W/<@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:12542
+r@https://www.autoscout24.nl/assets/as24-search-funnel/_next/static/chunks/main-0ebfba5ae647e415.js:6:8359
+
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.sys.mjs, line 573: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+1703333556443	Marionette	INFO	Stopped listening on port 62925
+Dynamically enable window occlusion 1
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1703333557850	geckodriver	INFO	Listening on 127.0.0.1:63207
+1703333560877	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--no-proxy-server" "--log-level=3" "-no-remote" "-profile" "C:\\Users\\ktmle\\AppData\\Local\\Temp\\rust_mozprofileU9s7Tt"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1703333561056	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-no-proxy-server"
+1703333561103	Marionette	INFO	Listening on port 63219
+Read port: 63219
+1703333561330	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.googletagmanager.com/gtm.js?id=GTM-WRHCNB line 5 > eval, line 2: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+JavaScript warning: https://cdn.insurads.com/bootstrap/TL9GZR2D.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 4639 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/Dtt_-LR3WxpzwV0Gscftq1A_D1owstvxoTnWWhwY4Ow.js line 2 > eval line 236 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
