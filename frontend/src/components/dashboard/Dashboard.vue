@@ -7,7 +7,7 @@
             </div>
             <div
                 class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex justify-center items-center h-64">
-                <CarsScrapedGraph />
+                <CarsScrapedPerWeekGraph />
             </div>
             <div
                 class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex justify-center items-center h-64">
@@ -36,6 +36,7 @@
 
 <script setup>
 import CarsScrapedGraph from './CarsScrapedGraph.vue';
+import CarsScrapedPerWeekGraph from './CarsScrapedPerWeekGraph.vue';
 import CarBrandsTable from './CarBrandsTable.vue';
 import CarModelsTable from './CarModelsTable.vue';
 import { useStore } from 'vuex';

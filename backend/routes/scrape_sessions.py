@@ -1,8 +1,6 @@
-from flask import Blueprint, jsonify, request
-from flask_restful import marshal, fields, abort, Resource
-from flask_restful import marshal_with, reqparse
-
-from ..extensions import db
+from flask import Blueprint, jsonify
+from flask_restful import marshal_with
+from collections import defaultdict
 
 from datetime import datetime, timedelta
 
@@ -18,12 +16,12 @@ def get_scrape_sessions():
 
     return users
 
-# endpoints for getting the amount of cars scraped per day for the last x days
-
 
 @scrape_sessions.route("/cars_per_day/<int:days>", methods=["GET"])
 def get_cars_per_day(days):
-    # scrape_sessions.created is like 2023-11-19 13:05:00.291988
+    """
+    Returns the amount of cars scraped per day for the last x days
+    """
     sessions = ScrapeSession.query.filter(ScrapeSession.created > (
         datetime.now() - timedelta(days=days))).all()
 
@@ -48,7 +46,52 @@ def get_cars_per_day(days):
 
     cars_per_day_list = [{'date': date, 'cars': cars}
                          for date, cars in cars_per_day.items()]
-    
-    cars_per_day_list.sort(key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
+
+    cars_per_day_list.sort(
+        key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
 
     return jsonify(cars_per_day_list)
+
+
+@scrape_sessions.route("/cars_per_week/<int:weeks>", methods=["GET"])
+def get_cars_per_week(weeks):
+    """
+    Returns the amount of cars scraped per week for the last x weeks
+    """
+    sessions = ScrapeSession.query.filter(ScrapeSession.created > (
+        datetime.now() - timedelta(weeks=weeks))).all()
+
+    cars_per_week = defaultdict(int)
+
+    for session in sessions:
+        date_string = session.created
+        try:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S.%f')
+        except ValueError:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S')
+
+        if not session.new_cars:
+            continue
+
+        # Get week number of the year
+        week_number = date.isocalendar()[1]
+
+        cars_per_week[week_number] += session.new_cars
+
+    cars_per_week_list = [{'week_number': week, 'cars': cars}
+                          for week, cars in cars_per_week.items()]
+
+    # Sorting the list based on the week number
+    cars_per_week_list.sort(key=lambda x: x['week_number'])
+
+    # get the last weeks amount of cars
+    current_week_number = datetime.now().isocalendar()[1]
+
+    max_week_numer = current_week_number - weeks
+
+    cars_per_week_list = [
+        week for week in cars_per_week_list if week['week_number'] >= max_week_numer]
+
+    return jsonify(cars_per_week_list)

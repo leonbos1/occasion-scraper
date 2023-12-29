@@ -17,6 +17,19 @@ class DashboardRepository {
         return await response.json();
     }
 
+    async getWeeklyScrapedCars(weeks) {
+        var url = '/scrape_sessions/cars_per_week/' + weeks;
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
     async getCarBrands() {
         var url = '/cars/brands';
         const response = await fetch(this.api_url + url, {
