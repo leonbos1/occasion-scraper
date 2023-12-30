@@ -53,6 +53,41 @@ def get_cars_per_day(days):
     return jsonify(cars_per_day_list)
 
 
+@scrape_sessions.route("/best_days")
+def get_best_days():
+    """
+    Returns top 10 most successful days based on amount of cars scraped
+    """
+    sessions = ScrapeSession.query.all()
+
+    cars_per_day = {}
+
+    for session in sessions:
+        date_string = session.created
+        try:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d')
+        except:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+
+        if not session.new_cars:
+            continue
+
+        if date in cars_per_day:
+            cars_per_day[date] += session.new_cars
+        else:
+            cars_per_day[date] = session.new_cars
+
+    cars_per_day_list = [{'date': date, 'cars': cars}
+                         for date, cars in cars_per_day.items()]
+
+    cars_per_day_list.sort(
+        key=lambda x: x['cars'], reverse=True)
+
+    return jsonify(cars_per_day_list[:10])
+
+
 @scrape_sessions.route("/cars_per_week/<int:weeks>", methods=["GET"])
 def get_cars_per_week(weeks):
     """
@@ -75,7 +110,6 @@ def get_cars_per_week(weeks):
         if not session.new_cars:
             continue
 
-        # Get week number of the year
         week_number = date.isocalendar()[1]
 
         cars_per_week[week_number] += session.new_cars
@@ -83,10 +117,8 @@ def get_cars_per_week(weeks):
     cars_per_week_list = [{'week_number': week, 'cars': cars}
                           for week, cars in cars_per_week.items()]
 
-    # Sorting the list based on the week number
     cars_per_week_list.sort(key=lambda x: x['week_number'])
 
-    # get the last weeks amount of cars
     current_week_number = datetime.now().isocalendar()[1]
 
     max_week_numer = current_week_number - weeks
@@ -95,3 +127,47 @@ def get_cars_per_week(weeks):
         week for week in cars_per_week_list if week['week_number'] >= max_week_numer]
 
     return jsonify(cars_per_week_list)
+
+
+@scrape_sessions.route("/cars_per_month/<int:months>", methods=["GET"])
+def get_cars_per_month(months):
+    """
+    Returns the amount of cars scraped per month for the last x months
+    """
+    sessions = ScrapeSession.query.filter(ScrapeSession.created > (
+        datetime.now() - timedelta(days=months*30))).all()
+
+    cars_per_months = defaultdict(int)
+
+    for session in sessions:
+        date_string = session.created
+        try:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S.%f')
+        except ValueError:
+            date = datetime.strptime(
+                date_string, '%Y-%m-%d %H:%M:%S')
+
+        if not session.new_cars:
+            continue
+
+        month_name = date.strftime("%B")
+
+        cars_per_months[month_name] += session.new_cars
+
+    cars_per_month_list = [{'month': month, 'cars': cars}
+                           for month, cars in cars_per_months.items()]
+
+    cars_per_month_list.sort(key=lambda x: x['month'])
+
+    current_month_index = datetime.now().month
+
+    max_month_index = current_month_index - months
+
+    cars_per_month_list = [
+        month for month in cars_per_month_list if datetime.strptime(month['month'], '%B').month >= max_month_index]
+
+    cars_per_month_list.sort(
+        key=lambda x: datetime.strptime(x['month'], '%B').month)
+
+    return jsonify(cars_per_month_list)

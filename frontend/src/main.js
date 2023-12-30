@@ -7,6 +7,7 @@ import CarInfo from './components/cars/CarInfo.vue';
 import Home from './components/home/Home.vue'; 
 import Users from './components/users/Users.vue';
 import Blueprints from './components/blueprints/Blueprints.vue';
+import CreateBlueprint from './components/blueprints/CreateBlueprint.vue';
 import Dashboard from './components/dashboard/Dashboard.vue';
 import Login from './components/users/Login.vue';
 import Register from './components/users/Register.vue';
@@ -18,15 +19,16 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: Home, name: 'Home' },
-    { path: '/cars', component: Cars },
-    { path: '/users', component: Users},
-    { path: '/blueprints', component: Blueprints},
-    { path: '/dashboard', component: Dashboard},
+    { path: '/cars', component: Cars, name: 'Cars' },
     { path: '/cars/:id', component: CarInfo, props: true, name: 'CarInfo'},
-    { path: '/login', component: Login},
-    { path: '/register', component: Register},
-    { path: '/logout', component: Logout},
-    { path: '/profile', component: profile},
+    { path: '/users', component: Users, name: 'Users'},
+    { path: '/blueprints', component: Blueprints, name: 'Blueprints'},
+    { path: '/blueprints/create', component: CreateBlueprint, name: 'CreateBlueprint'},
+    { path: '/dashboard', component: Dashboard, name: 'Dashboard'},
+    { path: '/login', component: Login, name: 'Login'},
+    { path: '/register', component: Register, name: 'Register'},
+    { path: '/logout', component: Logout, name: 'Logout'},
+    { path: '/profile', component: profile, name: 'Profile'},
   ],
 });
 

@@ -41,6 +41,7 @@ class BlueprintRepository {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify(blueprint),
         });
@@ -53,6 +54,7 @@ class BlueprintRepository {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify(blueprint),
         });
@@ -65,6 +67,17 @@ class BlueprintRepository {
         const response = await this.get(url);
 
         return await response.json();
+    }
+
+    async deleteBlueprint(id) {
+        const response = await fetch(this.api_url + `/blueprints/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+
+        return response;
     }
 
     async get(url) {

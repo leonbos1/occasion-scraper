@@ -1,5 +1,7 @@
 <template>
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex justify-between items-center mb-4 w-full">
+    <a href="/blueprints/create" class=" left-0 bg-blue-500 text-white px-4 py-2 rounded m-4">
+      Create Blueprint</a>
     <OrderByComponent @option-selected="handleOrderBy" class="max-w-xs" />
     <PaginationComponent :maximumPage="maxPage" :currentPage="currentPage" @next="handleNextPage"
       @previous="handlePreviousPage" class="max-w-xs" />

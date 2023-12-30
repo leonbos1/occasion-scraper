@@ -108,6 +108,13 @@ def get_recent_cars(count):
 
     return cars
 
+@cars.route("/expensive/<int:count>", methods=["GET"])
+@marshal_with(car_fields)
+def get_expensive_cars(count):
+    cars = Car.query.order_by(Car.price.desc()).limit(count).all()
+
+    return cars
+
 
 @cars.route("/image/<string:id>", methods=["GET"])
 def get_car_image(id):

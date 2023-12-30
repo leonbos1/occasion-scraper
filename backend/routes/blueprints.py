@@ -29,6 +29,23 @@ def get_blueprint(id):
 
     return blueprint
 
+@blueprints.route("/<string:id>", methods=["DELETE"])
+@marshal_with(blueprint_fields)
+@logged_in_required
+def delete_blueprint(current_user, id):
+    blueprint = BluePrint.query.filter_by(id=id).first()
+
+    if not blueprint:
+        abort(404, message="Blueprint {} doesn't exist".format(id))
+
+    if blueprint.owner_id != current_user.id:
+        abort(403, message="You are not the owner of this blueprint")
+
+    db.session.delete(blueprint)
+    db.session.commit()
+
+    return blueprint
+
 @blueprints.route("/<int:page_number>/<int:per_page>", methods=["GET"])
 @marshal_with(blueprint_fields)
 def get_blueprints_page(page_number, per_page):

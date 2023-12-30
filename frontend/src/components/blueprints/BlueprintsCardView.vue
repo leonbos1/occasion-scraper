@@ -13,7 +13,9 @@
                         <button @click="handleSubscriptionChange(blueprint)" v-if="!blueprint.isSubscribed"
                             class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Subscribe</button>
                         <button @click="handleSubscriptionChange(blueprint)" v-if="blueprint.isSubscribed"
-                            class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Unsubscribe</button>
+                            class="p-4 inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded hover:bg-blue-600">Unsubscribe</button>
+                        <button @click="handleDeleteBlueprint(blueprint)" v-if="blueprint.isOwner"
+                            class="inline-block bg-red-500 text-white py-2 px-4 m-2 rounded hover:bg-red-600">Delete</button>
                     </div>
                 </div>
             </div>
@@ -24,6 +26,8 @@
 <script setup>
 import { ref, onMounted, watch, defineProps } from 'vue';
 import SubscriptionRepository from '../../services/SubscriptionRepository';
+import BlueprintRepository from '../../services/BlueprintRepository';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
     blueprints: {
@@ -31,6 +35,8 @@ const props = defineProps({
         required: true
     }
 });
+
+const router = useRouter();
 
 async function handleSubscriptionChange(blueprint) {
     if (blueprint.isSubscribed) {
@@ -45,6 +51,12 @@ async function handleSubscriptionChange(blueprint) {
     }
 
     blueprint.isSubscribed = !blueprint.isSubscribed;
+}
+
+async function handleDeleteBlueprint(blueprint) {
+    await BlueprintRepository.deleteBlueprint(blueprint.id);
+
+    router.go();
 }
 
 function addUserIsSubscribed() {
@@ -63,8 +75,23 @@ function addUserIsSubscribed() {
     props.blueprints = newBlueprints;
 }
 
+function addBlueprintIsOwner() {
+    var newBlueprints = [];
+
+    props.blueprints.forEach((blueprint) => {
+        if (blueprint.owner_id == localStorage.getItem('id')) {
+            blueprint.isOwner = true;
+        }
+
+        newBlueprints.push(blueprint);
+    });
+
+    props.blueprints = newBlueprints;
+}
+
 onMounted(async () => {
     addUserIsSubscribed();
+    addBlueprintIsOwner();
 });
 
 </script>
