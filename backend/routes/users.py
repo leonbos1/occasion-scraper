@@ -143,11 +143,13 @@ def logout(current_user):
 
     return jsonify({"message": "Logged out successfully"})
 
+
 @users.route("/profile", methods=["GET"])
 @logged_in_required
 def get_profile(current_user):
 
-    amount_of_blueprints_subscribed = Subscription.query.filter_by(user_id=current_user.id).count()
+    amount_of_blueprints_subscribed = Subscription.query.filter_by(
+        user_id=current_user.id).count()
 
     result = {
         'email': current_user.email,
@@ -159,3 +161,10 @@ def get_profile(current_user):
     }
 
     return jsonify(result)
+
+
+@users.route("/count", methods=["GET"])
+def get_user_count():
+    user_count = User.query.count()
+
+    return jsonify(user_count)

@@ -176,3 +176,9 @@ def get_models():
         Car.model)).group_by(Car.model).all()
 
     return {model: count for model, count in models}
+
+@cars.route("/count", methods=["GET"])
+def get_car_count():
+    car_count = Car.query.count()
+
+    return jsonify(car_count)

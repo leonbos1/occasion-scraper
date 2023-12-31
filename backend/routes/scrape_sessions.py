@@ -5,6 +5,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from ..models.scrape_session import ScrapeSession, scrape_session_fields
+from ..models.car import Car
 
 scrape_sessions = Blueprint("scrape_sessions", __name__)
 
