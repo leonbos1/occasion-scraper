@@ -59,6 +59,20 @@ class CarRepository {
         }
     }
 
+    async getExpensiveCars(amount) {
+        var url = '/cars/expensive/' + amount;
+
+        try {
+            const response = await this.get(url);
+
+            return await response.json();
+        }
+
+        catch (error) {
+            return []
+        }
+    }
+
     async getCarById(id) {
         const response = await this.get(`/cars/${id}`);
 

@@ -18,6 +18,7 @@ import datetime
 
 BASE_URL = 'https://www.autoscout24.nl/lst'
 
+
 def debug(text):
     with open("./log.txt", "a") as f:
         f.write(text + "\n")
@@ -93,8 +94,12 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
     sleep(2)
     accept_cookies(driver)
-
-    main = driver.find_element_by_class_name("ListPage_main__L0gsf")
+    try:
+        main = driver.find_element_by_class_name("ListPage_main___0g2X")
+    except Exception as e:
+        _logger.log_error("Could not find main element")
+        main = driver.find_element_by_xpath(
+            "//main[contains(@class, 'ListPage_main')]")
     scroll = 600
 
     for i in range(0, 20):
@@ -127,10 +132,10 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
             try:
                 WebDriverWait(driver, 1).until(EC.visibility_of_element_located(
-                    (By.CLASS_NAME, "NewGallery_img__bi92g")))
+                    (By.CLASS_NAME, "NewGallery_img__cXZQC")))
 
                 img = article.find_element_by_class_name(
-                    "NewGallery_img__bi92g")
+                    "NewGallery_img__cXZQC")
                 image = img.get_attribute("src")
                 request = requests.get(image)
                 image = request.content
@@ -153,7 +158,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
 
             try:
                 a_element = article.find_element_by_xpath(
-                    ".//a[contains(@class, 'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l')]")
+                    ".//a[contains(@class, 'ListItem_title__ndA4s ListItem_title_new_design__QIU2b Link_link__Ajn7I')]")
                 href = a_element.get_attribute("href")
             except Exception as e:
                 _logger.log_error("Could not find href")
@@ -185,7 +190,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         emails = get_emails(blueprint)
         for e in emails:
             _logger.log_info("Email: " + e)
-            
+
     except Exception as e:
         _logger.log_error("Could not get emails" + str(e))
         emails = []
@@ -194,7 +199,7 @@ def scrape_blueprint(driver: webdriver, cars: list, blueprint: BluePrint):
         mail.send_email(new_cars, emails, blueprint.name)
     except Exception as e:
         _logger.log_error("Could not send email" + str(e))
-    
+
     _logger.log_info("Email sent")
 
     _logger.log_info("Scrape session ended")

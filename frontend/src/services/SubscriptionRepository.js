@@ -89,17 +89,18 @@ class SubscriptionRepository {
         return await response.json();
     }
 
-    async deleteSubscription(subscription) {
-        var url = '/subscriptions/' + subscription.id;
+    async deleteSubscription(blueprintId) {
+        var url = '/subscriptions/blueprint/' + blueprintId;
         const response = await fetch(this.api_url + url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': this.api_key
+                'x-api-key': this.api_key,
+                'Authorization': localStorage.getItem('token')
             }
         });
 
-        return await response.json();
+        return response;
     }
 }
 

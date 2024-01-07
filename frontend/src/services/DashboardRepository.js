@@ -17,6 +17,45 @@ class DashboardRepository {
         return await response.json();
     }
 
+    async getWeeklyScrapedCars(weeks) {
+        var url = '/scrape_sessions/cars_per_week/' + weeks;
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
+    async getMonthlyScrapedCars(months) {
+        var url = '/scrape_sessions/cars_per_month/' + months;
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
+    async startScraper() {
+        var url = '/start';
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
     async getCarBrands() {
         var url = '/cars/brands';
         const response = await fetch(this.api_url + url, {
@@ -32,6 +71,58 @@ class DashboardRepository {
 
     async getCarModels() {
         var url = '/cars/models';
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
+    async getCarsInDatabase() {
+        var url = '/cars/count';
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key
+            }
+        });
+
+        return await response.json();
+    }
+
+    async getUsersInDatabase() {
+        var url = '/users/count';
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key,
+            },
+        });
+
+        return await response.json();
+    }
+
+    async getBlueprintsInDatabase() {
+        var url = '/blueprints/count';
+        const response = await fetch(this.api_url + url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.api_key,
+            },
+        });
+
+        return await response.json();
+    }
+
+    async getBestDays() {
+        var url = '/scrape_sessions/best_days';
         const response = await fetch(this.api_url + url, {
             method: 'GET',
             headers: {

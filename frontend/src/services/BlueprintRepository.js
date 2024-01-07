@@ -41,6 +41,7 @@ class BlueprintRepository {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify(blueprint),
         });
@@ -53,8 +54,27 @@ class BlueprintRepository {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify(blueprint),
+        });
+
+        return response;
+    }
+
+    async getUsersBlueprints(size) {
+        var url = '/blueprints/user/' + size;
+        const response = await this.get(url);
+
+        return await response.json();
+    }
+
+    async deleteBlueprint(id) {
+        const response = await fetch(this.api_url + `/blueprints/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
         });
 
         return response;
@@ -63,7 +83,8 @@ class BlueprintRepository {
     async get(url) {
         const response = await fetch(this.api_url + url, {
             headers: {
-                'X-API-Key': this.api_key
+                'X-API-Key': this.api_key,
+                'Authorization': localStorage.getItem('token')
             }
         });
 

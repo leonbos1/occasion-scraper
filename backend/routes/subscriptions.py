@@ -8,6 +8,9 @@ from ..extensions import db
 
 from ..models.subscription import Subscription, subscription_fields
 from ..models.blueprint import BluePrint
+from ..models.user import User
+
+from ..routes.users import logged_in_required, admin_required
 
 import datetime
 import uuid
@@ -62,12 +65,20 @@ def get_subscription(subscription_id):
 def create_subscription():
     subscription = Subscription(**request.json)
 
-    #check if there already is a subscription with the same blueprint_id and user_id
     existing_subscription = Subscription.query.filter_by(
         blueprint_id=subscription.blueprint_id, user_id=subscription.user_id).first()
     
     if existing_subscription:
         abort(409, message="Subscription already exists")
+
+    #check if user exists
+    user = User.query.get(subscription.user_id)
+    if not user:
+        abort(404, message="User {} doesn't exist".format(subscription.user_id))
+
+    blueprint = BluePrint.query.get(subscription.blueprint_id)
+    if not blueprint:
+        abort(404, message="Blueprint {} doesn't exist".format(subscription.blueprint_id))
 
     subscription.id = str(uuid.uuid4())
     subscription.created = datetime.datetime.now()
@@ -81,11 +92,15 @@ def create_subscription():
 
 @subscriptions.route("/<string:subscription_id>", methods=["PUT"])
 @marshal_with(subscription_fields)
-def update_subscription(subscription_id):
+@logged_in_required
+def update_subscription(current_user, subscription_id):
     subscription = Subscription.query.get(subscription_id)
 
     if not subscription:
         abort(404, message="Subscription {} doesn't exist".format(subscription_id))
+
+    if subscription.user_id != current_user.id:
+        abort(403, message="You are not allowed to update this subscription")
 
     subscription.blueprint_id = request.json.get("blueprint_id", subscription.blueprint_id)
     subscription.user_id = request.json.get("user_id", subscription.user_id)
@@ -98,17 +113,36 @@ def update_subscription(subscription_id):
 
 @subscriptions.route("/<string:subscription_id>", methods=["DELETE"])
 @marshal_with(subscription_fields)
-def delete_subscription(subscription_id):
+@logged_in_required
+def delete_subscription(current_user, subscription_id):
     subscription = Subscription.query.get(subscription_id)
 
     if not subscription:
-        abort(404, message="Subscription {} doesn't exist".format(subscription_id))
+        return f"Subscription {subscription_id} doesn't exist", 404
+    
+    if subscription.user_id != current_user.id:
+        abort(403, message="You are not allowed to delete this subscription")
 
     db.session.delete(subscription)
     db.session.commit()
 
-    return "Deleted!"#subscription, 200
+    return "Deleted!"
 
+
+@subscriptions.route("/blueprint/<string:blueprint_id>", methods=["DELETE"])
+@marshal_with(subscription_fields)
+@logged_in_required
+def delete_subscription_by_blueprint(current_user, blueprint_id):
+    subscription = Subscription.query.filter_by(
+        blueprint_id=blueprint_id, user_id=current_user.id).first()
+
+    if not subscription:
+        return f"Subscription with blueprint_id {blueprint_id} doesn't exist", 404
+
+    db.session.delete(subscription)
+    db.session.commit()
+
+    return "Deleted!"
 
 @subscriptions.route("/maxpage/<int:per_page>", methods=["GET"])
 def get_max_page(per_page):

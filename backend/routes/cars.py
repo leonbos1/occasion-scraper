@@ -108,6 +108,13 @@ def get_recent_cars(count):
 
     return cars
 
+@cars.route("/expensive/<int:count>", methods=["GET"])
+@marshal_with(car_fields)
+def get_expensive_cars(count):
+    cars = Car.query.order_by(Car.price.desc()).limit(count).all()
+
+    return cars
+
 
 @cars.route("/image/<string:id>", methods=["GET"])
 def get_car_image(id):
@@ -169,3 +176,9 @@ def get_models():
         Car.model)).group_by(Car.model).all()
 
     return {model: count for model, count in models}
+
+@cars.route("/count", methods=["GET"])
+def get_car_count():
+    car_count = Car.query.count()
+
+    return jsonify(car_count)

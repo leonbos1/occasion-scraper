@@ -4,7 +4,7 @@
 
 <script setup>
 
-import { ref, onMounted, defineProps } from 'vue';
+import { ref, onMounted } from 'vue';
 import DashboardRepository from '../../services/DashboardRepository';
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js'
@@ -19,10 +19,10 @@ const carsScraped = ref([]);
 const chartData = ref({});
 
 onMounted(async () => {
-    data.value = await DashboardRepository.getCarsScrapedPerDay(7);
+    data.value = await DashboardRepository.getMonthlyScrapedCars(12);
 
     for (var i = 0; i < data.value.length; i++) {
-        dates.value.push(data.value[i].date);
+        dates.value.push(data.value[i].month);
         carsScraped.value.push(data.value[i].cars);
     }
 
@@ -30,7 +30,7 @@ onMounted(async () => {
         labels: dates.value,
         datasets: [
             {
-                label: 'Cars scraped per day',
+                label: 'Cars scraped per month',
                 backgroundColor: '#f87979',
                 data: carsScraped.value
             }
