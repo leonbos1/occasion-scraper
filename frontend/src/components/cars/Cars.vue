@@ -10,7 +10,6 @@
     <button @click="showFilters = !showFilters" class="md:hidden bg-blue-500 text-white px-4 py-2 rounded m-4">
       {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
     </button>
-
     <div v-if="showFilters || !isMobile" class="w-full md:w-auto md:flex-shrink-0 md:mr-4">
       <FilterComponent @filter="handleFilter" />
     </div>
