@@ -1,6 +1,5 @@
-from .scrapers import autoscout, gaspedaal
+from .scrapers import autoscout_fast
 
 def start():
-    print("Starting scrapers")
-    autoscout.start()
+    autoscout_fast.start()
     #gaspedaal.start()
