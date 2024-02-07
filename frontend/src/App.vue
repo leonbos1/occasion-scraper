@@ -34,6 +34,7 @@ body {
   margin: 0;
   background-color: rgba(198, 198, 255, 0.26);
 }
+
 h1 {
   margin-top: 0;
 }

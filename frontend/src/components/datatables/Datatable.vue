@@ -113,7 +113,7 @@ import CreateComponent from '@/components/datatables/CreateComponent.vue'
 const data = ref([]);
 const columns = ref([]);
 
-const props = defineProps(['inputData', 'inputColumns', 'maximumPage', 'loading','order_by']);
+const props = defineProps(['inputData', 'inputColumns', 'maximumPage', 'loading', 'order_by']);
 
 const perPage = ref(10);
 const currentPage = ref(1);;
