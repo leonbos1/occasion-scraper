@@ -18,7 +18,7 @@
                     <p class="text-sm text-gray-600">Prijs: <span class="font-semibold text-green-600">${{ car.price
                     }}</span></p>
                     <p class="text-sm text-gray-600">Locatie: <span class="text-gray-800">{{ car.location }}</span></p>
-                    <a :href="car.url" target="_blank"
+                    <a :href="'https://www.autoscout24.nl' + car.url" target="_blank"
                         class="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200 text-center bottom-0">
                         Bekijk
                         Details</a>
