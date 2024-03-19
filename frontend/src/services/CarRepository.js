@@ -11,6 +11,19 @@ class CarRepository {
         return await response.json();
     }
 
+    async getBrandsAndModels() {
+        var url = '/cars/brands_and_models';
+
+        try {
+            const response = await this.get(url);
+
+            return await response.json();
+
+        } catch (error) {
+            return []
+        }
+    }
+
     async getCarsByPage(page, size, orderBy = "created", orderDirection = "desc", filters = {}) {
         var url = '/cars/' + page + '/' + size;
 

@@ -182,3 +182,20 @@ def get_car_count():
     car_count = Car.query.count()
 
     return jsonify(car_count)
+
+@cars.route("/brands_and_models", methods=["GET"])
+def get_brands_and_models():
+    """
+    Returns an object with brands as keys and a list of models as values
+    """
+    brands_and_models = db.session.query(Car.brand, Car.model).all()
+
+    brands = {}
+
+    for brand, model in brands_and_models:
+        if brand not in brands:
+            brands[brand] = []
+        if model not in brands[brand]:
+            brands[brand].append(model)
+
+    return brands

@@ -46,64 +46,70 @@ def scrape_blueprint(cars: list, blueprint: BluePrint):
 
     save_session_to_db(scrape_session, _logger)
 
-    if blueprint.brand != None:
-        url += f"/{blueprint.brand}"
-
-    if blueprint.model != None:
-        url += f"/{blueprint.model}"
-
-    url += "?cy=NL"
-
-    url += f"&pricefrom={blueprint.min_price}"
-
-    if blueprint.max_price > 0:
-        url += f"&priceto={blueprint.max_price}"
-
-    if blueprint.max_mileage > 0:
-        url += f"&kmto={blueprint.max_mileage}"
-
-    if blueprint.max_first_registration > 0:
-        url += f"&fregto={blueprint.max_first_registration}"
-
-    url += "&ustate=N%2CU"
-
-    if blueprint.city != None and blueprint.max_distance_from_home > 0:
-        url += f"&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
-
-    new_cars_found = []
-
-    for i in range(1, 20):
-        cars = scrape_page(url + f"&page={i}", scrape_session)
-
-        if len(cars) == 0:
-            break
-
-        new_cars = get_new_cars(cars)
-
-        new_cars_found += new_cars
-
-        save_cars_to_db(new_cars, _logger)
-        scrape_session.ended = datetime.datetime.now()
-        scrape_session.new_cars = len(new_cars)
-        save_session_to_db(scrape_session, _logger)
-
     try:
-        emails = get_emails(blueprint)
-        for e in emails:
-            _logger.log_info("Email: " + e)
+
+        if blueprint.brand != None:
+            url += f"/{blueprint.brand}"
+
+        if blueprint.model != None:
+            url += f"/{blueprint.model}"
+
+        url += "?cy=NL"
+
+        url += f"&pricefrom={blueprint.min_price}"
+
+        if blueprint.max_price and blueprint.max_price > 0:
+            url += f"&priceto={blueprint.max_price}"
+
+        if blueprint.max_mileage and blueprint.max_mileage > 0:
+            url += f"&kmto={blueprint.max_mileage}"
+
+        if blueprint.max_first_registration and blueprint.max_first_registration > 0:
+            url += f"&fregto={blueprint.max_first_registration}"
+
+        url += "&ustate=N%2CU"
+
+        if blueprint.city != None and blueprint.max_distance_from_home and blueprint.max_distance_from_home > 0:
+            url += f"&zip={blueprint.city}&zipr={blueprint.max_distance_from_home}"
+
+        new_cars_found = []
+
+        for i in range(1, 20):
+            cars = scrape_page(url + f"&page={i}", scrape_session)
+
+            if len(cars) == 0:
+                break
+
+            new_cars = get_new_cars(cars)
+
+            new_cars_found += new_cars
+
+            save_cars_to_db(new_cars, _logger)
+            scrape_session.ended = datetime.datetime.now()
+            scrape_session.new_cars = len(new_cars)
+            save_session_to_db(scrape_session, _logger)
+
+        try:
+            emails = get_emails(blueprint)
+            for e in emails:
+                _logger.log_info("Email: " + e)
+
+        except Exception as e:
+            _logger.log_error("Could not get emails" + str(e))
+            emails = []
+
+        try:
+            mail.send_email(new_cars_found, emails, blueprint.name)
+        except Exception as e:
+            _logger.log_error("Could not send email" + str(e))
+
+        _logger.log_info("Email sent")
+
+        _logger.log_info("Scrape session ended")
 
     except Exception as e:
-        _logger.log_error("Could not get emails" + str(e))
-        emails = []
-
-    try:
-        mail.send_email(new_cars_found, emails, blueprint.name)
-    except Exception as e:
-        _logger.log_error("Could not send email" + str(e))
-
-    _logger.log_info("Email sent")
-
-    _logger.log_info("Scrape session ended")
+        _logger.log_error("Error while scraping autoscout" + str(e))
+        print(e)
 
 
 def scrape_page(url: str, scrape_session: ScrapeSession) -> list:

@@ -7,6 +7,16 @@
             </div>
 
             <div class="flex flex-col">
+                <label for="brand" class="text-gray-700">Brand:</label>
+                <input type="text" id="brand" v-model="blueprint.brand" class="border border-gray-300 rounded p-2" />
+            </div>
+
+            <div class="flex flex-col">
+                <label for="model" class="text-gray-700">Model:</label>
+                <input type="text" id="model" v-model="blueprint.model" class="border border-gray-300 rounded p-2" />
+            </div>
+
+            <div class="flex flex-col">
                 <label for="minPrice" class="text-gray-700">Min Price:</label>
                 <input type="number" id="minPrice" v-model="blueprint.min_price"
                     class="border border-gray-300 rounded p-2" />
@@ -47,6 +57,8 @@ const router = useRouter();
 
 const blueprint = ref({
     name: '',
+    brand: '',
+    model: '',
     min_price: 0,
     max_price: 0,
     min_mileage: 0,
