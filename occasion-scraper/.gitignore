@@ -45,6 +45,5 @@ build/
 .coverage
 htmlcov/
 
-# Actual image files (placeholders are tracked)
-icon.png
-logo.png
+# Note: icon.png and logo.png should be committed
+# Removed from ignore list
