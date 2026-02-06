@@ -50,9 +50,3 @@ ports_description:
 ingress: true
 ingress_port: 80
 panel_icon: mdi:car-search
-
-services:
-  - trigger_scrape
-  - get_scrape_status
-  - list_cars
-  - get_car_details
