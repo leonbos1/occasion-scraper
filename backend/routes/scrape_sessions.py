@@ -29,13 +29,18 @@ def get_cars_per_day(days):
     cars_per_day = {}
 
     for session in sessions:
-        date_string = session.created
-        try:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d')
-        except:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+        date_obj = session.created
+        # Convert datetime object to date string
+        if isinstance(date_obj, datetime):
+            date = date_obj.strftime('%Y-%m-%d')
+        else:
+            # If it's already a string, parse it
+            try:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d')
+            except:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
 
         if not session.new_cars:
             continue
@@ -64,13 +69,18 @@ def get_best_days():
     cars_per_day = {}
 
     for session in sessions:
-        date_string = session.created
-        try:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d')
-        except:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+        date_obj = session.created
+        # Convert datetime object to date string
+        if isinstance(date_obj, datetime):
+            date = date_obj.strftime('%Y-%m-%d')
+        else:
+            # If it's already a string, parse it
+            try:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d')
+            except:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
 
         if not session.new_cars:
             continue
@@ -100,13 +110,17 @@ def get_cars_per_week(weeks):
     cars_per_week = defaultdict(int)
 
     for session in sessions:
-        date_string = session.created
-        try:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S.%f')
-        except ValueError:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S')
+        date_obj = session.created
+        # Convert datetime object or parse string
+        if isinstance(date_obj, datetime):
+            date = date_obj
+        else:
+            try:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S.%f')
+            except ValueError:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S')
 
         if not session.new_cars:
             continue
@@ -141,13 +155,17 @@ def get_cars_per_month(months):
     cars_per_months = defaultdict(int)
 
     for session in sessions:
-        date_string = session.created
-        try:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S.%f')
-        except ValueError:
-            date = datetime.strptime(
-                date_string, '%Y-%m-%d %H:%M:%S')
+        date_obj = session.created
+        # Convert datetime object or parse string
+        if isinstance(date_obj, datetime):
+            date = date_obj
+        else:
+            try:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S.%f')
+            except ValueError:
+                date = datetime.strptime(
+                    date_obj, '%Y-%m-%d %H:%M:%S')
 
         if not session.new_cars:
             continue

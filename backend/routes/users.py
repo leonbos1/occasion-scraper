@@ -4,6 +4,7 @@ from flask_restful import marshal_with, reqparse
 
 from ..extensions import db
 from ..utills.user import generate_token, user_is_owner
+from ..utills.responses import success_response, error_response, not_found_error, validation_error, auth_error, ErrorCodes
 
 from ..models.user import User, user_fields
 from ..models.subscription import Subscription
@@ -19,11 +20,11 @@ def logged_in_required(func):
         token = request.headers.get("Authorization")
 
         if not token:
-            abort(401, message="Authorization header required")
+            return auth_error("Authorization header required")
 
         user = User.query.filter_by(token=token).first()
         if not user:
-            abort(401, message="Invalid token")
+            return auth_error("Invalid token")
 
         return func(user, *args, **kwargs)
 
@@ -31,17 +32,18 @@ def logged_in_required(func):
 
 
 def admin_required(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         token = request.headers.get("Authorization")
         if not token:
-            abort(401, message="Authorization header required")
+            return auth_error("Authorization header required")
 
         user = User.query.filter_by(token=token).first()
         if not user:
-            abort(401, message="Invalid token")
+            return auth_error("Invalid token")
 
         if user.role != "1":
-            abort(403, message="Admin role required")
+            return error_response(ErrorCodes.AUTH_ERROR, "Admin role required", 403)
 
         return func(*args, **kwargs)
 
@@ -49,122 +51,194 @@ def admin_required(func):
 
 
 @users.route("", methods=["GET"])
-@marshal_with(user_fields)
 @admin_required
 @logged_in_required
 def get_users(current_user):
-    users = User.query.all()
-
-    return users
+    """Get all users (admin only)"""
+    try:
+        users_list = User.query.all()
+        result = []
+        for user in users_list:
+            user_dict = marshal(user, user_fields)
+            user_dict['created'] = str(user.created).split('.')[0]
+            user_dict['updated'] = str(user.updated).split('.')[0]
+            result.append(user_dict)
+        return success_response(result)
+    except Exception as e:
+        print(f"Error fetching users: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to fetch users", 500)
 
 
 @users.route("/<string:user_id>", methods=["PUT"])
-@marshal_with(user_fields)
 @logged_in_required
 def update_user(current_user, user_id):
-    data = request.get_json()
-    user = User.query.filter_by(id=user_id).first()
+    """Update user (owner or admin only)"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return validation_error("Request body is required")
+        
+        user = User.query.filter_by(id=user_id).first()
 
-    if not user or not user_is_owner(current_user, user):
-        abort(404, message="User not found")
+        if not user or not user_is_owner(current_user, user):
+            return not_found_error("User not found")
 
-    if data.get("email"):
-        user.email = data.get("email")
+        if data.get("email"):
+            user.email = data.get("email")
 
-    if data.get("password"):
-        user.password = data.get("password")
+        if data.get("password"):
+            user.password = data.get("password")
 
-    if user.role == "1" and data.get("role"):
-        user.role = data.get("role")
+        if user.role == "1" and data.get("role"):
+            user.role = data.get("role")
 
-    db.session.commit()
+        db.session.commit()
+        
+        user_dict = marshal(user, user_fields)
+        user_dict['created'] = str(user.created).split('.')[0]
+        user_dict['updated'] = str(user.updated).split('.')[0]
 
-    return user
+        return success_response(user_dict)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating user: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to update user", 500)
 
 
 @users.route("/<string:user_id>", methods=["DELETE"])
-@marshal_with(user_fields)
 @logged_in_required
 def delete_user(current_user, user_id):
-    user = User.query.filter_by(id=user_id).first()
+    """Delete user (owner or admin only)"""
+    try:
+        user = User.query.filter_by(id=user_id).first()
 
-    if not user or not user_is_owner(current_user, user):
-        abort(404, message="User not found")
+        if not user or not user_is_owner(current_user, user):
+            return not_found_error("User not found")
 
-    db.session.delete(user)
-    db.session.commit()
+        db.session.delete(user)
+        db.session.commit()
+        
+        user_dict = marshal(user, user_fields)
+        user_dict['created'] = str(user.created).split('.')[0]
+        user_dict['updated'] = str(user.updated).split('.')[0]
 
-    return user
+        return success_response(user_dict)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting user: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to delete user", 500)
 
 
 @users.route("register", methods=["POST"])
-@marshal_with(user_fields)
 def create_user():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
+    """Register a new user"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return validation_error("Request body is required")
+        
+        email = data.get("email")
+        password = data.get("password")
+        
+        if not email or not password:
+            return validation_error("Email and password are required", {"fields": ["email", "password"]})
 
-    user = User.query.filter_by(email=email).first()
-    if user:
-        abort(409, message="Email already exists")
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return error_response(ErrorCodes.VALIDATION_ERROR, "Email already exists", 409)
 
-    user = User(email=email, password=password)
-    db.session.add(user)
-    db.session.commit()
+        user = User(email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
+        
+        user_dict = marshal(user, user_fields)
+        user_dict['created'] = str(user.created).split('.')[0]
+        user_dict['updated'] = str(user.updated).split('.')[0]
 
-    return user, 201
+        return success_response(user_dict)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating user: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to create user", 500)
 
 
 @users.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
+    """Login user and generate token"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return validation_error("Request body is required")
+        
+        email = data.get("email")
+        password = data.get("password")
+        
+        if not email or not password:
+            return validation_error("Email and password are required", {"fields": ["email", "password"]})
 
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        abort(401, message="Invalid email or password")
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return auth_error("Invalid email or password")
 
-    # TODO: hash password
-    if user.password != password:
-        abort(401, message="Invalid email or password")
+        # TODO: hash password
+        if user.password != password:
+            return auth_error("Invalid email or password")
 
-    user.token = generate_token()
-    db.session.commit()
+        user.token = generate_token()
+        db.session.commit()
 
-    return jsonify({"token": user.token, "role": user.role, "id": user.id})
+        return success_response({"token": user.token, "role": user.role, "id": user.id})
+    except Exception as e:
+        print(f"Error during login: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Login failed", 500)
 
 
 @users.route("/logout", methods=["POST"])
 @logged_in_required
 def logout(current_user):
-    current_user.token = None
-    db.session.commit()
+    """Logout user and clear token"""
+    try:
+        current_user.token = None
+        db.session.commit()
 
-    return jsonify({"message": "Logged out successfully"})
+        return success_response({"message": "Logged out successfully"})
+    except Exception as e:
+        print(f"Error during logout: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Logout failed", 500)
 
 
 @users.route("/profile", methods=["GET"])
 @logged_in_required
 def get_profile(current_user):
+    """Get current user profile"""
+    try:
+        amount_of_blueprints_subscribed = Subscription.query.filter_by(
+            user_id=current_user.id).count()
 
-    amount_of_blueprints_subscribed = Subscription.query.filter_by(
-        user_id=current_user.id).count()
+        result = {
+            'email': current_user.email,
+            'role': current_user.role,
+            'created': str(current_user.created).split('.')[0],
+            'updated': str(current_user.updated).split('.')[0],
+            'amount_of_blueprints_subscribed': amount_of_blueprints_subscribed,
+            'amount_of_blueprints_created': 0
+        }
 
-    result = {
-        'email': current_user.email,
-        'role': current_user.role,
-        'created': current_user.created,
-        'updated': current_user.updated,
-        'amount_of_blueprints_subscribed': amount_of_blueprints_subscribed,
-        'amount_of_blueprints_created': 0
-    }
-
-    return jsonify(result)
+        return success_response(result)
+    except Exception as e:
+        print(f"Error fetching profile: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to fetch profile", 500)
 
 
 @users.route("/count", methods=["GET"])
 def get_user_count():
-    user_count = User.query.count()
-
-    return jsonify(user_count)
+    """Get total user count"""
+    try:
+        user_count = User.query.count()
+        return success_response({"count": user_count})
+    except Exception as e:
+        print(f"Error counting users: {e}")
+        return error_response(ErrorCodes.DATABASE_ERROR, "Failed to count users", 500)

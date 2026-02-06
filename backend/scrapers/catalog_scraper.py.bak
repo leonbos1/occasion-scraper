@@ -1,0 +1,307 @@
+"""
+AutoScout24 Brand/Model Catalog Scraper
+Discovers all available brands and models from AutoScout24
+"""
+import requests
+from bs4 import BeautifulSoup
+from time import sleep
+import random
+from urllib.robotparser import RobotFileParser
+from datetime import datetime
+from ..extensions import db
+from ..models.brand import Brand
+from ..models.model import BrandModel
+
+AUTOSCOUT_BASE = 'https://www.autoscout24.nl'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
+
+def _log(message, level="INFO"):
+    """Simple logging function for catalog scraper"""
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [{level}] {message}")
+
+
+def check_robots_txt():
+    """Check robots.txt to respect crawling rules"""
+    try:
+        rp = RobotFileParser()
+        rp.set_url(f"{AUTOSCOUT_BASE}/robots.txt")
+        rp.read()
+        
+        # Check if we can access /lst pages
+        can_fetch = rp.can_fetch(USER_AGENT, f"{AUTOSCOUT_BASE}/lst")
+        _log(f"Robots.txt check: Can fetch /lst = {can_fetch}")
+        return can_fetch
+    except Exception as e:
+        _log(f"Failed to check robots.txt: {e}. Proceeding with caution.", "WARNING")
+        return True
+
+
+def rate_limit_delay():
+    """Apply random delay between 1-3 seconds"""
+    delay = random.uniform(1.0, 3.0)
+    sleep(delay)
+
+
+def fetch_brands():
+    """
+    Scrape AutoScout24 to discover all available brands
+    Returns: List of dicts with 'name' and 'slug' keys
+    """
+    _log("Fetching brands from AutoScout24...")
+    
+    try:
+        headers = {'User-Agent': USER_AGENT}
+        response = requests.get(f"{AUTOSCOUT_BASE}/lst", headers=headers, timeout=15)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        brands = []
+        
+        # Look for brand links in the page
+        # AutoScout24 typically has brand links in format /lst/{brand-slug}
+        brand_links = soup.find_all('a', href=True)
+        
+        for link in brand_links:
+            href = link.get('href', '')
+            
+            # Match links like /lst/alfa-romeo or /lst/bmw
+            if href.startswith('/lst/') and href.count('/') == 2:
+                slug = href.split('/')[-1]
+                
+                # Skip generic pages
+                if slug in ['', 'index', 'all', 'search']:
+                    continue
+                
+                # Get brand name from link text or slug
+                name = link.get_text(strip=True) or slug.replace('-', ' ').title()
+                
+                if name and slug:
+                    brands.append({'name': name, 'slug': slug})
+                    _log(f"Found brand: {name} ({slug})")
+        
+        # Remove duplicates
+        seen = set()
+        unique_brands = []
+        for brand in brands:
+            if brand['slug'] not in seen:
+                seen.add(brand['slug'])
+                unique_brands.append(brand)
+        
+        _log(f"Discovered {len(unique_brands)} unique brands")
+        return unique_brands
+        
+    except Exception as e:
+        _log(f"Failed to fetch brands: {e}")
+        return []
+
+
+def fetch_models_for_brand(brand_slug):
+    """
+    Scrape AutoScout24 to discover all models for a specific brand
+    Args:
+        brand_slug: URL slug of the brand (e.g., 'alfa-romeo')
+    Returns: List of dicts with 'name' and 'slug' keys
+    """
+    _log(f"Fetching models for brand: {brand_slug}")
+    
+    try:
+        headers = {'User-Agent': USER_AGENT}
+        url = f"{AUTOSCOUT_BASE}/lst/{brand_slug}"
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        models = []
+        
+        # Look for model links in the page
+        # AutoScout24 has model links in format /lst/{brand-slug}/{model-slug}
+        model_links = soup.find_all('a', href=True)
+        
+        for link in model_links:
+            href = link.get('href', '')
+            
+            # Match links like /lst/alfa-romeo/giulia
+            if href.startswith(f'/lst/{brand_slug}/') and href.count('/') == 3:
+                parts = href.split('/')
+                slug = parts[-1]
+                
+                # Skip generic pages
+                if slug in ['', 'all', 'index']:
+                    continue
+                
+                # Get model name from link text or slug
+                name = link.get_text(strip=True) or slug.replace('-', ' ').title()
+                
+                if name and slug:
+                    models.append({'name': name, 'slug': slug})
+                    _log(f"Found model: {name} ({slug}) for {brand_slug}")
+        
+        # Remove duplicates
+        seen = set()
+        unique_models = []
+        for model in models:
+            if model['slug'] not in seen:
+                seen.add(model['slug'])
+                unique_models.append(model)
+        
+        _log(f"Discovered {len(unique_models)} unique models for {brand_slug}")
+        return unique_models
+        
+    except Exception as e:
+        _log(f"Failed to fetch models for {brand_slug}: {e}")
+        return []
+
+
+def upsert_brand(brand_data):
+    """
+    Insert or update a brand in the database
+    Args:
+        brand_data: Dict with 'name' and 'slug' keys
+    Returns: Brand object or None on failure
+    """
+    try:
+        existing_brand = db.session.query(Brand).filter_by(slug=brand_data['slug']).first()
+        
+        now = datetime.now()
+        
+        if existing_brand:
+            # Update existing brand
+            existing_brand.last_seen = now
+            # Only update slug if it changed (shouldn't happen often)
+            if existing_brand.slug != brand_data['slug']:
+                existing_brand.slug = brand_data['slug']
+            # Don't update name or display_name if they were customized
+            _log(f"Updated existing brand: {brand_data['slug']}")
+            db.session.commit()
+            return existing_brand
+        else:
+            # Insert new brand
+            new_brand = Brand(
+                name=brand_data['name'],
+                slug=brand_data['slug'],
+                display_name=brand_data['name'],
+                enabled=True,
+                last_seen=now
+            )
+            db.session.add(new_brand)
+            db.session.commit()
+            _log(f"Inserted new brand: {brand_data['name']} ({brand_data['slug']})")
+            return new_brand
+            
+    except Exception as e:
+        _log(f"Failed to upsert brand {brand_data['slug']}: {e}")
+        db.session.rollback()
+        return None
+
+
+def upsert_model(brand_id, model_data):
+    """
+    Insert or update a model in the database
+    Args:
+        brand_id: ID of the parent brand
+        model_data: Dict with 'name' and 'slug' keys
+    Returns: BrandModel object or None on failure
+    """
+    try:
+        existing_model = db.session.query(BrandModel).filter_by(
+            brand_id=brand_id,
+            slug=model_data['slug']
+        ).first()
+        
+        now = datetime.now()
+        
+        if existing_model:
+            # Update existing model
+            existing_model.last_seen = now
+            # Don't update name or display_name if they were customized
+            _log(f"Updated existing model: {model_data['slug']} for brand {brand_id}")
+            db.session.commit()
+            return existing_model
+        else:
+            # Insert new model
+            new_model = BrandModel(
+                brand_id=brand_id,
+                name=model_data['name'],
+                slug=model_data['slug'],
+                display_name=model_data['name'],
+                enabled=True,
+                last_seen=now
+            )
+            db.session.add(new_model)
+            db.session.commit()
+            _log(f"Inserted new model: {model_data['name']} ({model_data['slug']}) for brand {brand_id}")
+            return new_model
+            
+    except Exception as e:
+        _log(f"Failed to upsert model {model_data['slug']} for brand {brand_id}: {e}")
+        db.session.rollback()
+        return None
+
+
+def scrape_catalog():
+    """
+    Main orchestrator function that scrapes the entire brand/model catalog
+    Returns: Dict with success/failure counts and failed brands list
+    """
+    _log("Starting catalog scrape...")
+    
+    # Check robots.txt first
+    if not check_robots_txt():
+        _log("Robots.txt check failed or disallows scraping. Proceeding anyway.")
+    
+    summary = {
+        'brands_total': 0,
+        'brands_success': 0,
+        'brands_failed': 0,
+        'models_total': 0,
+        'models_success': 0,
+        'models_failed': 0,
+        'failed_brands': []
+    }
+    
+    # Fetch all brands
+    brands = fetch_brands()
+    summary['brands_total'] = len(brands)
+    
+    if not brands:
+        _log("No brands found. Aborting catalog scrape.")
+        return summary
+    
+    rate_limit_delay()
+    
+    # Process each brand
+    for brand_data in brands:
+        try:
+            # Upsert brand
+            brand = upsert_brand(brand_data)
+            
+            if not brand:
+                summary['brands_failed'] += 1
+                summary['failed_brands'].append(brand_data['slug'])
+                continue
+            
+            summary['brands_success'] += 1
+            
+            # Rate limit before fetching models
+            rate_limit_delay()
+            
+            # Fetch models for this brand
+            models = fetch_models_for_brand(brand_data['slug'])
+            summary['models_total'] += len(models)
+            
+            # Upsert each model
+            for model_data in models:
+                model = upsert_model(brand.id, model_data)
+                if model:
+                    summary['models_success'] += 1
+                else:
+                    summary['models_failed'] += 1
+            
+        except Exception as e:
+            _log(f"Error processing brand {brand_data['slug']}: {e}")
+            summary['brands_failed'] += 1
+            summary['failed_brands'].append(brand_data['slug'])
+    
+    _log(f"Catalog scrape complete. Summary: {summary}")
+    return summary

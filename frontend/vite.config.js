@@ -8,6 +8,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
   ],
+  base: process.env.VITE_BASE_URL || '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'), // Gebruik 'path.resolve' om het absolute pad naar de 'src'-map te krijgen

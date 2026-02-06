@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-wrap justify-center">
-        <div v-for="blueprint in blueprints" :key="blueprint.id" class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2">
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden h-max">
+    <div class="flex flex-wrap justify-center gap-4">
+        <div v-for="blueprint in blueprints" :key="blueprint.id" class="w-full sm:w-80 md:w-96 lg:w-96">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden h-full">
                 <div class="p-4 max-h-1/4">
                     <h1 class="font-bold text-lg">{{ blueprint.name }}</h1>
                     <p class="text-gray-700">{{ blueprint.created }}</p>
@@ -11,10 +11,14 @@
                     <p class="text-gray-600 mb-4">Mileage: {{ blueprint.min_mileage }} - {{ blueprint.max_mileage }} km
                     </p>
                     <div>
+                        <button @click="handleScrapeBlueprint(blueprint)" :disabled="isScraping(blueprint.id)"
+                            class="inline-block bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-50">
+                            {{ isScraping(blueprint.id) ? 'Scraping...' : 'Scrape Now' }}
+                        </button>
                         <button @click="handleSubscriptionChange(blueprint)" v-if="!blueprint.isSubscribed"
-                            class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Subscribe</button>
+                            class="inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded hover:bg-blue-600">Subscribe</button>
                         <button @click="handleSubscriptionChange(blueprint)" v-if="blueprint.isSubscribed"
-                            class="p-4 inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded hover:bg-blue-600">Unsubscribe</button>
+                            class="inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded hover:bg-blue-600">Unsubscribe</button>
                         <button @click="handleDeleteBlueprint(blueprint)" v-if="blueprint.isOwner"
                             class="inline-block bg-red-500 text-white py-2 px-4 m-2 rounded hover:bg-red-600">Delete</button>
                     </div>
@@ -38,6 +42,29 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const scrapingBlueprints = ref(new Set());
+
+function isScraping(blueprintId) {
+    return scrapingBlueprints.value.has(blueprintId);
+}
+
+async function handleScrapeBlueprint(blueprint) {
+    if (isScraping(blueprint.id)) {
+        return;
+    }
+
+    const next = new Set(scrapingBlueprints.value);
+    next.add(blueprint.id);
+    scrapingBlueprints.value = next;
+
+    try {
+        await BlueprintRepository.startScrape(blueprint.id);
+    } finally {
+        const updated = new Set(scrapingBlueprints.value);
+        updated.delete(blueprint.id);
+        scrapingBlueprints.value = updated;
+    }
+}
 
 async function handleSubscriptionChange(blueprint) {
     if (blueprint.isSubscribed) {

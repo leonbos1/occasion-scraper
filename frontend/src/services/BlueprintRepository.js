@@ -15,19 +15,25 @@ class BlueprintRepository {
         var url = '/blueprints/' + page + '/' + size;
         try {
             const response = await this.get(url);
-
-            return await response.json();
+            const data = await response.json();
+            return data.data || [];
         }
         catch (error) {
-            return []
+            console.error('Error fetching blueprints:', error);
+            return [];
         }
     }
 
     async getMaxPage(size) {
         var url = '/blueprints/max_page/' + size;
-        const response = await this.get(url);
-
-        return await response.json();
+        try {
+            const response = await this.get(url);
+            const result = await response.json();
+            return result.data?.max_page || 0;
+        } catch (error) {
+            console.error('Error fetching max page:', error);
+            return 0;
+        }
     }
 
     async getBlueprintById(id) {
@@ -78,6 +84,24 @@ class BlueprintRepository {
         });
 
         return response;
+    }
+
+    async startScrape(blueprintId) {
+        const url = `/start/${blueprintId}`;
+        try {
+            const response = await fetch(this.api_url + url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': this.api_key,
+                    'Authorization': localStorage.getItem('token')
+                }
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error starting blueprint scrape:', error);
+            return { success: false, error: error.message };
+        }
     }
 
     async get(url) {

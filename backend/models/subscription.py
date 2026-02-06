@@ -13,6 +13,11 @@ class Subscription(db.Model, BaseModel):
     blueprint_id = Column(String(36), ForeignKey('blueprints.id'))
 
     user = db.relationship('User', backref='subscriptions')
+    
+    def __init__(self, user_id=None, blueprint_id=None, **kwargs):
+        BaseModel.__init__(self)
+        self.user_id = user_id
+        self.blueprint_id = blueprint_id
 
 
 subscription_fields = {

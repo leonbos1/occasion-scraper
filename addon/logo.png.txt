@@ -1,0 +1,4 @@
+# Placeholder for addon logo
+# Replace this file with a larger PNG image (recommended 1024x1024)
+# Logo should represent the occasion-scraper application
+# Suggested design: Car with magnifying glass or search icon

@@ -36,6 +36,18 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <label class="block text-sm mb-2 dark:text-white"> Brand </label>
+                                <div class="relative">
+                                    <BrandDropdown v-model="selectedBrandSlug" @change="onBrandChange" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <label class="block text-sm mb-2 dark:text-white"> Model </label>
+                                <div class="relative">
+                                    <ModelDropdown v-model="selectedModelSlug" :brand-slug="selectedBrandSlug" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 mb-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <label class="block text-sm mb-2 dark:text-white"> Users </label>
                                 <div class="relative">
                                     <UserDropdown :subscriptions="blueprint.subscriptions" label="Select users"
@@ -55,9 +67,11 @@
 </template>
   
 <script setup>
-import { defineEmits, onMounted, ref, defineProps } from 'vue';
+import { defineEmits, onMounted, ref, defineProps, watch } from 'vue';
 import UserRepository from '../../services/UserRepository';
 import UserDropdown from '../dropdowns/UserDropdown.vue';
+import BrandDropdown from '../dropdowns/BrandDropdown.vue';
+import ModelDropdown from '../dropdowns/ModelDropdown.vue';
 
 const emit = defineEmits();
 
@@ -69,6 +83,20 @@ const props = defineProps({
 });
 
 const selectedUsers = ref([]);
+const selectedBrandSlug = ref('');
+const selectedModelSlug = ref('');
+
+// Initialize with existing brand/model values
+onMounted(() => {
+    selectedBrandSlug.value = props.blueprint.brand || '';
+    selectedModelSlug.value = props.blueprint.model || '';
+});
+
+// Watch for changes in the blueprint prop (when modal opens with different blueprint)
+watch(() => props.blueprint, (newBlueprint) => {
+    selectedBrandSlug.value = newBlueprint.brand || '';
+    selectedModelSlug.value = newBlueprint.model || '';
+}, { immediate: true });
 
 const updateProperty = (property, value) => {
     props.blueprint[property] = value;
@@ -76,8 +104,19 @@ const updateProperty = (property, value) => {
 
 const properties = ref([]);
 
+const onBrandChange = () => {
+    // Clear model when brand changes
+    selectedModelSlug.value = '';
+};
+
 function edit(blueprint) {
-    emit('edit', blueprint, selectedUsers.value);
+    // Update blueprint with selected brand/model slugs
+    const updatedBlueprint = {
+        ...blueprint,
+        brand: selectedBrandSlug.value,
+        model: selectedModelSlug.value
+    };
+    emit('edit', updatedBlueprint, selectedUsers.value);
 }
 
 function handleUpdateUsers(newVal) {

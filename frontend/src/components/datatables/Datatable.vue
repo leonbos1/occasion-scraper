@@ -61,10 +61,7 @@
                                     class="h-px whitespace-nowrap overflow-hidden w-px">
                                     <div class="pl-6 py-3">
                                         <template v-if="column === 'base_image'">
-                                            <img v-if="row[column] !== ''" :src="row[column]" class="w-1/2 h-1/2 " />
-
-                                            <img v-else :src="setBaseImage(row)" class="w-1/2 h-1/2 " />
-
+                                            <img :src="getImageSrc(row[column])" class="w-1/2 h-1/2 " />
                                         </template>
                                         <template v-else-if="column.toLowerCase() === 'url'">
                                             <a :href="row[column]" target="_blank"
@@ -104,6 +101,7 @@
   
 <script setup>
 import { ref, onMounted, watch, defineProps, defineEmits } from 'vue';
+import getImageSrc from '../../utils/imagehelper';
 import PerPageComponent from '@/components/datatables/PerPageComponent.vue';
 import PaginationComponent from '@/components/datatables/PaginationComponent.vue';
 import SearchComponent from '@/components/datatables/SearchComponent.vue';
@@ -143,18 +141,6 @@ watch(currentPage, (newVal) => {
 function handleOrderBy(column) {
     currentPage.value = 1;
     emit('order_by', column);
-}
-
-function setBaseImage(row) {
-    if (row.base_image === '') {
-        var url = row.image_url;
-
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-                row.base_image = data;
-            });
-    }
 }
 
 function handleNext() {

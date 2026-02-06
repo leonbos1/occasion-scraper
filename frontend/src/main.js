@@ -12,11 +12,13 @@ import Dashboard from './components/dashboard/Dashboard.vue';
 import Login from './components/users/Login.vue';
 import Register from './components/users/Register.vue';
 import Logout from './components/users/Logout.vue';
+import BrandManagement from './components/admin/BrandManagement.vue';
+import ModelManagement from './components/admin/ModelManagement.vue';
 import store from './store';
 import profile from './components/users/Profile.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL || '/'),
   routes: [
     { path: '/', component: Home, name: 'Home' },
     { path: '/cars', component: Cars, name: 'Cars' },
@@ -29,6 +31,8 @@ const router = createRouter({
     { path: '/register', component: Register, name: 'Register'},
     { path: '/logout', component: Logout, name: 'Logout'},
     { path: '/profile', component: profile, name: 'Profile'},
+    { path: '/admin/brands', component: BrandManagement, name: 'BrandManagement'},
+    { path: '/admin/models', component: ModelManagement, name: 'ModelManagement'},
   ],
 });
 

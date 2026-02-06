@@ -1,0 +1,50 @@
+# Home Assistant Addon .gitignore
+
+# Data directory (contains MySQL data, should not be committed)
+/data/
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Docker
+.dockerignore
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Test files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Actual image files (placeholders are tracked)
+icon.png
+logo.png

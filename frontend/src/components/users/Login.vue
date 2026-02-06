@@ -36,19 +36,23 @@ const submitForm = async () => {
         const response = await UserRepository.login(user.value);
 
         var json = await response.json();
+        
+        // Extract from API envelope
+        const token = json.data?.token || json.token;
+        const role = json.data?.role || json.role;
+        const id = json.data?.id || json.id;
 
-        localStorage.setItem('token', json.token);
-        localStorage.setItem('role', json.role);
-        localStorage.setItem('id', json.id);
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('id', id);
 
         if (response.status === 200) {
-            store.commit('setToken', json.token);
-            var role = json.role;
+            store.commit('setToken', token);
             store.commit('setRole', role);
             router.push({ name: 'Home' });
         }
     } catch (error) {
-        console.log(error);
+        console.error('Login error:', error);
     }
 };
 </script>

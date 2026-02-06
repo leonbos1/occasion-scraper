@@ -1,11 +1,11 @@
 <template>
     <div class="container mx-auto p-4">
         <div class="bg-yellow-600 mb-8">
-            <button v-if="role == '1' && !isScraping"
+            <button v-if="!isScraping"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full" @click="start">Start
                 Scraper!</button>
-            <button v-else class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Scraper
-                disabled!</button>
+            <button v-else class="bg-red-500 text-white font-bold py-2 px-4 rounded w-full" disabled>Scraper
+                running...</button>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10 h-max mb-8">

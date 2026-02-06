@@ -113,48 +113,45 @@ def scrape_blueprint(cars: list, blueprint: BluePrint):
 
 
 def scrape_page(url: str, scrape_session: ScrapeSession) -> list:
+    """Scrape a single page of car listings"""
     print(url)
 
     cars = []
 
-    response = requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
 
-    if response.status_code != 200:
-        _logger.log_error("Error while scraping autoscout")
-        return
+        if response.status_code != 200:
+            _logger.log_error(f"HTTP {response.status_code} error while fetching page: {url}")
+            return []  # Return empty list on failure
+    except requests.exceptions.RequestException as e:
+        _logger.log_error(f"Network error while fetching page: {url} - {str(e)}")
+        return []  # Return empty list on network failure
 
     try:
-        articles = BeautifulSoup(
-            response.text, "html.parser").find_all("article")
-    except:
-        _logger.log_error("Error while scraping autoscout")
-        return
+        soup = BeautifulSoup(response.text, "html.parser")
+        # Prioritize element type (article) over class names for flexibility
+        articles = soup.find_all("article")
+    except Exception as e:
+        _logger.log_error(f"Error parsing HTML: {str(e)}")
+        return []  # Return empty list on parse failure
 
     if len(articles) == 0:
-        return []
+        _logger.log_info(f"No article elements found on page: {url}")
+        return []  # Return empty list when no cars found
 
     for article in articles:
         try:
-            car_id = article["data-guid"]
-            if car_is_new(car_id) == False:
-                continue
-
-            location = get_location(article)
-            condition = get_condition(article)
-            url = get_href(article)
-
-            image = get_image(url)
-
-            car = Car(id=article["data-guid"], brand=article["data-make"], model=article["data-model"], price=article["data-price"],
-                      mileage=article["data-mileage"], first_registration=convert_to_year(article["data-first-registration"]), vehicle_type=article["data-vehicle-type"],
-                      location=location, condition=condition, url=url, session_id=scrape_session.id, image=image)
-
-            cars.append(car)
-
+            car = extract_car_from_article(article, scrape_session)
+            if car:
+                cars.append(car)
         except Exception as e:
-            print("Error while scraping car" + str(e))
+            # Log context for debugging but don't crash the whole scrape
+            car_id = article.get("data-guid", "unknown")
+            _logger.log_error(f"Error scraping car {car_id}: {str(e)}")
             continue
 
+    _logger.log_info(f"Successfully scraped {len(cars)} cars from page")
     return cars
 
 
@@ -179,6 +176,80 @@ def car_is_new(car_id: int):
     return False
 
 
+def extract_car_from_article(article, scrape_session: ScrapeSession):
+    """
+    Extract car information from article element with fallback strategies.
+    Prioritizes element types over class names for flexibility.
+    
+    Returns Car object or None if extraction fails.
+    """
+    try:
+        # Extract car ID from data-guid attribute (prioritize data attributes)
+        car_id = article.get("data-guid")
+        if not car_id:
+            _logger.log_error("No data-guid found in article")
+            return None
+        
+        # Extract brand and model from data attributes (primary strategy)
+        brand = article.get("data-make", "Unknown")
+        model = article.get("data-model", "Unknown")
+        
+        # Extract price - try data attribute, fallback to element search
+        try:
+            price = int(article.get("data-price", 0))
+        except (ValueError, TypeError):
+            _logger.log_warning(f"Could not parse price for car {car_id}, using 0")
+            price = 0
+        
+        # Extract mileage (condition)
+        mileage = get_condition(article)
+        
+        # Extract first registration year - try data attribute first
+        try:
+            first_reg_str = article.get("data-first-registration", "2010")
+            first_registration = convert_to_year(first_reg_str)
+        except Exception as e:
+            _logger.log_warning(f"Could not parse first registration for car {car_id}: {str(e)}")
+            first_registration = 2010
+        
+        # Extract vehicle type
+        vehicle_type = article.get("data-vehicle-type", "Unknown")
+        
+        # Extract location with fallback
+        location = get_location(article)
+        
+        # Build URL from car ID
+        url = f"{BASE_URL}offers/{car_id}"
+        
+        # Extract image from article (prioritize element types)
+        image = get_image_from_article(article)
+        
+        # Create car object
+        car = Car(
+            id=car_id,
+            brand=brand,
+            model=model,
+            price=price,
+            mileage=mileage,
+            first_registration=first_registration,
+            vehicle_type=vehicle_type,
+            location=location,
+            condition=mileage,
+            url=url,
+            session_id=scrape_session.id,
+            image=image
+        )
+        
+        return car
+        
+    except Exception as e:
+        car_id = article.get("data-guid", "unknown")
+        _logger.log_error(f"Failed to extract car {car_id}: {str(e)}")
+        # Log context for debugging
+        _logger.log_error(f"Article attributes: {article.attrs if hasattr(article, 'attrs') else 'N/A'}")
+        return None
+
+
 def get_href(article):
     try:
         a_element = article.find(
@@ -193,23 +264,132 @@ def get_href(article):
 
 
 def get_condition(article):
+    """Extract condition (mileage), return default if unavailable"""
     try:
-        return int(article["data-mileage"])
-    except:
+        mileage = int(article.get("data-mileage", 0))
+        return mileage if mileage > 0 else 100420
+    except (ValueError, TypeError) as e:
+        _logger.log_error(f"Error parsing condition/mileage: {str(e)}")
         return 100420
 
 
 def get_location(article):
+    """
+    Extract location with multiple fallback strategies.
+    
+    Strategies (in order):
+    1. SellerInfo_address span with text splitting
+    2. Any span containing location-like patterns
+    3. Last span element (common pattern)
+    4. Default to "Unknown"
+    """
     try:
-        location_span = article.find(
-            "span", {"class": "SellerInfo_address__txoNV"})
-        location_text = location_span.text.split("•")
-
-        return location_text[1]
-
+        # Strategy 1: Primary - look for SellerInfo_address span
+        location_span = article.find("span", {"class": "SellerInfo_address__txoNV"})
+        if location_span:
+            location_text = location_span.text.split("•")
+            if len(location_text) > 1:
+                return location_text[1].strip()
+            # If no bullet separator, try comma
+            location_text = location_span.text.split(",")
+            if len(location_text) > 0:
+                return location_text[0].strip()
+        
+        # Strategy 2: Look for any span elements (flexible selector)
+        all_spans = article.find_all("span")
+        if all_spans:
+            # Strategy 2a: Try to find span with location-like content (contains letters and spaces)
+            for span in reversed(all_spans):  # Check from end as location often near the bottom
+                text = span.text.strip()
+                if len(text) > 3 and any(c.isalpha() for c in text):
+                    # Likely a location
+                    return text
+            
+            # Strategy 2b: Fallback to last span element
+            return all_spans[-1].text.strip()
+        
+        _logger.log_warning(f"Could not extract location from article, no span elements found")
+        return "Unknown"
     except Exception as e:
-        all_elements = article.find_all("span")
-        return all_elements[-1].text
+        _logger.log_error(f"Error extracting location with context: {str(e)}")
+        return "Unknown"
+
+
+def get_image_from_article(article):
+    """
+    Get the car image directly from the article listing with multiple fallback strategies.
+    
+    Strategies (in order):
+    1. Find picture element and extract img src
+    2. Find any img element directly in article
+    3. Search for img with specific class patterns
+    4. Return empty bytes on all failures
+    
+    Uses flexible selectors prioritizing element types (picture, img) over classes.
+    Returns empty bytes (b"") on failure to maintain compatibility.
+    """
+    try:
+        # Strategy 1: Find picture element (prioritize element type over classes)
+        picture = article.find("picture")
+        if picture:
+            img = picture.find("img")
+            if img and img.get('src'):
+                img_url = img.get('src')
+                # Validate and fetch
+                if _validate_and_fetch_image(img_url):
+                    return _validate_and_fetch_image(img_url)
+        
+        # Strategy 2: Find any img element in article
+        img = article.find("img")
+        if img and img.get('src'):
+            img_url = img.get('src')
+            result = _validate_and_fetch_image(img_url)
+            if result:
+                return result
+        
+        # Strategy 3: Try finding img with common class patterns (less flexible but worth trying)
+        for class_pattern in ["Gallery", "Image", "img", "Img"]:
+            img = article.find("img", {"class": lambda c: c and class_pattern in c})
+            if img and img.get('src'):
+                img_url = img.get('src')
+                result = _validate_and_fetch_image(img_url)
+                if result:
+                    return result
+        
+        _logger.log_warning("No valid image found in article after all fallback strategies")
+        return b""
+        
+    except Exception as e:
+        _logger.log_error(f"Unexpected error extracting image with context: {str(e)}")
+        return b""
+
+
+def _validate_and_fetch_image(img_url: str):
+    """
+    Validate image URL and fetch if valid.
+    Returns image bytes or None on failure.
+    """
+    try:
+        # Validate URL before fetching (only autoscout24 listing images)
+        if 'prod.pictures.autoscout24.net/listing-images' not in img_url:
+            # Try alternative CDN patterns
+            if 'autoscout24' not in img_url.lower():
+                _logger.log_warning(f"Image URL not from autoscout24: {img_url}")
+                return None
+        
+        response = requests.get(img_url, timeout=5)
+        if response.status_code == 200:
+            return response.content
+        else:
+            _logger.log_warning(f"HTTP {response.status_code} fetching image: {img_url}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        _logger.log_error(f"Network error fetching image: {str(e)}")
+        return None
+    except Exception as e:
+        _logger.log_error(f"Error validating/fetching image: {str(e)}")
+        return None
 
 
 def get_image(url):
@@ -218,7 +398,7 @@ def get_image(url):
 
         if response.status_code != 200:
             _logger.log_error("Could not find image")
-            return ""
+            return b""  # Return empty bytes instead of empty string
 
         soup = BeautifulSoup(response.text, "html.parser")
         link_element = soup.find("link")
@@ -228,13 +408,13 @@ def get_image(url):
 
         if image_response.status_code != 200:
             _logger.log_error("Could not find image")
-            return ""
+            return b""  # Return empty bytes instead of empty string
 
         return image_response.content
 
     except Exception as e:
         _logger.log_error("Could not find image")
-        return ""
+        return b""  # Return empty bytes instead of empty string
 
 
 def convert_to_year(first_registration: str):

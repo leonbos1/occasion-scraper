@@ -1,13 +1,19 @@
 #docker-compose for flask app, mysql and jenkins
-version: '3.8'
 services:
   flaskapp:
     build: ./backend
     ports:
       - "5000:5000"
-    command: sh -c "sleep 10s ; flask --app=. run --host=0.0.0.0"
+    command: sh -c "sleep 30s ; flask --app=. run --host=0.0.0.0"
+    environment:
+      - root_username=${root_username}
+      - password=${password}
+      - hostname=${hostname}
+      - port=${port}
+      - database=${database}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
@@ -21,6 +27,11 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   jenkins_home:

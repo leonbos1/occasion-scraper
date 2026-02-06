@@ -13,11 +13,12 @@ load_dotenv()
 pymysql.install_as_MySQLdb()
 
 # Retrieve environment variables
-username = os.getenv("root_username")
-password = os.getenv("password")
-hostname = os.getenv("hostname", "db")
+# Support both standalone deployment (.env) and addon deployment (MYSQL_* vars)
+username = os.getenv("MYSQL_USER") or os.getenv("root_username")
+password = os.getenv("MYSQL_PASSWORD") or os.getenv("password")
+hostname = os.getenv("MYSQL_HOST") or os.getenv("hostname", "db")
 port = os.getenv("port", "3306")
-database = os.getenv("database")
+database = os.getenv("MYSQL_DATABASE") or os.getenv("database")
 email = os.getenv("email")
 email_password = os.getenv("email_password")
 

@@ -16,11 +16,11 @@ class CarRepository {
 
         try {
             const response = await this.get(url);
-
-            return await response.json();
-
+            const data = await response.json();
+            return data.data || [];
         } catch (error) {
-            return []
+            console.error('Error fetching brands and models:', error);
+            return [];
         }
     }
 
@@ -43,19 +43,25 @@ class CarRepository {
                 body: JSON.stringify(properties),
             });
 
-            return await response.json();
+            const data = await response.json();
+            return data.data || [];
         }
         catch (error) {
-            console.log(error);
-            return []
+            console.error('Error fetching cars:', error);
+            return [];
         }
     }
 
     async getMaxPage(size) {
         var url = '/cars/max_page/' + size;
-        const response = await this.get(url);
-
-        return await response.json();
+        try {
+            const response = await this.get(url);
+            const result = await response.json();
+            return result.data?.max_page || 0;
+        } catch (error) {
+            console.error('Error fetching max page:', error);
+            return 0;
+        }
     }
 
     async getRecentCars(amount) {
@@ -63,12 +69,12 @@ class CarRepository {
 
         try {
             const response = await this.get(url);
-
-            return await response.json();
+            const data = await response.json();
+            return data.data || [];
         }
-
         catch (error) {
-            return []
+            console.error('Error fetching recent cars:', error);
+            return [];
         }
     }
 
@@ -77,19 +83,35 @@ class CarRepository {
 
         try {
             const response = await this.get(url);
-
-            return await response.json();
+            const data = await response.json();
+            return data.data || [];
         }
-
         catch (error) {
-            return []
+            console.error('Error fetching expensive cars:', error);
+            return [];
         }
     }
 
     async getCarById(id) {
-        const response = await this.get(`/cars/${id}`);
+        try {
+            const response = await this.get(`/cars/${id}`);
+            const data = await response.json();
+            return data.data || null;
+        } catch (error) {
+            console.error('Error fetching car:', error);
+            return null;
+        }
+    }
 
-        return await response.json();
+    async getCarImages(id) {
+        try {
+            const response = await this.get(`/cars/${id}/images`);
+            const data = await response.json();
+            return data.data || [];
+        } catch (error) {
+            console.error('Error fetching car images:', error);
+            return [];
+        }
     }
 
     async updateCar(car) {
@@ -109,12 +131,12 @@ class CarRepository {
 
         try {
             const response = await this.get(url);
-
-            return await response.json();
+            const data = await response.json();
+            return data.data || {};
         }
-
         catch (error) {
-            return []
+            console.error('Error fetching filters:', error);
+            return {};
         }
     }
 

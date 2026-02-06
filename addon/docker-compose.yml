@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: addon_occasion_scraper_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - /data/mysql:/var/lib/mysql
+    networks:
+      - addon_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: dockerfile
+    container_name: addon_occasion_scraper_backend
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SCRAPE_INTERVAL: ${SCRAPE_INTERVAL}
+      ENABLE_AUTOSCOUT: ${ENABLE_AUTOSCOUT}
+      ENABLE_MARKTPLAATS: ${ENABLE_MARKTPLAATS}
+      ENABLE_ANWB: ${ENABLE_ANWB}
+      ENABLE_GASPEDAAL: ${ENABLE_GASPEDAAL}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - addon_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/api/health', timeout=2)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: dockerfile
+      args:
+        VITE_BASE_URL: ${VITE_BASE_URL:-/}
+        VITE_API_URL: ${VITE_API_URL:-http://backend:5000}
+    container_name: addon_occasion_scraper_frontend
+    environment:
+      VITE_BASE_URL: ${VITE_BASE_URL:-/}
+      VITE_API_URL: ${VITE_API_URL:-http://backend:5000}
+    depends_on:
+      - backend
+    networks:
+      - addon_network
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+networks:
+  addon_network:
+    driver: bridge

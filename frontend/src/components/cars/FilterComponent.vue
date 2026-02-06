@@ -2,36 +2,43 @@
     <div v-if="Object.keys(groupedFilters).length > 0" class="p-4">
         <form @submit.prevent="applyFilters" class="space-y-4">
             <div v-for="(group, baseName) in groupedFilters" :key="baseName"
-                class="flex flex-col md:flex-row items-center md:space-x-2 space-y-2 md:space-y-0">
-                <span class="font-semibold w-full md:w-[7vw] text-center md:text-left">{{
-        baseName.charAt(0).toUpperCase() +
-        baseName.slice(1) }}:</span>
-                <div v-for="filter in group" :key="filter" class="flex items-center space-x-1">
+                class="grid grid-cols-1 gap-2">
+                <span class="text-sm font-semibold text-gray-700">
+                    {{ baseName.charAt(0).toUpperCase() + baseName.slice(1) }}
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <template v-for="filter in group" :key="filter">
+                        <template v-if="filter === 'brand'">
+                            <select v-model="filterValues[filter]"
+                                class="border border-gray-300 rounded-lg px-3 py-2 w-full">
+                                <option value="">All brands</option>
+                                <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
+                            </select>
+                        </template>
 
-                    <template v-if="filter === 'brand'">
-                        <select v-model="filterValues[filter]"
-                            class="border-2 border-gray-300 rounded px-2 py-1 w-full md:max-w-[5vw]">
-                            <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
-                        </select>
+                        <template v-else-if="filter === 'model'">
+                            <select v-model="filterValues[filter]"
+                                class="border border-gray-300 rounded-lg px-3 py-2 w-full">
+                                <option value="">All models</option>
+                                <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
+                            </select>
+                        </template>
+
+                        <template v-else>
+                            <input :type="getInputType(filter)" :id="filter" v-model="filterValues[filter]"
+                                class="border border-gray-300 rounded-lg px-3 py-2 w-full" />
+                        </template>
+
+                        <span v-if="group.length > 1 && filter.startsWith('min_')" class="text-xs text-gray-400">to</span>
                     </template>
-
-                    <template v-else-if="filter === 'model'">
-                        <select v-model="filterValues[filter]"
-                            class="border-2 border-gray-300 rounded px-2 py-1 w-full md:max-w-[5vw]">
-                            <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
-                        </select>
-                    </template>
-
-                    <template v-else>
-                        <input type="text" :id="filter" v-model="filterValues[filter]"
-                            class="border-2 border-gray-300 rounded px-2 py-1 w-full md:max-w-[5vw]" />
-                    </template>
-
-                    <span v-if="group.length > 1 && filter.startsWith('min_')">to</span>
                 </div>
             </div>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">Apply
-                Filters</button>
+            <div class="flex gap-2">
+                <button type="button" @click="resetFilters"
+                    class="w-1/2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">Reset</button>
+                <button type="submit" class="w-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Apply
+                    Filters</button>
+            </div>
         </form>
     </div>
 </template>
@@ -109,5 +116,15 @@ function initializeFilterValues() {
 
 function applyFilters() {
     emit('filter', filterValues);
+}
+
+function resetFilters() {
+    initializeFilterValues();
+    emit('filter', filterValues);
+}
+
+function getInputType(filterName) {
+    const numericKeys = ['price', 'mileage', 'first_registration', 'distance'];
+    return numericKeys.some((key) => filterName.includes(key)) ? 'number' : 'text';
 }
 </script>

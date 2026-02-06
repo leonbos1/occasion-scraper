@@ -8,8 +8,11 @@ class Logger:
         self.session_id = session_id
 
     def log(self, message, level):
+        # Truncate message to prevent DB errors (logs table message column limit)
+        truncated_message = message[:500] if len(message) > 500 else message
+        
         log = Log(
-            message=message,
+            message=truncated_message,
             level=level,
             session_id=self.session_id
         )

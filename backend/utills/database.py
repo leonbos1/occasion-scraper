@@ -1,13 +1,13 @@
 from ..models.car import Car
 from ..models.scrape_session import ScrapeSession
-from ..extensions import session
+from ..extensions import db
 
 def get_new_cars(cars: list):
     new_cars = []
     new_car_ids = []
 
     for car in cars:
-        car_from_db = session.query(Car).filter(Car.id == car.id).first()
+        car_from_db = db.session.query(Car).filter(Car.id == car.id).first()
 
         if car_from_db == None and car.id not in new_car_ids:
             new_cars.append(car)
@@ -19,26 +19,28 @@ def get_new_cars(cars: list):
 def save_cars_to_db(cars: list, logger):
     try:
         for car in cars:
-            session.add(car)
+            db.session.add(car)
 
-        session.commit()
+        db.session.commit()
         logger.log_info(f"{len(cars)} new cars saved to db")
 
     except Exception as e:
+        db.session.rollback()
         logger.log_error(str(e))
 
 
 def save_session_to_db(scrape_session: ScrapeSession, logger):
     try:
-        if session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
-            session.add(scrape_session)
+        if db.session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).first() == None:
+            db.session.add(scrape_session)
 
         else:
-            session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
+            db.session.query(ScrapeSession).filter(ScrapeSession.id == scrape_session.id).update(
                 {"ended": scrape_session.ended, "new_cars": scrape_session.new_cars})
             
-        session.commit()
+        db.session.commit()
         logger.log_info("Scrape session saved to db")
             
     except Exception as e:
+        db.session.rollback()
         logger.log_error(str(e))

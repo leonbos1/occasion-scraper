@@ -1,0 +1,58 @@
+name: Occasion Scraper
+version: 1.0.0
+slug: occasion-scraper
+description: Automated car marketplace scraper with brand/model catalog management
+url: https://github.com/leonbos1/occasion-scraper
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+startup: services
+boot: auto
+init: false
+map:
+  - addon_config:rw
+
+options:
+  mysql_root_password: "changeme_root"
+  db_name: "occasion_scraper"
+  db_user: "scraper"
+  db_password: "changeme_db"
+  admin_email: "admin@example.com"
+  admin_password: "changeme_admin"
+  scrape_interval_minutes: 60
+  enable_autoscout: true
+  enable_marktplaats: true
+  enable_anwb: true
+  enable_gaspedaal: true
+
+schema:
+  mysql_root_password: password
+  db_name: str
+  db_user: str
+  db_password: password
+  admin_email: email
+  admin_password: password
+  scrape_interval_minutes: int
+  enable_autoscout: bool
+  enable_marktplaats: bool
+  enable_anwb: bool
+  enable_gaspedaal: bool
+
+ports:
+  80/tcp: null
+
+ports_description:
+  80/tcp: Web interface (only if not using ingress)
+
+ingress: true
+ingress_port: 80
+panel_icon: mdi:car-search
+
+services:
+  - trigger_scrape
+  - get_scrape_status
+  - list_cars
+  - get_car_details

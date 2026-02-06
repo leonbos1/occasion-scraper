@@ -1,12 +1,38 @@
-/**
- * @deprecated 
- */
-function fixBase64Image(cars) {
-    cars.value.forEach(car => {
-        if (!car.base_image.startsWith('data:image')) {
-            car.base_image = 'data:image/png;base64,' + car.base_image;
-        }
-    });
+function detectMimeFromBase64(base64) {
+    if (!base64) {
+        return 'image/jpeg';
+    }
+
+    if (base64.startsWith('iVBOR')) {
+        return 'image/png';
+    }
+
+    if (base64.startsWith('/9j/')) {
+        return 'image/jpeg';
+    }
+
+    if (base64.startsWith('UklGR')) {
+        return 'image/webp';
+    }
+
+    return 'image/jpeg';
 }
 
-export default fixBase64Image;
+export function getImageSrc(baseImage) {
+    if (!baseImage) {
+        return '';
+    }
+
+    if (baseImage.startsWith('data:image')) {
+        return baseImage;
+    }
+
+    if (baseImage.startsWith('http://') || baseImage.startsWith('https://')) {
+        return baseImage;
+    }
+
+    const mime = detectMimeFromBase64(baseImage);
+    return `data:${mime};base64,${baseImage}`;
+}
+
+export default getImageSrc;
