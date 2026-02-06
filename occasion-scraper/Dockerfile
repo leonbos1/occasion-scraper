@@ -1,8 +1,10 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.11
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.20
 FROM $BUILD_FROM
 
 # Install system dependencies
 RUN apk add --no-cache \
+    python3 \
+    py3-pip \
     mariadb \
     mariadb-client \
     nginx \
